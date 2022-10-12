@@ -38,71 +38,15 @@ export const DesignForms = (form, error) => {
 
 //Form fields here
 
-//SingUpForm
-export const SignupForm = [
+export const JoinRoomForm = [
   {
-    name: "name",
-    placeholder: "Name",
-    style: { marginTop: "0px" },
-    helperText: "Please enter your name here",
-  },
-  {
-    name: "email",
-    placeholder: "Email",
-    helperText: "Please enter your email here",
-  },
-  {
-    name: "password",
-    placeholder: "Password",
-    helperText: "Please enter your password here",
-  },
-  {
-    name: "cnfpassword",
-    placeholder: "Confirm Password",
-    helperText: "Please confirm your password here",
-  },
-];
-
-//Signinform
-export const SigninForm = [
-  {
-    name: "username",
-    placeholder: "Email",
-    helperText: "Please enter your email here",
-    style: { marginTop: "0px" },
-  },
-  {
-    name: "password",
-    placeholder: "Password",
-    helperText: "Please enter your password here",
-  },
-];
-
-export const ProfileForm = [
-  {
-    name: "email",
-    placeholder: "Email",
-    helperText: "Please enter your email here",
-    style: { marginTop: "0px" },
-    type: "email",
-    disabled: true,
+    name: "room",
+    placeholder: "Room Name",
+    helperText: "Please enter room name",
   },
   {
     name: "name",
-    placeholder: "Name",
-    helperText: "Please enter your name here",
-    type: "text",
-  },
-  {
-    name: "password",
-    placeholder: "Password",
-    helperText: "Please enter your password here",
-    type: "password",
-  },
-  {
-    name: "cnfpassword",
-    placeholder: "Confirm Password",
-    helperText: "Please enter your password here again",
-    type: "password",
+    placeholder: "Your name",
+    helperText: "Please enter your name",
   },
 ];
