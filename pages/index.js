@@ -6,8 +6,11 @@ import {
   Radio,
   FormControlLabel,
 } from "@mui/material";
+import { setSocket } from "../Utils/Configs/Socket";
 import { DesignForms, JoinRoomForm } from "../Utils/DesignUtilities/Form";
 import ToastHandler from "../Utils/Toast/ToastHandler";
+import { ConnectMeet } from "../MEET_SDK";
+
 export default function Home() {
   const handleJoin = (e) => {
     e.preventDefault();
@@ -16,10 +19,24 @@ export default function Home() {
       room: e.target.room.value,
       role: e.target.role.value,
     };
-    console.log({ formData });
+
     if (!formData.name || !formData.room || !formData.role) {
       return ToastHandler("dan", "Please fill all fields");
     }
+
+    ConnectMeet({
+      room: formData.room,
+      name: formData.name,
+      role: formData.role,
+      appID: process.env.TOKEN || "govind",
+      uid: formData.name,
+    })
+      .then((socket) => {
+        setSocket(socket);
+      })
+      .catch((e) => {
+        console.log(e.message);
+      });
   };
 
   return (
