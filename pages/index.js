@@ -10,8 +10,16 @@ import { setSocket } from "../Utils/Configs/Socket";
 import { DesignForms, JoinRoomForm } from "../Utils/DesignUtilities/Form";
 import ToastHandler from "../Utils/Toast/ToastHandler";
 import { ConnectMeet } from "../MEET_SDK";
+import { useRouter } from "next/router";
+import { SaveUserData } from "../Redux/Actions/User/DataAction";
+import { useDispatch } from "react-redux";
 
 export default function Home() {
+  //constants here
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  //form submission handler
   const handleJoin = (e) => {
     e.preventDefault();
     const formData = {
@@ -33,6 +41,16 @@ export default function Home() {
     })
       .then((socket) => {
         setSocket(socket);
+        dispatch(
+          SaveUserData({
+            room: formData.room,
+            name: formData.name,
+            role: formData.role,
+            appID: process.env.TOKEN || "govind",
+            uid: formData.name,
+          })
+        );
+        router.push(`/room/${formData.room}`);
       })
       .catch((e) => {
         console.log(e.message);
