@@ -30,15 +30,12 @@ export default function Home() {
 
     if (!formData.name || !formData.room || !formData.role) {
       return ToastHandler("dan", "Please fill all fields");
+    } else if (formData.name.includes(" ")) {
+      return ToastHandler("dan", "Name can not have spaces");
     }
 
-    ConnectMeet({
-      room: formData.room,
-      name: formData.name,
-      role: formData.role,
-      appID: process.env.TOKEN || "govind",
-      uid: formData.name,
-    })
+    const token = "xyz"; //logic for getting the token
+    ConnectMeet({ token, role: formData.role, uid: formData.name })
       .then((socket) => {
         setSocket(socket);
         dispatch(
@@ -46,7 +43,7 @@ export default function Home() {
             room: formData.room,
             name: formData.name,
             role: formData.role,
-            appID: process.env.TOKEN || "govind",
+            token,
             uid: formData.name,
           })
         );
@@ -112,6 +109,7 @@ export default function Home() {
             style={{
               margin: "auto",
               marginTop: "10px",
+              marginRight: "20px",
             }}
             type="submit"
           >

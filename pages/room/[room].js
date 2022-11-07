@@ -33,22 +33,18 @@ export default function Room() {
 
       ToastHandler("info", "Room changed");
 
+      const token = "xyz";
+
       ConnectMeet({
-        room: userData.room,
-        name: userData.name,
-        role: userData.role,
-        appID: process.env.TOKEN || "govind",
-        uid: userData.name,
+        token,
       }).then((socket) => {
         setSocket(socket);
         ToastHandler("sus", "Joined another room succefully");
       });
     } else if (!socket) {
       ConnectMeet({
-        room: userData.room,
-        name: userData.name,
         role: userData.role,
-        appID: process.env.TOKEN || "govind",
+        token: userData.token,
         uid: userData.name,
       }).then((socket) => {
         setSocket(socket);

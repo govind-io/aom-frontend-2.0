@@ -1,3 +1,4 @@
+import axios from "axios";
 import { io } from "socket.io-client";
 import { DEBUG_LOGS } from "../configs/SETTINGS";
 import { API_BASE_URL } from "../configs/URL";
@@ -8,15 +9,9 @@ const getJoinedUsers = async () => {
 };
 
 //Main Connect_Meet which does all manipulation related to socket IO server
-export const Connect_Meet = async ({ room, uid, role, appID, name }) => {
+export const Connect_Meet = async ({ token, uid, role }) => {
   const socket = io(API_BASE_URL, {
-    query: {
-      uid,
-      name,
-      role,
-      room,
-    },
-    auth: { token: appID },
+    auth: { token },
     "force new connection": true,
     reconnectionAttempts: "5",
     timeout: 10000,
