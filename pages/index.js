@@ -13,6 +13,7 @@ import { ConnectMeet } from "../MEET_SDK";
 import { useRouter } from "next/router";
 import { SaveUserData } from "../Redux/Actions/User/DataAction";
 import { useDispatch } from "react-redux";
+import { GetMeetToken } from "../Utils/ApiUtilities/GetMeetToken";
 
 export default function Home() {
   //constants here
@@ -20,7 +21,7 @@ export default function Home() {
   const dispatch = useDispatch();
 
   //form submission handler
-  const handleJoin = (e) => {
+  const handleJoin = async (e) => {
     e.preventDefault();
     const formData = {
       name: e.target.name.value,
@@ -34,7 +35,10 @@ export default function Home() {
       return ToastHandler("dan", "Name can not have spaces");
     }
 
-    const token = "xyz"; //logic for getting the token
+    const token = await GetMeetToken(formData.room); //login for getting token which should be moved to backend server of client
+
+    if (!token) return
+
     ConnectMeet({ token, role: formData.role, uid: formData.name })
       .then((socket) => {
         setSocket(socket);
