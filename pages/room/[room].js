@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Chat from "../../components/Room/chat";
+import MainGrid from "../../components/Room/grid";
 import Participants from "../../components/Room/Participants";
 import { ConnectMeet } from "../../MEET_SDK";
 import { SaveUserData } from "../../Redux/Actions/User/DataAction";
@@ -130,8 +131,11 @@ export default function Room() {
                 xs={7}
                 sx={{
                   border: "1px solid yellow",
+                  maxHeight: "100%",
                 }}
-              ></Grid>
+              >
+                <MainGrid />
+              </Grid>
               <Grid
                 item
                 xs={3}

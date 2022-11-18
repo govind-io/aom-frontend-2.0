@@ -86,6 +86,7 @@ export default function Participants() {
                 padding: "10px",
                 marginBottom: "10px",
               }}
+              key={item.name}
             >
               <Grid item xs={12} key={item.name}>
                 <Typography

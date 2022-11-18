@@ -4,7 +4,7 @@ import { DEBUG_LOGS } from "../configs/SETTINGS";
 import { API_BASE_URL } from "../configs/URL";
 
 //Global object
-let globalSocket;
+export let globalSocket;
 
 //methods for the Socket IO
 const getJoinedUsers = async (token) => {
@@ -59,7 +59,7 @@ export const Connect_Meet = async ({ token, uid, role }) => {
   });
 
   return new Promise((resolve, reject) => {
-    socket.on("connected", ({ id }) => {
+    socket.on("connected", ({ id, role }) => {
       if (DEBUG_LOGS) {
         console.log("socket connected succefully, id ", id);
       }
@@ -67,6 +67,9 @@ export const Connect_Meet = async ({ token, uid, role }) => {
       //adding custom methods
       socket.getJoinedUsers = getJoinedUsers;
       socket.getAllMessages = getAllMessages
+
+      //adding custom variables
+      socket.role = role
 
       //seting global socket object
       globalSocket = socket;
