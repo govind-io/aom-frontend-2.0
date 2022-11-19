@@ -1,19 +1,17 @@
 import { Device } from "mediasoup-client";
 import { DEBUG_LOGS, RTCEvents } from "../configs/SETTINGS";
 import { globalSocket } from "../socket";
-import { handleCreateTracks, handleProduceTracks } from "./tracks";
+import { handleCreateTracks, handleProduceTracks, StartRecievingTheTracks } from "./tracks";
 
 export let globalDevice;
 
-//handling database
-const PeersData = {};
 
 export const CreateRtcClient = () =>
   new Promise((resolve, reject) => {
     const socket = globalSocket;
 
     if (!socket?.connected) {
-      reject("You must call ConnectMeet first before CreatingRtcClient");
+      return reject("You must call ConnectMeet first before CreatingRtcClient");
     }
 
     const timer = setTimeout(() => {
@@ -24,16 +22,19 @@ export const CreateRtcClient = () =>
       const device = new Device();
       globalDevice = device;
       await device.load({ routerRtpCapabilities });
-      clearTimeout(timer);
 
+      clearTimeout(timer);
       //adding custom methods here
       device.on = EventListenerFunc;
+      device.off = EventListenerRemover
 
       device.createTracks = handleCreateTracks;
 
       device.produceTracks = handleProduceTracks;
 
       resolve(device);
+
+      socket.emit("device-connected")
     });
   });
 
@@ -48,10 +49,28 @@ const EventListenerFunc = async (eventName, callback) => {
   }
 };
 
+const EventListenerRemover = async (eventName, callback) => {
+  const socket = globalSocket
+
+  switch (eventName) {
+    case RTCEvents["user-published"]:
+      socket.off("user-published", callback)
+      break;
+
+    default:
+      break;
+  }
+};
+
 const handleUserPublishedEvent = async (callback) => {
   const socket = globalSocket;
 
+
+
   socket.on("user-published", (user) => {
+    user.subscribe = async () => {
+      await StartRecievingTheTracks(user)
+    }
     callback(user);
   });
 };

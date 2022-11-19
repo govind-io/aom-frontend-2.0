@@ -13,6 +13,19 @@ export default function MainGrid() {
   const [RtcClient, setRtcClient] = useState();
   const [tracks, setTracks] = useState({});
 
+
+  //Event listeners
+
+  const userPublishedEvents = async (user) => {
+    console.log({ user })
+    try {
+      await user.subscribe()
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+
   //creating RTC client here
   useEffect(() => {
     if (RtcClient || !socket) return;
@@ -20,11 +33,6 @@ export default function MainGrid() {
     CreateRtcClient()
       .then((device) => {
         setRtcClient(device);
-
-        //temporary
-        device.on("user-published", ({ user }) => {
-          console.log({ user });
-        });
       })
       .catch((e) => console.log(e.message));
   }, [socket]);
@@ -74,6 +82,18 @@ export default function MainGrid() {
         console.log({ e });
       });
   }, [RtcClient, tracks]);
+
+
+  useEffect(() => {
+
+    if (!RtcClient) return
+
+    RtcClient.on("user-published", userPublishedEvents)
+
+
+    return () => RtcClient.off("user-published", userPublishedEvents);
+
+  }, [RtcClient])
 
   return (
     <Grid
