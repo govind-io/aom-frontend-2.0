@@ -1,6 +1,15 @@
 import { Grid } from "@mui/material";
+import { useCallback, useEffect, useRef } from "react";
 
-export default function VideoPlayer() {
+export default function VideoPlayer({ audioTrack, videoTrack }) {
+  const videoRef = useCallback(
+    (node) => {
+      if (!node || !videoTrack) return;
+      node.srcObject = videoTrack;
+    },
+    [audioTrack, videoTrack]
+  );
+
   return (
     <Grid
       container
@@ -15,6 +24,8 @@ export default function VideoPlayer() {
           width: "100%",
           height: "100%",
         }}
+        ref={videoRef}
+        autoPlay={true}
       />
     </Grid>
   );

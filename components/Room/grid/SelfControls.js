@@ -1,6 +1,17 @@
 import { Grid, IconButton } from "@mui/material";
+import { useEffect, useState } from "react";
 
-export default function SelfControl({ disabled }) {
+export default function SelfControl({ videoTrack, audioTrack }) {
+  const [audioState, setAudioState] = useState(false);
+  const [videoState, setVideoState] = useState(false);
+
+  useEffect(() => {
+    if (!audioTrack && !videoTrack) return;
+
+    setAudioState(audioTrack.enabled);
+    setVideoState(videoTrack.enabled);
+  }, [videoTrack, audioTrack]);
+
   return (
     <Grid
       container
@@ -12,7 +23,6 @@ export default function SelfControl({ disabled }) {
     >
       <Grid item>
         <IconButton
-          disabled={disabled}
           variant="contained"
           sx={{
             backgroundColor: "blue",
@@ -20,13 +30,16 @@ export default function SelfControl({ disabled }) {
             height: "fit-content",
             borderRadius: "0px",
           }}
+          onClick={() => {
+            setVideoState(!videoTrack.enabled);
+            videoTrack.setEnabled(!videoTrack.enabled);
+          }}
         >
-          vid
+          {videoState ? "vid" : "no vid"}
         </IconButton>
       </Grid>
       <Grid item>
         <IconButton
-          disabled={disabled}
           variant={"contained"}
           sx={{
             backgroundColor: "blue",
@@ -35,8 +48,12 @@ export default function SelfControl({ disabled }) {
             height: "fit-content",
             borderRadius: "0px",
           }}
+          onClick={() => {
+            setAudioState(!audioTrack.enabled);
+            audioTrack.setEnabled(!audioTrack.enabled);
+          }}
         >
-          audio
+          {audioState ? "aud" : "no aud"}
         </IconButton>
       </Grid>
     </Grid>
