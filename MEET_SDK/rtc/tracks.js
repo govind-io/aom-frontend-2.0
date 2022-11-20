@@ -60,7 +60,7 @@ export const handleProduceTracks = (data) => {
       async ({ dtlsParameters }, callback, errorback) => {
         try {
           socket.emit("connect-producer", { dtlsParameters }, (error) => {
-            if (!error) return callback()
+            if (!error) return callback();
           });
 
           if (DEBUG_LOGS)
@@ -142,6 +142,12 @@ export const handleProduceTracks = (data) => {
           track: videoTrack,
           ...videoParams,
         });
+
+        console.log({
+          track: videoTrack,
+          ...videoParams,
+          codec: globalDevice.rtpCapabilities.codecs.find((item) => item.mimeType === "video/H264")
+        }, "produced")
         producers.push(videoProducer);
       } catch (e) {
         return reject(e);
@@ -223,99 +229,230 @@ export const handleProduceTracks = (data) => {
   });
 };
 
+function MakeQuerablePromise(promise) {
+  // Don't modify any promise that has been already modified.
+  if (promise.isFulfilled) return promise;
+
+  // Set initial state
+  var isPending = true;
+  var isRejected = false;
+  var isFulfilled = false;
+
+  // Observe the promise, saving the fulfillment in a closure scope.
+  var result = promise.then(
+    function (v) {
+      isFulfilled = true;
+      isPending = false;
+      return v;
+    },
+    function (e) {
+      isRejected = true;
+      isPending = false;
+      throw e;
+    }
+  );
+
+  result.isFulfilled = function () {
+    return isFulfilled;
+  };
+  result.isPending = function () {
+    return isPending;
+  };
+  result.isRejected = function () {
+    return isRejected;
+  };
+  return result;
+}
+
+const handleCreateReceiveTransport = (user) => {
+  const socket = globalSocket;
+  const device = globalDevice;
+
+  const { producerId, uid, kind } = user;
+
+  return new Promise((resolve, reject) => {
+    socket.emit("create-reciever-transport", async (data, error) => {
+      if (error) {
+        reject(error);
+      }
+
+      const RecieverTransport = await device.createRecvTransport(data);
+
+      RecieverTransport.on("dtlsstatechange", (dtlsState) => {
+        if (dtlsState === "closed") {
+          if (DEBUG_LOGS)
+            console.log(
+              "Consumer Transport DTLSState Changed to ",
+              dtlsState,
+              " Transport closed there fore"
+            );
+          RecieverTransport.close();
+        }
+      });
+
+      if (DEBUG_LOGS) console.log("Created Reciever transport");
+
+      PeersData = {
+        ...PeersData,
+        [uid]: {
+          RecieverTransport,
+          consumers: [{ kind, producerId }],
+          remoteReceiverTransport: { id: data.id },
+          ...PeersData[uid],
+        },
+      };
+
+      resolve();
+    });
+  });
+};
 
 export const StartRecievingTheTracks = async (user) => {
-
-  const { producerId, uid, kind } = user
+  const { producerId, uid, kind } = user;
 
   const socket = globalSocket;
   const device = globalDevice;
 
-  if (PeersData[uid]?.consumers.find(elem => elem.producerId === producerId)) throw new Error("Can no subsribe to already subscribed/subscribing to this tracks")
-
+  if (PeersData[uid]?.consumers?.find((elem) => elem.producerId === producerId))
+    throw new Error(
+      "Can not subsribe to already subscribed/subscribing to this tracks"
+    );
 
   const handleConnectRecieverTransport = async () => {
+    if (DEBUG_LOGS) console.log("Started connecting with receiver transport");
 
-    if (DEBUG_LOGS) console.log("Started connecting with receiver transport")
+    PeersData[uid].RecieverTransport.on(
+      "connect",
+      async ({ dtlsParameters }, callback, errback) => {
+        try {
+          await socket.emit(
+            "connect-consumer",
+            {
+              dtlsParameters,
+              serverConsumerTransportId:
+                PeersData[uid].remoteReceiverTransport.id,
+            },
+            (error) => {
+              if (error) return errback;
 
-    PeersData[uid].RecieverTransport.on('connect', async ({ dtlsParameters }, callback, errback) => {
-      try {
-        await socket.emit('connect-consumer', {
-          dtlsParameters,
-          serverConsumerTransportId: PeersData[uid].remoteReceiverTransport.id,
-        }, (error) => {
-          if (error) return errback
-
-          callback()
-          if (DEBUG_LOGS) console.log("Connected with receiver transport, trying to consumer")
-        })
-      } catch (error) {
-        // Tell the transport that something was wrong
-        errback(error)
-      }
-    })
-
-
-    await socket.emit('consume-consumer', {
-      rtpCapabilities: device.rtpCapabilities,
-      producerId,
-      serverConsumerTransportId: PeersData[uid].remoteReceiverTransport.id,
-    }, async (data, error) => {
-      if (error) {
-        throw new Error(error)
-      }
-
-      if (DEBUG_LOGS) console.log("Receiver transport is ready to consume")
-
-      const consumer = await PeersData[uid].RecieverTransport.consume({
-        id: data.id,
-        producerId: producerId,
-        kind: data.kind,
-        rtpParameters: data.rtpParameters
-      })
-
-
-
-      PeersData[uid].consumers = PeersData[uid].consumers.map((item) => {
-        if (item.producerId === producerId) return { ...item, consumer }
-        else return item
-      })
-
-
-      console.log(PeersData)
-
-    })
-  }
-
-
-  if (PeersData[uid]?.RecieverTransport) {
-    PeersData[uid].consumers.push({ kind, producerId })
-    await handleConnectRecieverTransport()
-  }
-
-  socket.emit("create-reciever-transport", async (data, error) => {
-    if (error) {
-      throw new Error(error);
-    }
-
-    const RecieverTransport = await device.createRecvTransport(data);
-
-    RecieverTransport.on("dtlsstatechange", (dtlsState) => {
-      if (dtlsState === "closed") {
-        if (DEBUG_LOGS)
-          console.log(
-            "Consumer Transport DTLSState Changed to ",
-            dtlsState,
-            " Transport closed there fore"
+              callback();
+              if (DEBUG_LOGS)
+                console.log(
+                  "Connected with receiver transport, trying to consumer"
+                );
+            }
           );
-        RecieverTransport.close();
+        } catch (error) {
+          // Tell the transport that something was wrong
+          errback(error);
+        }
       }
+    );
+
+    await socket.emit(
+      "consume-consumer",
+      {
+        rtpCapabilities: device.rtpCapabilities,
+        producerId,
+        serverConsumerTransportId: PeersData[uid].remoteReceiverTransport.id,
+      },
+      async (data, error) => {
+        if (error) {
+          throw new Error(error);
+        }
+
+        if (DEBUG_LOGS) console.log("Receiver transport is ready to consume");
+
+        const consumer = await PeersData[uid].RecieverTransport.consume({
+          id: data.id,
+          producerId: producerId,
+          kind: data.kind,
+          rtpParameters: data.rtpParameters,
+        });
+
+        PeersData[uid].consumers = PeersData[uid].consumers.map((item) => {
+          if (item.producerId === producerId) {
+            if (item.consumer) {
+              item.consumer.close();
+            }
+
+            const { track } = consumer;
+
+            socket.emit("resume-consumer", { consumer_id: data.serverConsumerId });
+
+            return { ...item, consumer, [kind]: track };
+
+
+          } else return item;
+        });
+
+        console.log({ PeersData })
+      }
+    );
+  };
+
+
+
+  if (!PeersData[uid]?.promise) {
+    const newRecieverTransport = MakeQuerablePromise(
+      handleCreateReceiveTransport(user)
+    );
+
+    newRecieverTransport.then(() => {
+      handleConnectRecieverTransport();
     });
 
-    if (DEBUG_LOGS) console.log("Created Reciever transport");
+    PeersData = { ...PeersData, [uid]: { promise: newRecieverTransport } };
+    return
+  }
 
-    PeersData = { ...PeersData, [uid]: { RecieverTransport, consumers: [{ kind, producerId }], remoteReceiverTransport: { id: data.id } } }
+  if (PeersData[uid]?.promise) {
+    const promise = PeersData[uid].promise;
+    if (promise.isPending) {
+      promise
+        .then(async () => {
+          PeersData[uid].consumers.push({ kind, producerId });
+          return await handleConnectRecieverTransport();
+        })
+        .catch((e) => {
+          return console.log({ e });
+        });
+    } else if (promise.isFulfilled) {
+      PeersData[uid].consumers.push({ kind, producerId });
+      return await handleConnectRecieverTransport();
+    } else {
+      throw new Error("You need to initialise a transport first");
+    }
+  }
+};
 
-    await handleConnectRecieverTransport()
+export const RemovingConsumerToTrack = () => {
+  const socket = globalSocket;
+
+  socket.on("producer-closed", ({ producerId }) => {
+    const allPeersUID = Object.keys(PeersData);
+
+    allPeersUID.forEach((item) => {
+      let found;
+
+      PeersData[item].consumers.forEach((item) => {
+        if (item.producerId === producerId) {
+          found = true;
+          item.consumer.close();
+        }
+      });
+
+      if (found) {
+        PeersData[item].consumers = PeersData[item].consumers.filter(
+          (item) => item.producerId !== producerId
+        );
+
+        if (PeersData[item].consumers.length === 0) {
+          PeersData[item].RecieverTransport?.close();
+          PeersData[item].promise = undefined;
+          PeersData[item].RecieverTransport = undefined;
+        }
+      }
+    });
   });
-}
+};

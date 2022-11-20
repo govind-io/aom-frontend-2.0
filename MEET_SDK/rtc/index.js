@@ -1,7 +1,7 @@
 import { Device } from "mediasoup-client";
 import { DEBUG_LOGS, RTCEvents } from "../configs/SETTINGS";
 import { globalSocket } from "../socket";
-import { handleCreateTracks, handleProduceTracks, StartRecievingTheTracks } from "./tracks";
+import { handleCreateTracks, handleProduceTracks, RemovingConsumerToTrack, StartRecievingTheTracks } from "./tracks";
 
 export let globalDevice;
 
@@ -34,6 +34,8 @@ export const CreateRtcClient = () =>
 
       resolve(device);
 
+      RemovingConsumerToTrack()
+
       socket.emit("device-connected")
     });
   });
@@ -54,7 +56,7 @@ const EventListenerRemover = async (eventName, callback) => {
 
   switch (eventName) {
     case RTCEvents["user-published"]:
-      socket.off("user-published", callback)
+      socket.off("user-published")
       break;
 
     default:
@@ -64,7 +66,6 @@ const EventListenerRemover = async (eventName, callback) => {
 
 const handleUserPublishedEvent = async (callback) => {
   const socket = globalSocket;
-
 
 
   socket.on("user-published", (user) => {

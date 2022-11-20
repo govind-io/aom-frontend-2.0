@@ -12,19 +12,21 @@ export default function MainGrid() {
   //localStates
   const [RtcClient, setRtcClient] = useState();
   const [tracks, setTracks] = useState({});
-
+  const [users, setUsers] = useState([]);
 
   //Event listeners
 
   const userPublishedEvents = async (user) => {
-    console.log({ user })
     try {
-      await user.subscribe()
+      await user.subscribe();
+      setUsers((prev) => {
+        if (prev.find((elem) => elem.uid === user.uid)) return prev;
+        return [...prev, user];
+      });
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
-  }
-
+  };
 
   //creating RTC client here
   useEffect(() => {
@@ -83,17 +85,15 @@ export default function MainGrid() {
       });
   }, [RtcClient, tracks]);
 
-
   useEffect(() => {
+    if (!RtcClient) return;
 
-    if (!RtcClient) return
+    RtcClient.on("user-published", userPublishedEvents);
 
-    RtcClient.on("user-published", userPublishedEvents)
-
-
-    return () => RtcClient.off("user-published", userPublishedEvents);
-
-  }, [RtcClient])
+    return () => {
+      RtcClient.off("user-published", userPublishedEvents);
+    };
+  }, [RtcClient]);
 
   return (
     <Grid
@@ -124,6 +124,26 @@ export default function MainGrid() {
           />
         </Grid>
       )}
+
+      {users.map((item) => {
+        return (
+          <Grid
+            item
+            xs={3}
+            style={{
+              border: "1px solid yello",
+              aspectRatio: "1",
+              position: "relative",
+            }}
+            key={item.uid}
+          >
+            <VideoPlayer
+              videoTrack={item.videoTrack}
+              audioTrack={item.audioTrack}
+            />
+          </Grid>
+        );
+      })}
     </Grid>
   );
 }

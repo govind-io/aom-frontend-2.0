@@ -1,3 +1,5 @@
+
+
 export const videoParams = {
     // mediasoup params
     encodings: [
@@ -20,7 +22,7 @@ export const videoParams = {
     // https://mediasoup.org/documentation/v3/mediasoup-client/api/#ProducerCodecOptions
     codecOptions: {
         videoGoogleStartBitrate: 1000
-    }
+    },
 }
 
 export const audioParams = {}
