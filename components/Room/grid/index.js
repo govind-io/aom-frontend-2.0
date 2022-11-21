@@ -19,10 +19,6 @@ export default function MainGrid() {
   const userPublishedEvents = async (user) => {
     try {
       await user.subscribe();
-      setUsers((prev) => {
-        if (prev.find((elem) => elem.uid === user.uid)) return prev;
-        return [...prev, user];
-      });
     } catch (e) {
       console.log(e);
     }
@@ -35,13 +31,22 @@ export default function MainGrid() {
     CreateRtcClient()
       .then((device) => {
         setRtcClient(device);
+
+        device.on("user-joined", (user) => {
+          setUsers((perv) => [...prev, user])
+        })
+
+        device.on("user-left", (user) => {
+          setUsers((prev) => prev.filter((elem) => elem.uid !== user.uid))
+        })
+
       })
       .catch((e) => console.log(e.message));
   }, [socket]);
 
   //for creating tracks
   useEffect(() => {
-    if (!RtcClient || userData.role !== "host") return;
+    if (!RtcClient || userData.role !== "host" && (!tracks.audioTrack && !tracks.videoTrack)) return;
 
     RtcClient.createTracks({
       audio: true,
@@ -73,10 +78,7 @@ export default function MainGrid() {
     )
       return;
 
-    RtcClient.produceTracks({
-      audioTrack: tracks.audioTrack,
-      videoTrack: tracks.videoTrack,
-    })
+    RtcClient.produceTracks([tracks.audioTrack, tracks.videoTrack])
       .then((producers) => {
         console.log({ producers });
       })
@@ -90,8 +92,14 @@ export default function MainGrid() {
 
     RtcClient.on("user-published", userPublishedEvents);
 
+
+    RtcClient.on("user-unpublished", (user) => {
+      console.log("this user unpublished it;s track", user)
+    })
+
     return () => {
       RtcClient.off("user-published", userPublishedEvents);
+      RtcClient.off("user-unpublished")
     };
   }, [RtcClient]);
 
@@ -138,8 +146,8 @@ export default function MainGrid() {
             key={item.uid}
           >
             <VideoPlayer
-              videoTrack={item.videoTrack}
-              audioTrack={item.audioTrack}
+              videoTrack={item.video}
+              audioTrack={item.audio}
             />
           </Grid>
         );

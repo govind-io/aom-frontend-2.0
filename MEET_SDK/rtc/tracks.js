@@ -8,7 +8,7 @@ let selfTracks;
 const producers = [];
 
 //handling database
-const PeersData = {};
+export const PeersData = {};
 
 export const handleCreateTracks = async (params) => {
   if (!params) throw new Error("Can not create tracks without params");
@@ -23,8 +23,6 @@ export const handleCreateTracks = async (params) => {
       audioTrack: new MediaStream([audioTrack]),
       videoTrack: new MediaStream([videoTrack]),
     };
-
-    globalDevice.tracks = selfTracks;
 
     //adding custom methods
     selfTracks.audioTrack.setEnabled = audioControl;
@@ -44,12 +42,45 @@ export const handleCreateTracks = async (params) => {
 const audioControl = async (val) => {
   selfTracks.audioTrack.getAudioTracks().enabled = val ? true : false;
   selfTracks.audioTrack.enabled = val ? true : false;
+
+  console.log("audio tracks set to ", val ? true : false);
 };
 
 const videoControl = async (val) => {
   selfTracks.videoTrack.getVideoTracks()[0].enabled = val ? true : false;
   selfTracks.videoTrack.enabled = val ? true : false;
+
+  console.log("video tracks ", val ? true : false);
 };
+
+
+export const handleUnproduceTracks = async (data) => {
+  if (data.length === 0) {
+    throw new Error("You must supply atleast one track")
+  }
+
+  data.forEach((item) => {
+    try {
+      item.getTracks().forEach((track) => {
+        producers = producers.filter((elem) => {
+          if (elem.track.id === track.id) {
+            if (DEBUG_LOGS) console.log("stopped publishing track ", track)
+            elem.close()
+          }
+          return elem.track.id !== track.id
+        })
+      })
+
+      return true
+    }
+    catch (e) {
+      throw new Error(e)
+    }
+  })
+
+
+}
+
 
 export const handleProduceTracks = (data) => {
   const handleProduceTransportConnection = async (resolve, reject) => {
@@ -102,92 +133,83 @@ export const handleProduceTracks = (data) => {
       }
     );
 
-    const audioTrack = data.audioTrack.getAudioTracks()[0];
-    const videoTrack = data.videoTrack.getVideoTracks()[0];
+    data.forEach((track) => {
+      track.getTracks().forEach(async (item) => {
+        if (item.kind === "audio") {
+          let audioProducer;
+          try {
+            const audioTrack = item;
+            audioProducer = await selfProducerTransport.produce({
+              track: audioTrack,
+              ...audioParams,
+            });
+            producers.push(audioProducer);
+          } catch (e) {
+            return reject(e);
+          }
 
-    let videoProducer;
-    let audioProducer;
+          if (DEBUG_LOGS) console.log("started audio produce");
 
-    if (audioTrack) {
-      try {
-        audioProducer = await selfProducerTransport.produce({
-          track: audioTrack,
-          ...audioParams,
-        });
-        producers.push(audioProducer);
-      } catch (e) {
-        return reject(e);
-      }
+          audioProducer.on("trackended", () => {
+            if (DEBUG_LOGS) console.log("audio track ended");
+            // close audio track
+            if (DEBUG_LOGS) console.log("audio Track closed");
+            audioTrack.close();
+          });
 
-      if (DEBUG_LOGS) console.log("started audio produce");
+          audioProducer.on("transportclose", () => {
+            if (DEBUG_LOGS) console.log("audio transport ended");
 
-      audioProducer.on("trackended", () => {
-        if (DEBUG_LOGS) console.log("audio track ended");
-        // close audio track
-        if (DEBUG_LOGS) console.log("audio Track closed");
-        audioTrack.close();
+            producers = producers.filter((item) => item.id !== audioProducer.id)
+            if (DEBUG_LOGS) console.log("audio Track closed");
+            // close audio track
+            audioTrack.close();
+          });
+        }
+
+        if (item.kind === "video") {
+          let videoProducer;
+          try {
+            const videoTrack = item;
+            videoProducer = await selfProducerTransport.produce({
+              track: videoTrack,
+              ...videoParams,
+            });
+            producers.push(videoProducer);
+          } catch (e) {
+            return reject(e);
+          }
+
+          if (DEBUG_LOGS) console.log("started video produce");
+
+          videoProducer.on("trackended", () => {
+            if (DEBUG_LOGS) console.log("video track ended");
+
+            if (DEBUG_LOGS) console.log("video Track closed");
+            // close video track
+            videoTrack.close();
+          });
+
+          videoProducer.on("transportclose", () => {
+            if (DEBUG_LOGS) console.log("video transport ended");
+
+            producers = producers.filter((item) => item.id !== videoProducer.id)
+
+            if (DEBUG_LOGS) console.log("video Track closed");
+            // close video track
+            videoTrack.close();
+          });
+        }
       });
-
-      audioProducer.on("transportclose", () => {
-        if (DEBUG_LOGS) console.log("audio transport ended");
-        if (DEBUG_LOGS) console.log("audio Track closed");
-        // close audio track
-        audioTrack.close();
-      });
-    }
-
-    if (videoTrack) {
-      try {
-        videoProducer = await selfProducerTransport.produce({
-          track: videoTrack,
-          ...videoParams,
-        });
-
-        console.log({
-          track: videoTrack,
-          ...videoParams,
-          codec: globalDevice.rtpCapabilities.codecs.find((item) => item.mimeType === "video/H264")
-        }, "produced")
-        producers.push(videoProducer);
-      } catch (e) {
-        return reject(e);
-      }
-
-      if (DEBUG_LOGS) console.log("started video produce");
-
-      videoProducer.on("trackended", () => {
-        if (DEBUG_LOGS) console.log("video track ended");
-
-        if (DEBUG_LOGS) console.log("video Track closed");
-        // close video track
-        videoTrack.close();
-      });
-
-      videoProducer.on("transportclose", () => {
-        if (DEBUG_LOGS) console.log("video transport ended");
-
-        if (DEBUG_LOGS) console.log("video Track closed");
-        // close video track
-        videoTrack.close();
-      });
-    }
-
-    if (audioProducer && videoProducer)
-      return resolve([audioProducer, videoProducer]);
-
-    if (audioProducer) return resolve([audioProducer]);
-
-    if (videoProducer) return resolve([videoProducer]);
+      return resolve(producers);
+    });
   };
 
   return new Promise((resolve, reject) => {
     if (!data)
       return reject(new Error("Atleast one of the tracks is required"));
 
-    const audioTracks = data.audioTrack;
-    const videoTracks = data.videoTrack;
-
-    if (!audioTracks && !videoTracks)
+    if (data.length === 0)
       return reject(new Error("Atleast one of the tracks is required"));
 
     const socket = globalSocket;
@@ -201,6 +223,8 @@ export const handleProduceTracks = (data) => {
         if (error) {
           return reject(error);
         }
+
+        console.log("producer transport data recieved from server ", data);
 
         const producerTransport = await device.createSendTransport(data);
 
@@ -378,20 +402,18 @@ export const StartRecievingTheTracks = async (user) => {
 
             const { track } = consumer;
 
-            socket.emit("resume-consumer", { consumer_id: data.serverConsumerId });
+            socket.emit("resume-consumer", {
+              consumer_id: data.serverConsumerId,
+            });
 
             return { ...item, consumer, [kind]: track };
-
-
           } else return item;
         });
 
-        console.log({ PeersData })
+        console.log({ PeersData });
       }
     );
   };
-
-
 
   if (!PeersData[uid]?.promise) {
     const newRecieverTransport = MakeQuerablePromise(
@@ -403,7 +425,7 @@ export const StartRecievingTheTracks = async (user) => {
     });
 
     PeersData = { ...PeersData, [uid]: { promise: newRecieverTransport } };
-    return
+    return;
   }
 
   if (PeersData[uid]?.promise) {

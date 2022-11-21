@@ -1,5 +1,3 @@
-
-
 export const videoParams = {
     // mediasoup params
     encodings: [

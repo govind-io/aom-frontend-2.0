@@ -1,7 +1,7 @@
 import { Device } from "mediasoup-client";
 import { DEBUG_LOGS, RTCEvents } from "../configs/SETTINGS";
 import { globalSocket } from "../socket";
-import { handleCreateTracks, handleProduceTracks, RemovingConsumerToTrack, StartRecievingTheTracks } from "./tracks";
+import { handleCreateTracks, handleProduceTracks, handleUnproduceTracks, PeersData, RemovingConsumerToTrack, StartRecievingTheTracks } from "./tracks";
 
 export let globalDevice;
 
@@ -31,6 +31,7 @@ export const CreateRtcClient = () =>
       device.createTracks = handleCreateTracks;
 
       device.produceTracks = handleProduceTracks;
+      device.unprodueTracks = handleUnproduceTracks;
 
       resolve(device);
 
@@ -46,6 +47,9 @@ const EventListenerFunc = async (eventName, callback) => {
       handleUserPublishedEvent(callback);
       break;
 
+    case RTCEvents["user-unpublished"]:
+      handleUserUnPublishedEvent(callback)
+      break
     default:
       break;
   }
@@ -58,7 +62,9 @@ const EventListenerRemover = async (eventName, callback) => {
     case RTCEvents["user-published"]:
       socket.off("user-published")
       break;
-
+    case RTCEvents["user-unpublished"]:
+      socket.off("user-unpublished")
+      break
     default:
       break;
   }
@@ -75,3 +81,21 @@ const handleUserPublishedEvent = async (callback) => {
     callback(user);
   });
 };
+
+
+const handleUserUnPublishedEvent = async (callback) => {
+  const socket = globalSocket
+
+  socket.on("user-unpublished", ({ producerId }) => {
+    const allPeersUID = Object.keys(PeersData);
+
+    allPeersUID.forEach((item) => {
+      PeersData[item].consumers.forEach((elem) => {
+        if (elem.producerId === producerId) {
+          callback({ uid: item, kind: elem.kind })
+        }
+      });
+    });
+
+  })
+}
