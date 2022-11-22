@@ -38,7 +38,7 @@ export default function Chat() {
     socket.on("message", socketMessageHandler);
 
     return () => {
-      socket.off("message", socketMessageHandler);
+      socket?.off("message", socketMessageHandler);
     };
   }, [socket]);
 

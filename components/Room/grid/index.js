@@ -1,4 +1,5 @@
-import { Grid } from "@mui/material";
+import { Grid, IconButton } from "@mui/material";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { CreateRtcClient } from "../../../MEET_SDK/rtc";
@@ -14,11 +15,23 @@ export default function MainGrid() {
   const [tracks, setTracks] = useState({});
   const [users, setUsers] = useState([]);
 
-  //Event listeners
 
+  //constants 
+  const router = useRouter()
+
+  //Event listeners
   const userPublishedEvents = async (user) => {
     try {
-      await user.subscribe();
+      const { track, kind } = await user.subscribe();
+
+      setUsers((prev) => {
+        return prev.map((item) => {
+          if (item.uid === user.uid) {
+            return { ...item, [kind]: track }
+          }
+          else return item
+        })
+      })
     } catch (e) {
       console.log(e);
     }
@@ -28,20 +41,35 @@ export default function MainGrid() {
   useEffect(() => {
     if (RtcClient || !socket) return;
 
+    let localDevice
+
+    const userJoinedEvent = (user) => {
+      setUsers((prev) => {
+        return [...prev, user]
+      })
+    }
+
+    const userLeftEvent = (user) => {
+      setUsers((prev) => prev.filter((item) => item.uid !== user.uid))
+    }
+
+
     CreateRtcClient()
       .then((device) => {
+        localDevice = device
+        localDevice.on("user-joined", userJoinedEvent);
+        localDevice.on("user-left", userLeftEvent);
         setRtcClient(device);
-
-        device.on("user-joined", (user) => {
-          setUsers((perv) => [...prev, user])
-        })
-
-        device.on("user-left", (user) => {
-          setUsers((prev) => prev.filter((elem) => elem.uid !== user.uid))
-        })
-
       })
       .catch((e) => console.log(e.message));
+
+    return () => {
+      if (localDevice) {
+        localDevice?.off("user-joined", userJoinedEvent);
+
+        localDevice?.off("user-left", userLeftEvent);
+      }
+    }
   }, [socket]);
 
   //for creating tracks
@@ -79,13 +107,15 @@ export default function MainGrid() {
       return;
 
     RtcClient.produceTracks([tracks.audioTrack, tracks.videoTrack])
-      .then((producers) => {
-        console.log({ producers });
-      })
+      .then()
       .catch((e) => {
         console.log({ e });
       });
   }, [RtcClient, tracks]);
+
+
+
+
 
   useEffect(() => {
     if (!RtcClient) return;
@@ -93,13 +123,16 @@ export default function MainGrid() {
     RtcClient.on("user-published", userPublishedEvents);
 
 
+
     RtcClient.on("user-unpublished", (user) => {
-      console.log("this user unpublished it;s track", user)
+      console.log("this user unpublished its track", user)
     })
 
     return () => {
-      RtcClient.off("user-published", userPublishedEvents);
-      RtcClient.off("user-unpublished")
+      RtcClient?.off("user-published", userPublishedEvents);
+      RtcClient?.off("user-unpublished")
+      RtcClient?.off("user-joined")
+      RtcClient?.off("user-left")
     };
   }, [RtcClient]);
 
@@ -112,6 +145,12 @@ export default function MainGrid() {
       }}
       justifyContent="center"
     >
+      <IconButton onClick={() => {
+        if (RtcClient) {
+          RtcClient.close()
+        }
+        router.push("/")
+      }}>Leave Room</IconButton>
       {userData.role === "host" && (
         <Grid
           item
@@ -125,6 +164,9 @@ export default function MainGrid() {
           <VideoPlayer
             videoTrack={tracks.videoTrack}
             audioTrack={tracks.audioTrack}
+            user={{ uid: userData.uid, role: userData.role }}
+            self={true}
+
           />
           <SelfControl
             videoTrack={tracks.videoTrack}
@@ -148,6 +190,7 @@ export default function MainGrid() {
             <VideoPlayer
               videoTrack={item.video}
               audioTrack={item.audio}
+              user={item}
             />
           </Grid>
         );

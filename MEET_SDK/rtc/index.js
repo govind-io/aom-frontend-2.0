@@ -1,14 +1,22 @@
 import { Device } from "mediasoup-client";
 import { DEBUG_LOGS, RTCEvents } from "../configs/SETTINGS";
 import { globalSocket } from "../socket";
-import { handleCreateTracks, handleProduceTracks, handleUnproduceTracks, PeersData, RemovingConsumerToTrack, StartRecievingTheTracks } from "./tracks";
+import { handleCloseConnection, handleCreateTracks, handleProduceTracks, handleUnproduceTracks, PeersData, RemovingConsumerToTrack, StartRecievingTheTracks } from "./tracks";
 
 export let globalDevice;
+
+export const updateglobalDevice = (val) => {
+  globalDevice = val
+}
 
 
 export const CreateRtcClient = () =>
   new Promise((resolve, reject) => {
     const socket = globalSocket;
+
+    if (globalDevice) {
+      return reject("Device already created")
+    }
 
     if (!socket?.connected) {
       return reject("You must call ConnectMeet first before CreatingRtcClient");
@@ -18,9 +26,10 @@ export const CreateRtcClient = () =>
       reject("Could not create a device");
     }, [10 * 1000]);
 
+    const device = new Device();
+    globalDevice = device;
+
     socket.emit("get-rtp-capabilities", async ({ routerRtpCapabilities }) => {
-      const device = new Device();
-      globalDevice = device;
       await device.load({ routerRtpCapabilities });
 
       clearTimeout(timer);
@@ -32,6 +41,10 @@ export const CreateRtcClient = () =>
 
       device.produceTracks = handleProduceTracks;
       device.unprodueTracks = handleUnproduceTracks;
+
+
+      //all RTC connection closing
+      device.close = handleCloseConnection
 
       resolve(device);
 
@@ -46,9 +59,14 @@ const EventListenerFunc = async (eventName, callback) => {
     case RTCEvents["user-published"]:
       handleUserPublishedEvent(callback);
       break;
-
     case RTCEvents["user-unpublished"]:
       handleUserUnPublishedEvent(callback)
+      break
+    case RTCEvents["user-joined"]:
+      handleUserJoined(callback)
+      break
+    case RTCEvents["user-left"]:
+      handleUserLeft(callback)
       break
     default:
       break;
@@ -60,10 +78,15 @@ const EventListenerRemover = async (eventName, callback) => {
 
   switch (eventName) {
     case RTCEvents["user-published"]:
-      socket.off("user-published")
+      socket?.off("user-published")
       break;
     case RTCEvents["user-unpublished"]:
-      socket.off("user-unpublished")
+      socket?.off("user-unpublished")
+    case RTCEvents["user-joined"]:
+      socket?.off("rtc-user-joined")
+      break
+    case RTCEvents["user-left"]:
+      socket?.off("user-left")
       break
     default:
       break;
@@ -76,8 +99,16 @@ const handleUserPublishedEvent = async (callback) => {
 
   socket.on("user-published", (user) => {
     user.subscribe = async () => {
-      await StartRecievingTheTracks(user)
+      try {
+        const track = await StartRecievingTheTracks(user)
+        return { ...track, track: new MediaStream([track.track]) }
+      } catch (e) {
+        return e
+      }
+
     }
+
+    user.unsubscribe = () => { }
     callback(user);
   });
 };
@@ -88,7 +119,6 @@ const handleUserUnPublishedEvent = async (callback) => {
 
   socket.on("user-unpublished", ({ producerId }) => {
     const allPeersUID = Object.keys(PeersData);
-
     allPeersUID.forEach((item) => {
       PeersData[item].consumers.forEach((elem) => {
         if (elem.producerId === producerId) {
@@ -97,5 +127,21 @@ const handleUserUnPublishedEvent = async (callback) => {
       });
     });
 
+  })
+}
+
+const handleUserJoined = (callback) => {
+  const socket = globalSocket
+  console.log("user-joined event got attached real")
+  socket.on("rtc-user-joined", (user) => {
+    callback(user)
+  })
+}
+
+const handleUserLeft = (callback) => {
+  const socket = globalSocket
+
+  socket.on("user-left", (user) => {
+    callback(user)
   })
 }

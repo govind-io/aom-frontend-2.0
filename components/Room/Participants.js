@@ -40,8 +40,8 @@ export default function Participants() {
     socket.on("user-left", userLeftEvent);
 
     return () => {
-      socket.off("user-joined", userJoinedEvent);
-      socket.off("user-left", userLeftEvent);
+      socket?.off("user-joined", userJoinedEvent);
+      socket?.off("user-left", userLeftEvent);
     };
   }, [socket]);
 

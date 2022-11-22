@@ -79,6 +79,8 @@ export default function Room() {
       ToastHandler("dan", "Something went wrong, Disconnected");
       router.push("/");
     });
+
+    return () => { socket?.off("disconnect") }
   }, [roomJoined, socket]);
 
   return (

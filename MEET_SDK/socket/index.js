@@ -5,6 +5,10 @@ import { API_BASE_URL } from "../configs/URL";
 
 //Global object
 export let globalSocket;
+export const updateGlobalSocket = (val) => {
+  globalSocket = val
+}
+
 
 //methods for the Socket IO
 const getJoinedUsers = async (token) => {

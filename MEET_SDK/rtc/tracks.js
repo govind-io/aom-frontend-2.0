@@ -1,6 +1,6 @@
-import { globalDevice } from ".";
+import { globalDevice, updateglobalDevice } from ".";
 import { DEBUG_LOGS } from "../configs/SETTINGS";
-import { globalSocket } from "../socket";
+import { globalSocket, updateGlobalSocket } from "../socket";
 import { videoParams, audioParams } from "./settings";
 
 let selfProducerTransport;
@@ -40,10 +40,8 @@ export const handleCreateTracks = async (params) => {
 
 //tracks control
 const audioControl = async (val) => {
-  selfTracks.audioTrack.getAudioTracks().enabled = val ? true : false;
+  selfTracks.audioTrack.getAudioTracks()[0].enabled = val ? true : false;
   selfTracks.audioTrack.enabled = val ? true : false;
-
-  console.log("audio tracks set to ", val ? true : false);
 };
 
 const videoControl = async (val) => {
@@ -53,10 +51,11 @@ const videoControl = async (val) => {
   console.log("video tracks ", val ? true : false);
 };
 
-
 export const handleUnproduceTracks = async (data) => {
+  const socket = globalSocket;
+
   if (data.length === 0) {
-    throw new Error("You must supply atleast one track")
+    throw new Error("You must supply atleast one track");
   }
 
   data.forEach((item) => {
@@ -64,23 +63,24 @@ export const handleUnproduceTracks = async (data) => {
       item.getTracks().forEach((track) => {
         producers = producers.filter((elem) => {
           if (elem.track.id === track.id) {
-            if (DEBUG_LOGS) console.log("stopped publishing track ", track)
-            elem.close()
+            if (DEBUG_LOGS) console.log("stopped publishing track ", track);
+            elem.close();
+            socket.emit("closed-producer", { producerId: elem.id });
           }
-          return elem.track.id !== track.id
-        })
-      })
+          return elem.track.id !== track.id;
+        });
 
-      return true
+        if (producers.length === 0) {
+          selfProducerTransport.close();
+        }
+      });
+
+      return true;
+    } catch (e) {
+      throw new Error(e);
     }
-    catch (e) {
-      throw new Error(e)
-    }
-  })
-
-
-}
-
+  });
+};
 
 export const handleProduceTracks = (data) => {
   const handleProduceTransportConnection = async (resolve, reject) => {
@@ -160,7 +160,9 @@ export const handleProduceTracks = (data) => {
           audioProducer.on("transportclose", () => {
             if (DEBUG_LOGS) console.log("audio transport ended");
 
-            producers = producers.filter((item) => item.id !== audioProducer.id)
+            producers = producers.filter(
+              (item) => item.id !== audioProducer.id
+            );
             if (DEBUG_LOGS) console.log("audio Track closed");
             // close audio track
             audioTrack.close();
@@ -193,7 +195,9 @@ export const handleProduceTracks = (data) => {
           videoProducer.on("transportclose", () => {
             if (DEBUG_LOGS) console.log("video transport ended");
 
-            producers = producers.filter((item) => item.id !== videoProducer.id)
+            producers = producers.filter(
+              (item) => item.id !== videoProducer.id
+            );
 
             if (DEBUG_LOGS) console.log("video Track closed");
             // close video track
@@ -331,121 +335,131 @@ const handleCreateReceiveTransport = (user) => {
   });
 };
 
-export const StartRecievingTheTracks = async (user) => {
+export const StartRecievingTheTracks = (user) => {
   const { producerId, uid, kind } = user;
 
   const socket = globalSocket;
   const device = globalDevice;
 
-  if (PeersData[uid]?.consumers?.find((elem) => elem.producerId === producerId))
-    throw new Error(
-      "Can not subsribe to already subscribed/subscribing to this tracks"
-    );
+  return new Promise(async (resolve, reject) => {
+    if (
+      PeersData[uid]?.consumers?.find((elem) => elem.producerId === producerId)
+    )
+      return reject(
+        new Error(
+          "Can not subsribe to already subscribed/subscribing to this tracks"
+        )
+      );
 
-  const handleConnectRecieverTransport = async () => {
-    if (DEBUG_LOGS) console.log("Started connecting with receiver transport");
+    const handleConnectRecieverTransport = async () => {
+      if (DEBUG_LOGS) console.log("Started connecting with receiver transport");
 
-    PeersData[uid].RecieverTransport.on(
-      "connect",
-      async ({ dtlsParameters }, callback, errback) => {
-        try {
-          await socket.emit(
-            "connect-consumer",
-            {
-              dtlsParameters,
-              serverConsumerTransportId:
-                PeersData[uid].remoteReceiverTransport.id,
-            },
-            (error) => {
-              if (error) return errback;
+      PeersData[uid].RecieverTransport.on(
+        "connect",
+        async ({ dtlsParameters }, callback, errback) => {
+          try {
+            await socket.emit(
+              "connect-consumer",
+              {
+                dtlsParameters,
+                serverConsumerTransportId:
+                  PeersData[uid].remoteReceiverTransport.id,
+              },
+              (error) => {
+                if (error) return errback;
 
-              callback();
-              if (DEBUG_LOGS)
-                console.log(
-                  "Connected with receiver transport, trying to consumer"
-                );
-            }
-          );
-        } catch (error) {
-          // Tell the transport that something was wrong
-          errback(error);
+                callback();
+                if (DEBUG_LOGS)
+                  console.log(
+                    "Connected with receiver transport, trying to consumer"
+                  );
+              }
+            );
+          } catch (error) {
+            // Tell the transport that something was wrong
+            errback(error);
+          }
         }
-      }
-    );
+      );
 
-    await socket.emit(
-      "consume-consumer",
-      {
-        rtpCapabilities: device.rtpCapabilities,
-        producerId,
-        serverConsumerTransportId: PeersData[uid].remoteReceiverTransport.id,
-      },
-      async (data, error) => {
-        if (error) {
-          throw new Error(error);
+      await socket.emit(
+        "consume-consumer",
+        {
+          rtpCapabilities: device.rtpCapabilities,
+          producerId,
+          serverConsumerTransportId: PeersData[uid].remoteReceiverTransport.id,
+        },
+        async (data, error) => {
+          if (error) {
+            return reject(new Error(error));
+          }
+
+          if (DEBUG_LOGS) console.log("Receiver transport is ready to consume");
+
+          const consumer = await PeersData[uid].RecieverTransport.consume({
+            id: data.id,
+            producerId: producerId,
+            kind: data.kind,
+            rtpParameters: data.rtpParameters,
+          });
+
+          const { track } = consumer;
+
+          PeersData[uid].consumers = PeersData[uid].consumers.map((item) => {
+            if (item.producerId === producerId) {
+              if (item.consumer) {
+                item.consumer.close();
+              }
+
+              socket.emit("resume-consumer", {
+                consumer_id: data.serverConsumerId,
+              });
+
+              return { ...item, consumer, [kind]: track };
+            } else return item;
+          });
+
+          resolve({ kind, track: track });
         }
+      );
+    };
 
-        if (DEBUG_LOGS) console.log("Receiver transport is ready to consume");
+    if (!PeersData[uid]?.promise) {
+      const newRecieverTransport = MakeQuerablePromise(
+        handleCreateReceiveTransport(user)
+      );
 
-        const consumer = await PeersData[uid].RecieverTransport.consume({
-          id: data.id,
-          producerId: producerId,
-          kind: data.kind,
-          rtpParameters: data.rtpParameters,
-        });
-
-        PeersData[uid].consumers = PeersData[uid].consumers.map((item) => {
-          if (item.producerId === producerId) {
-            if (item.consumer) {
-              item.consumer.close();
-            }
-
-            const { track } = consumer;
-
-            socket.emit("resume-consumer", {
-              consumer_id: data.serverConsumerId,
-            });
-
-            return { ...item, consumer, [kind]: track };
-          } else return item;
-        });
-
-        console.log({ PeersData });
-      }
-    );
-  };
-
-  if (!PeersData[uid]?.promise) {
-    const newRecieverTransport = MakeQuerablePromise(
-      handleCreateReceiveTransport(user)
-    );
-
-    newRecieverTransport.then(() => {
-      handleConnectRecieverTransport();
-    });
-
-    PeersData = { ...PeersData, [uid]: { promise: newRecieverTransport } };
-    return;
-  }
-
-  if (PeersData[uid]?.promise) {
-    const promise = PeersData[uid].promise;
-    if (promise.isPending) {
-      promise
-        .then(async () => {
-          PeersData[uid].consumers.push({ kind, producerId });
-          return await handleConnectRecieverTransport();
+      newRecieverTransport
+        .then(() => {
+          handleConnectRecieverTransport();
         })
         .catch((e) => {
-          return console.log({ e });
+          return reject(e);
         });
-    } else if (promise.isFulfilled) {
-      PeersData[uid].consumers.push({ kind, producerId });
-      return await handleConnectRecieverTransport();
-    } else {
-      throw new Error("You need to initialise a transport first");
+
+      PeersData = { ...PeersData, [uid]: { promise: newRecieverTransport } };
+      return;
     }
-  }
+
+    if (PeersData[uid]?.promise) {
+      const promise = PeersData[uid].promise;
+      if (promise.isPending) {
+        promise
+          .then(async () => {
+            PeersData[uid].consumers.push({ kind, producerId });
+            return await handleConnectRecieverTransport();
+          })
+          .catch((e) => {
+            return reject(e);
+          });
+      } else if (promise.isFulfilled) {
+        PeersData[uid].consumers.push({ kind, producerId });
+        return await handleConnectRecieverTransport();
+      } else {
+        return reject(new Error("You need to initialise a transport first"));
+      }
+    }
+  });
 };
 
 export const RemovingConsumerToTrack = () => {
@@ -477,4 +491,33 @@ export const RemovingConsumerToTrack = () => {
       }
     });
   });
+};
+
+export const handleCloseConnection = () => {
+  const socket = globalSocket;
+  const device = globalDevice;
+
+  producers.forEach((item) => {
+    item.close();
+  });
+
+  selfProducerTransport.close();
+
+  const allPeers = Object.keys(PeersData);
+
+  allPeers.forEach((item) => {
+    PeersData[item].consumers?.forEach((elem) => {
+      elem?.consumer?.close();
+    });
+    PeersData[item].RecieverTransport?.close();
+  });
+
+  producers = [];
+  selfProducerTransport = undefined;
+  PeersData = {};
+
+  socket.disconnect();
+
+  updateGlobalSocket(undefined);
+  updateglobalDevice(undefined);
 };
