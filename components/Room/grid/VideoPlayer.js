@@ -1,0 +1,101 @@
+import { Grid, Typography } from "@mui/material";
+import { useCallback, useEffect, useRef } from "react";
+
+export default function VideoPlayer({ audioTrack, videoTrack, user, self }) {
+  const videoRef = useCallback(
+    (node) => {
+      if (!node || !videoTrack) return;
+      node.srcObject = videoTrack;
+      console.log({ videoTrack })
+    },
+    [videoTrack]
+  );
+
+  const audioRef = useCallback(
+    (node) => {
+      if (!node || !audioTrack || self) return;
+      node.srcObject = audioTrack;
+    },
+    [audioTrack]
+  );
+
+  return (
+    <Grid
+      container
+      style={{
+        width: "100%",
+        height: "100%",
+        border: "1px solid black",
+        position: "relative",
+      }}
+    >
+      {(videoTrack && videoTrack?.enabled) || !self ? (
+        <video
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+          ref={videoRef}
+          autoPlay={true}
+        />
+      ) : (
+        <Grid
+          sx={{
+            width: "100%",
+            height: "100%",
+          }}
+          container
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Typography
+            style={{
+              backgroundColor: "rgba(0,0,0,0.4)",
+              padding: "0px 5px",
+              color: "black",
+              zIndex: "2",
+              borderRadius: "5px",
+              fontSize: "12px",
+            }}
+          >
+            {self ? "You have turned your camera off" : `${user.uid} has turned camera off`}
+          </Typography>
+        </Grid>
+      )}
+
+      <audio
+        style={{
+          display: "none",
+        }}
+        autoPlay={true}
+        ref={audioRef}
+      />
+
+      <Grid>
+        <Typography
+          style={{
+            top: "5px",
+            left: "5px",
+            position: "absolute",
+            backgroundColor: "rgba(0,0,0,0.4)",
+            padding: "0px 5px",
+            color: "white",
+            zIndex: "2",
+            borderRadius: "5px",
+            fontSize: "12px",
+          }}
+        >
+          <span
+            style={{
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            {self ? "You" : `${user.uid}`}
+          </span>{" "}
+          [{user.role}]{" "}
+        </Typography>
+      </Grid>
+    </Grid>
+  );
+}
