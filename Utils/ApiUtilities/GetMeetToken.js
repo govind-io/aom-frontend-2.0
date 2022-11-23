@@ -1,5 +1,5 @@
 import axios from "axios"
-import { TOKEN } from "../../ENV.JS"
+import { TOKEN } from "../../env.js"
 import { API_BASE_URL } from "../Configs/ApiConfigs"
 
 import ToastHandler from "../Toast/ToastHandler"
