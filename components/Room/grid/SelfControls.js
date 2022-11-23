@@ -1,5 +1,9 @@
 import { Grid, IconButton } from "@mui/material";
 import { useEffect, useState } from "react";
+import VideocamIcon from '@mui/icons-material/Videocam';
+import VideocamOffIcon from '@mui/icons-material/VideocamOff';
+import MicIcon from '@mui/icons-material/Mic';
+import MicOffIcon from '@mui/icons-material/MicOff';
 
 export default function SelfControl({ videoTrack, audioTrack, setTracks }) {
   const [audioState, setAudioState] = useState(false);
@@ -25,10 +29,13 @@ export default function SelfControl({ videoTrack, audioTrack, setTracks }) {
         <IconButton
           variant="contained"
           sx={{
-            backgroundColor: "blue",
+            backgroundColor: "black",
             width: "fit-content",
             height: "fit-content",
-            borderRadius: "0px",
+            borderRadius: "10px",
+            "&:hover": {
+              backgroundColor: "rgba(0,0,0,0.5)"
+            }
           }}
           onClick={() => {
             setVideoState(!videoTrack.enabled);
@@ -36,18 +43,25 @@ export default function SelfControl({ videoTrack, audioTrack, setTracks }) {
             setTracks((prev) => ({ ...prev, videoTrack }))
           }}
         >
-          {videoState ? "vid" : "no vid"}
+          {videoState ? <VideocamIcon sx={{
+            color: "white"
+          }} /> : <VideocamOffIcon sx={{
+            color: "white"
+          }} />}
         </IconButton>
       </Grid>
       <Grid item>
         <IconButton
           variant={"contained"}
           sx={{
-            backgroundColor: "blue",
+            backgroundColor: "black",
             ml: "10px",
             width: "fit-content",
             height: "fit-content",
-            borderRadius: "0px",
+            borderRadius: "10px",
+            "&:hover": {
+              backgroundColor: "rgba(0,0,0,0.5)"
+            }
           }}
           onClick={() => {
             setAudioState(!audioTrack.enabled);
@@ -55,7 +69,11 @@ export default function SelfControl({ videoTrack, audioTrack, setTracks }) {
             setTracks((prev) => ({ ...prev, audioTrack }))
           }}
         >
-          {audioState ? "aud" : "no aud"}
+          {audioState ? <MicIcon sx={{
+            color: "white"
+          }} /> : <MicOffIcon sx={{
+            color: "white"
+          }} />}
         </IconButton>
       </Grid>
     </Grid >
