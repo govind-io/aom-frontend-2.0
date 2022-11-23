@@ -97,7 +97,7 @@ const handleUserPublishedEvent = async (callback) => {
   const socket = globalSocket;
 
 
-  socket.on("user-published", (user) => {
+  socket?.on("user-published", (user) => {
     user.subscribe = async () => {
       try {
         const track = await StartRecievingTheTracks(user)
@@ -108,7 +108,9 @@ const handleUserPublishedEvent = async (callback) => {
 
     }
 
-    user.unsubscribe = () => { }
+    user.unsubscribe = async (tracks) => {
+      return await StopReceivingTracks(tracks, user)
+    }
     callback(user);
   });
 };
@@ -117,7 +119,7 @@ const handleUserPublishedEvent = async (callback) => {
 const handleUserUnPublishedEvent = async (callback) => {
   const socket = globalSocket
 
-  socket.on("user-unpublished", ({ producerId }) => {
+  socket?.on("user-unpublished", ({ producerId }) => {
     const allPeersUID = Object.keys(PeersData);
     allPeersUID.forEach((item) => {
       PeersData[item].consumers.forEach((elem) => {
@@ -133,7 +135,7 @@ const handleUserUnPublishedEvent = async (callback) => {
 const handleUserJoined = (callback) => {
   const socket = globalSocket
   console.log("user-joined event got attached real")
-  socket.on("rtc-user-joined", (user) => {
+  socket?.on("rtc-user-joined", (user) => {
     callback(user)
   })
 }
@@ -141,7 +143,7 @@ const handleUserJoined = (callback) => {
 const handleUserLeft = (callback) => {
   const socket = globalSocket
 
-  socket.on("user-left", (user) => {
+  socket?.on("user-left", (user) => {
     callback(user)
   })
 }

@@ -75,7 +75,7 @@ export default function Room() {
   useEffect(() => {
     if (!socket || !roomJoined) return;
 
-    socket.on("disconnect", () => {
+    socket?.on("disconnect", () => {
       ToastHandler("dan", "Something went wrong, Disconnected");
       router.push("/");
     });

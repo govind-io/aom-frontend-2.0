@@ -35,9 +35,9 @@ export default function Participants() {
 
     func();
 
-    socket.on("user-joined", userJoinedEvent);
+    socket?.on("user-joined", userJoinedEvent);
 
-    socket.on("user-left", userLeftEvent);
+    socket?.on("user-left", userLeftEvent);
 
     return () => {
       socket?.off("user-joined", userJoinedEvent);

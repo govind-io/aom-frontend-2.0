@@ -1,7 +1,7 @@
 import { Grid, IconButton } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export default function SelfControl({ videoTrack, audioTrack }) {
+export default function SelfControl({ videoTrack, audioTrack, setTracks }) {
   const [audioState, setAudioState] = useState(false);
   const [videoState, setVideoState] = useState(false);
 
@@ -33,6 +33,7 @@ export default function SelfControl({ videoTrack, audioTrack }) {
           onClick={() => {
             setVideoState(!videoTrack.enabled);
             videoTrack.setEnabled(!videoTrack.enabled);
+            setTracks((prev) => ({ ...prev, videoTrack }))
           }}
         >
           {videoState ? "vid" : "no vid"}
@@ -51,11 +52,12 @@ export default function SelfControl({ videoTrack, audioTrack }) {
           onClick={() => {
             setAudioState(!audioTrack.enabled);
             audioTrack.setEnabled(!audioTrack.enabled);
+            setTracks((prev) => ({ ...prev, audioTrack }))
           }}
         >
           {audioState ? "aud" : "no aud"}
         </IconButton>
       </Grid>
-    </Grid>
+    </Grid >
   );
 }

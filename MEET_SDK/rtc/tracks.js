@@ -34,9 +34,10 @@ export const handleCreateTracks = async (params) => {
 
     return selfTracks;
   } catch (e) {
-    return e;
+    throw new Error(e);
   }
 };
+
 
 //tracks control
 const audioControl = async (val) => {
@@ -47,8 +48,6 @@ const audioControl = async (val) => {
 const videoControl = async (val) => {
   selfTracks.videoTrack.getVideoTracks()[0].enabled = val ? true : false;
   selfTracks.videoTrack.enabled = val ? true : false;
-
-  console.log("video tracks ", val ? true : false);
 };
 
 export const handleUnproduceTracks = async (data) => {
@@ -108,6 +107,7 @@ export const handleProduceTracks = (data) => {
     selfProducerTransport.on(
       "produce",
       async (parameters, callback, errorback) => {
+        console.log("produce event fired")
         try {
           if (DEBUG_LOGS) console.log("Producer Connected with server");
           socket.emit(
@@ -126,7 +126,7 @@ export const handleProduceTracks = (data) => {
             }
           );
         } catch (e) {
-          reject(e.message);
+          reject(e);
           if (DEBUG_LOGS) console.log("Producer can not produce " + e.message);
           errorback(e);
         }
@@ -177,6 +177,7 @@ export const handleProduceTracks = (data) => {
               track: videoTrack,
               ...videoParams,
             });
+            console.log("produce method called")
             producers.push(videoProducer);
           } catch (e) {
             return reject(e);
@@ -252,7 +253,6 @@ export const handleProduceTracks = (data) => {
       });
       return;
     }
-
     handleProduceTransportConnection(resolve, reject);
   });
 };
@@ -371,7 +371,7 @@ export const StartRecievingTheTracks = (user) => {
                 callback();
                 if (DEBUG_LOGS)
                   console.log(
-                    "Connected with receiver transport, trying to consumer"
+                    "Connected with receiver transport, trying to consume"
                   );
               }
             );
@@ -465,7 +465,7 @@ export const StartRecievingTheTracks = (user) => {
 export const RemovingConsumerToTrack = () => {
   const socket = globalSocket;
 
-  socket.on("producer-closed", ({ producerId }) => {
+  socket?.on("producer-closed", ({ producerId }) => {
     const allPeersUID = Object.keys(PeersData);
 
     allPeersUID.forEach((item) => {
@@ -492,6 +492,49 @@ export const RemovingConsumerToTrack = () => {
     });
   });
 };
+
+
+export const StopReceivingTracks = (tracks, user) => {
+  const socket = globalSocket
+
+  if (!socket) return
+
+  return new Promise((resolve, reject) => {
+    if (tracks.length === 0) {
+      PeersData[user.uid].consumers.forEach((item) => {
+        item.consumer.close()
+        socket.emit("consumer-closed")
+      })
+
+      PeersData[user.uid].RecieverTransport.close()
+
+      PeersData[user.uid].consumers = []
+      PeersData[user.uid].RecieverTransport = undefined
+      if (DEBUG_LOGS) console.log("All Consumers closed for " + user.uid)
+      return resolve("Unsubscribed to all tracks for " + user.uid)
+    }
+
+    tracks.forEach((item) => {
+      item.getTracks().forEach((track) => {
+        PeersData[user.uid].consumers = PeersData[user.uid].consumers.filter((elem) => {
+          if (elem.consumer.track.id === track.id) {
+            elem.consumer.close()
+            if (DEBUG_LOGS) console.log("Unsubscribed to track ", track, "for " + user.uid)
+            return false
+          }
+          return true
+        })
+
+        if (PeersData[user.uid].consumers.length === 0) {
+          PeersData[user.uid].RecieverTransport?.close()
+          if (DEBUG_LOGS) console.log("Unsubscribed to all tracks for " + user.uid)
+        }
+      })
+    })
+
+    resolve("Unsubscribed to provided track")
+  })
+}
 
 export const handleCloseConnection = () => {
   const socket = globalSocket;

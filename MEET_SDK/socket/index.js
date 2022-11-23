@@ -63,7 +63,7 @@ export const Connect_Meet = async ({ token, uid, role }) => {
   });
 
   return new Promise((resolve, reject) => {
-    socket.on("connected", ({ id, role }) => {
+    socket?.on("connected", ({ id, role }) => {
       if (DEBUG_LOGS) {
         console.log("socket connected succefully, id ", id);
       }
@@ -82,7 +82,7 @@ export const Connect_Meet = async ({ token, uid, role }) => {
       resolve(socket);
     });
 
-    socket.on("disconnect", () => {
+    socket?.on("disconnect", () => {
       if (DEBUG_LOGS) {
         console.log("Disconnected from server");
       }

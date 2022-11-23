@@ -14,49 +14,32 @@ export default function MainGrid() {
   const [RtcClient, setRtcClient] = useState();
   const [tracks, setTracks] = useState({});
   const [users, setUsers] = useState([]);
+  const [sharingTracks, setSharingTracks] = useState(false);
 
-
-  //constants 
-  const router = useRouter()
-
-  //Event listeners
-  const userPublishedEvents = async (user) => {
-    try {
-      const { track, kind } = await user.subscribe();
-
-      setUsers((prev) => {
-        return prev.map((item) => {
-          if (item.uid === user.uid) {
-            return { ...item, [kind]: track }
-          }
-          else return item
-        })
-      })
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  //constants
+  const router = useRouter();
 
   //creating RTC client here
   useEffect(() => {
     if (RtcClient || !socket) return;
 
-    let localDevice
+    let localDevice;
 
     const userJoinedEvent = (user) => {
+      if (user.role !== "host") return;
       setUsers((prev) => {
-        return [...prev, user]
-      })
-    }
+        return [...prev, user];
+      });
+    };
 
     const userLeftEvent = (user) => {
-      setUsers((prev) => prev.filter((item) => item.uid !== user.uid))
-    }
-
+      if (user.role !== "host") return;
+      setUsers((prev) => prev.filter((item) => item.uid !== user.uid));
+    };
 
     CreateRtcClient()
       .then((device) => {
-        localDevice = device
+        localDevice = device;
         localDevice.on("user-joined", userJoinedEvent);
         localDevice.on("user-left", userLeftEvent);
         setRtcClient(device);
@@ -69,12 +52,16 @@ export default function MainGrid() {
 
         localDevice?.off("user-left", userLeftEvent);
       }
-    }
+    };
   }, [socket]);
 
   //for creating tracks
   useEffect(() => {
-    if (!RtcClient || userData.role !== "host" && (!tracks.audioTrack && !tracks.videoTrack)) return;
+    if (
+      !RtcClient ||
+      (userData.role !== "host" && !tracks.audioTrack && !tracks.videoTrack)
+    )
+      return;
 
     RtcClient.createTracks({
       audio: true,
@@ -102,7 +89,8 @@ export default function MainGrid() {
     if (
       !RtcClient ||
       userData.role !== "host" ||
-      (!tracks.audioTrack && !tracks.videoTrack)
+      (!tracks.audioTrack && !tracks.videoTrack) ||
+      sharingTracks
     )
       return;
 
@@ -111,30 +99,59 @@ export default function MainGrid() {
       .catch((e) => {
         console.log({ e });
       });
+
+    setSharingTracks(true);
   }, [RtcClient, tracks]);
-
-
-
-
 
   useEffect(() => {
     if (!RtcClient) return;
 
+    const userUnpublishedEvents = (user) => {
+      setUsers((prev) =>
+        prev.map((item) => {
+          if (item.uid === user.uid) {
+            item[kind] = undefined;
+            return item;
+          } else return item;
+        })
+      );
+    };
+
+    //Event listeners
+    const userPublishedEvents = async (user) => {
+      try {
+        const { track, kind } = await user.subscribe();
+
+        setUsers((prev) => {
+          return prev.map((item) => {
+            if (item.uid === user.uid) {
+              return { ...item, [kind]: track };
+            } else return item;
+          });
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
     RtcClient.on("user-published", userPublishedEvents);
-
-
-
-    RtcClient.on("user-unpublished", (user) => {
-      console.log("this user unpublished its track", user)
-    })
+    RtcClient.on("user-unpublished", userUnpublishedEvents);
 
     return () => {
       RtcClient?.off("user-published", userPublishedEvents);
-      RtcClient?.off("user-unpublished")
-      RtcClient?.off("user-joined")
-      RtcClient?.off("user-left")
+      RtcClient?.off("user-unpublished");
+      RtcClient?.off("user-joined");
+      RtcClient?.off("user-left");
     };
   }, [RtcClient]);
+
+  useEffect(() => {
+    return () => {
+      if (RtcClient) {
+        RtcClient.close();
+      }
+    };
+  }, []);
 
   return (
     <Grid
@@ -145,16 +162,28 @@ export default function MainGrid() {
       }}
       justifyContent="center"
     >
-      <IconButton onClick={() => {
-        if (RtcClient) {
-          RtcClient.close()
-        }
-        router.push("/")
-      }}>Leave Room</IconButton>
+      <IconButton
+        onClick={() => {
+          if (RtcClient) {
+            RtcClient.close();
+          }
+          router.push("/");
+        }}
+        style={{
+          position: "fixed",
+          right: "10px",
+          top: "10px",
+          borderRadius: "10px",
+          backgroundColor: "red"
+        }}
+        variant="contained"
+      >
+        Leave Room
+      </IconButton>
       {userData.role === "host" && (
         <Grid
           item
-          xs={3}
+          xs={users.length >= 0 && users.length < 2 ? 6 : 3}
           style={{
             border: "1px solid yello",
             aspectRatio: "1",
@@ -166,35 +195,38 @@ export default function MainGrid() {
             audioTrack={tracks.audioTrack}
             user={{ uid: userData.uid, role: userData.role }}
             self={true}
-
           />
           <SelfControl
             videoTrack={tracks.videoTrack}
             audioTrack={tracks.audioTrack}
+            setTracks={setTracks}
           />
         </Grid>
-      )}
+      )
+      }
 
-      {users.map((item) => {
-        return (
-          <Grid
-            item
-            xs={3}
-            style={{
-              border: "1px solid yello",
-              aspectRatio: "1",
-              position: "relative",
-            }}
-            key={item.uid}
-          >
-            <VideoPlayer
-              videoTrack={item.video}
-              audioTrack={item.audio}
-              user={item}
-            />
-          </Grid>
-        );
-      })}
-    </Grid>
+      {
+        users.map((item) => {
+          return (
+            <Grid
+              item
+              xs={users.length >= 0 && users.length < 2 ? 6 : 3
+              }
+              style={{
+                border: "1px solid yello",
+                aspectRatio: "1",
+                position: "relative",
+              }}
+              key={item.uid}
+            >
+              <VideoPlayer
+                videoTrack={item.video}
+                audioTrack={item.audio}
+                user={item}
+              />
+            </Grid >
+          );
+        })}
+    </Grid >
   );
 }

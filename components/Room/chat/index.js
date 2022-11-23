@@ -35,7 +35,7 @@ export default function Chat() {
       setMessages([...messagesRef.current, data]);
     };
 
-    socket.on("message", socketMessageHandler);
+    socket?.on("message", socketMessageHandler);
 
     return () => {
       socket?.off("message", socketMessageHandler);
