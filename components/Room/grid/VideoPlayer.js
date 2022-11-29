@@ -6,7 +6,7 @@ export default function VideoPlayer({ audioTrack, videoTrack, user, self }) {
     (node) => {
       if (!node || !videoTrack) return;
       node.srcObject = videoTrack;
-      console.log({ videoTrack })
+      console.log({ videoTrack });
     },
     [videoTrack]
   );
@@ -29,7 +29,7 @@ export default function VideoPlayer({ audioTrack, videoTrack, user, self }) {
         position: "relative",
       }}
     >
-      {(videoTrack && videoTrack?.enabled) || !self ? (
+      {(videoTrack && videoTrack?.enabled) || (!self && videoTrack) ? (
         <video
           style={{
             width: "100%",
@@ -58,7 +58,9 @@ export default function VideoPlayer({ audioTrack, videoTrack, user, self }) {
               fontSize: "12px",
             }}
           >
-            {self ? "You have turned your camera off" : `${user.uid} has turned camera off`}
+            {self
+              ? "You have turned your camera off"
+              : `${user.uid} has turned camera off`}
           </Typography>
         </Grid>
       )}
@@ -93,7 +95,7 @@ export default function VideoPlayer({ audioTrack, videoTrack, user, self }) {
           >
             {self ? "You" : `${user.uid}`}
           </span>{" "}
-          [{user.role}]{" "}
+          [{user.role}]
         </Typography>
       </Grid>
     </Grid>

@@ -107,14 +107,24 @@ export default function MainGrid() {
     if (!RtcClient) return;
 
     const userUnpublishedEvents = (user) => {
-      setUsers((prev) =>
-        prev.map((item) => {
-          if (item.uid === user.uid) {
+      const { kind, trackId } = user;
+
+      setUsers((prev) => {
+        const temp = prev.map((item) => {
+          if (
+            (item.uid === user.uid || item.uid.split("@")[0] === user.uid) &&
+            item[kind]?.id === trackId
+          ) {
             item[kind] = undefined;
             return item;
           } else return item;
-        })
-      );
+        });
+
+        return temp.filter(
+          (item) =>
+            !(item.uid.split("@")[1] === "screen" && !item.audio && !item.video)
+        );
+      });
     };
 
     //Event listeners
@@ -122,13 +132,38 @@ export default function MainGrid() {
       try {
         const { track, kind } = await user.subscribe();
 
-        setUsers((prev) => {
-          return prev.map((item) => {
-            if (item.uid === user.uid) {
-              return { ...item, [kind]: track };
-            } else return item;
+        const { type, uid } = user;
+
+        if (type !== "screen") {
+          setUsers((prev) => {
+            return prev.map((item) => {
+              if (item.uid === uid) {
+                return { ...item, [kind]: track };
+              } else return item;
+            });
           });
-        });
+        } else {
+          const existingUser = users.find((item) => {
+            return item.uid === `${uid}@screen`;
+          });
+
+          if (existingUser) {
+            setUsers((prev) => {
+              return prev.map((item) => {
+                if (item.uid === `${uid}@screen`) {
+                  return { ...item, [kind]: track };
+                } else {
+                  return item;
+                }
+              });
+            });
+          } else {
+            setUsers((prev) => [
+              ...prev,
+              { ...user, uid: `${uid}@screen`, [kind]: track },
+            ]);
+          }
+        }
       } catch (e) {
         console.log(e);
       }
@@ -153,6 +188,66 @@ export default function MainGrid() {
     };
   }, []);
 
+  //function
+
+  const handleScreenSharing = async () => {
+    const options = {
+      video: {
+        cursor: "always",
+      },
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        sampleRate: 44100,
+      },
+    };
+
+    if (!RtcClient) return;
+    try {
+      const screenTrack = await RtcClient.createScreenTrack(options);
+      setTracks((prev) => {
+        return {
+          ...prev,
+          screenVideoTrack: screenTrack[0],
+          screenAudioTrack: screenTrack[1],
+        };
+      });
+
+      RtcClient.produceTracks(screenTrack, "screen");
+
+      return true;
+    } catch (e) {
+      throw new Error(e);
+    }
+  };
+
+  const stopSharingScreen = async () => {
+    if (!tracks.screenAudioTrack && !tracks.screenVideoTrack) {
+      return;
+    }
+
+    tracks.screenAudioTrack?.closeTrack();
+    tracks.screenVideoTrack?.closeTrack();
+
+    const temp = [];
+
+    if (tracks.screenAudioTrack) {
+      temp.push(tracks.screenAudioTrack);
+    }
+
+    if (tracks.screenVideoTrack) {
+      temp.push(tracks.screenVideoTrack);
+    }
+
+    try {
+      await RtcClient.unprodueTracks(temp);
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  };
+
   return (
     <Grid
       container
@@ -174,7 +269,7 @@ export default function MainGrid() {
           right: "10px",
           top: "10px",
           borderRadius: "10px",
-          backgroundColor: "red"
+          backgroundColor: "red",
         }}
         variant="contained"
       >
@@ -200,33 +295,32 @@ export default function MainGrid() {
             videoTrack={tracks.videoTrack}
             audioTrack={tracks.audioTrack}
             setTracks={setTracks}
+            handleScreenSharing={handleScreenSharing}
+            stopSharingScreen={stopSharingScreen}
           />
         </Grid>
-      )
-      }
+      )}
 
-      {
-        users.map((item) => {
-          return (
-            <Grid
-              item
-              xs={users.length >= 0 && users.length < 2 ? 6 : 3
-              }
-              style={{
-                border: "1px solid yello",
-                aspectRatio: "1",
-                position: "relative",
-              }}
-              key={item.uid}
-            >
-              <VideoPlayer
-                videoTrack={item.video}
-                audioTrack={item.audio}
-                user={item}
-              />
-            </Grid >
-          );
-        })}
-    </Grid >
+      {users.map((item) => {
+        return (
+          <Grid
+            item
+            xs={users.length >= 0 && users.length < 2 ? 6 : 3}
+            style={{
+              border: "1px solid yello",
+              aspectRatio: "1",
+              position: "relative",
+            }}
+            key={item.uid}
+          >
+            <VideoPlayer
+              videoTrack={item.video}
+              audioTrack={item.audio}
+              user={item}
+            />
+          </Grid>
+        );
+      })}
+    </Grid>
   );
 }
