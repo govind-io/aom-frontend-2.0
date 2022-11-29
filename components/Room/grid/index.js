@@ -241,6 +241,11 @@ export default function MainGrid() {
 
     try {
       await RtcClient.unprodueTracks(temp);
+      setTracks((prev) => ({
+        ...prev,
+        screenAudioTrack: undefined,
+        screenVideoTrack: undefined,
+      }));
       return true;
     } catch (e) {
       console.log(e);

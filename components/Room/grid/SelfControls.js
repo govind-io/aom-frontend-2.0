@@ -114,7 +114,14 @@ export default function SelfControl({
                 backgroundColor: "rgba(0,0,0,0.5)",
               },
             }}
-            onClick={stopSharingScreen}
+            onClick={async () => {
+              try {
+                await stopSharingScreen();
+                setSreenState(false);
+              } catch (e) {
+                console.log(e);
+              }
+            }}
           >
             <CancelPresentationIcon
               sx={{
