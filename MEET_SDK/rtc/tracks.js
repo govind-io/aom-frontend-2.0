@@ -38,6 +38,37 @@ export const handleCreateTracks = async (params) => {
   }
 };
 
+export const handleCreateScreenTrack = async (options) => {
+  try {
+    const screenTrack = await navigator.mediaDevices.getDisplayMedia(options);
+    if (DEBUG_LOGS) console.log(screenTrack, "track created");
+    const tracks = screenTrack.getTracks().map((item) => {
+      return new MediaStream([item]);
+    });
+
+    tracks.map((item) => {
+      console.log({ item });
+
+      item.closeTrack = () => {
+        try {
+          item.getTracks().forEach((elem) => elem.stop());
+        } catch (e) {
+          throw new Error(e);
+        }
+      };
+
+      item.onended = (callback) => {
+        item.getTracks().forEach((elem) => {
+          elem.onended = callback;
+        });
+      };
+    });
+
+    return tracks;
+  } catch (e) {
+    throw new Error(e);
+  }
+};
 
 //tracks control
 const audioControl = async (val) => {
@@ -81,57 +112,13 @@ export const handleUnproduceTracks = async (data) => {
   });
 };
 
-export const handleProduceTracks = (data) => {
+//used for updating tracktype value inside on produce event
+let trackType;
+
+export const handleProduceTracks = (data, type) => {
+  trackType = type;
   const handleProduceTransportConnection = async (resolve, reject) => {
     const socket = globalSocket;
-
-    selfProducerTransport.on(
-      "connect",
-      async ({ dtlsParameters }, callback, errorback) => {
-        try {
-          socket.emit("connect-producer", { dtlsParameters }, (error) => {
-            if (!error) return callback();
-          });
-
-          if (DEBUG_LOGS)
-            console.log("Transmitted connection details to server");
-        } catch (e) {
-          reject(e.message);
-          if (DEBUG_LOGS)
-            console.log("Producer can not connect to server " + e.message);
-          errorback(e);
-        }
-      }
-    );
-
-    selfProducerTransport.on(
-      "produce",
-      async (parameters, callback, errorback) => {
-        console.log("produce event fired")
-        try {
-          if (DEBUG_LOGS) console.log("Producer Connected with server");
-          socket.emit(
-            "produce-producer",
-            {
-              transportId: selfProducerTransport.id,
-              kind: parameters.kind,
-              rtpParameters: parameters.rtpParameters,
-              appData: parameters.appData,
-            },
-            ({ id, error }) => {
-              if (error) return console.log(error);
-
-              callback({ id });
-              if (DEBUG_LOGS) console.log("Producer can start producing now");
-            }
-          );
-        } catch (e) {
-          reject(e);
-          if (DEBUG_LOGS) console.log("Producer can not produce " + e.message);
-          errorback(e);
-        }
-      }
-    );
 
     data.forEach((track) => {
       track.getTracks().forEach(async (item) => {
@@ -173,13 +160,21 @@ export const handleProduceTracks = (data) => {
           let videoProducer;
           try {
             const videoTrack = item;
+
             videoProducer = await selfProducerTransport.produce({
               track: videoTrack,
               ...videoParams,
+              codec: videoTrack.label.includes("screen")
+                ? globalDevice.rtpCapabilities.codecs.find(
+                    (codec) => codec.mimeType.toLowerCase() === "video/vp8"
+                  )
+                : globalDevice.rtpCapabilities.codecs.find(
+                    (codec) => codec.mimeType.toLowerCase() === "video/h264"
+                  ),
             });
-            console.log("produce method called")
             producers.push(videoProducer);
           } catch (e) {
+            console.log(e);
             return reject(e);
           }
 
@@ -249,10 +244,62 @@ export const handleProduceTracks = (data) => {
 
         selfProducerTransport = producerTransport;
 
+        selfProducerTransport.on(
+          "connect",
+          async ({ dtlsParameters }, callback, errorback) => {
+            try {
+              socket.emit("connect-producer", { dtlsParameters }, (error) => {
+                if (!error) return callback();
+              });
+
+              if (DEBUG_LOGS)
+                console.log("Transmitted connection details to server");
+            } catch (e) {
+              reject(e.message);
+              if (DEBUG_LOGS)
+                console.log("Producer can not connect to server " + e.message);
+              errorback(e);
+            }
+          }
+        );
+
+        selfProducerTransport.on(
+          "produce",
+          async (parameters, callback, errorback) => {
+            try {
+              if (DEBUG_LOGS) console.log("Producer Connected with server");
+              console.log("track type inside on event ", trackType);
+              socket.emit(
+                "produce-producer",
+                {
+                  transportId: selfProducerTransport.id,
+                  kind: parameters.kind,
+                  rtpParameters: parameters.rtpParameters,
+                  appData: parameters.appData,
+                  type: trackType || parameters.kind,
+                },
+                ({ id, error }) => {
+                  if (error) return console.log(error);
+
+                  callback({ id });
+                  if (DEBUG_LOGS)
+                    console.log("Producer can start producing now");
+                }
+              );
+            } catch (e) {
+              reject(e);
+              if (DEBUG_LOGS)
+                console.log("Producer can not produce " + e.message);
+              errorback(e);
+            }
+          }
+        );
+
         handleProduceTransportConnection(resolve, reject);
       });
       return;
     }
+    console.log("directly called connect producers");
     handleProduceTransportConnection(resolve, reject);
   });
 };
@@ -403,7 +450,9 @@ export const StartRecievingTheTracks = (user) => {
             rtpParameters: data.rtpParameters,
           });
 
-          const { track } = consumer;
+          const { track: tempTrack } = consumer;
+
+          const track = new MediaStream([tempTrack]);
 
           PeersData[uid].consumers = PeersData[uid].consumers.map((item) => {
             if (item.producerId === producerId) {
@@ -493,48 +542,51 @@ export const RemovingConsumerToTrack = () => {
   });
 };
 
-
 export const StopReceivingTracks = (tracks, user) => {
-  const socket = globalSocket
+  const socket = globalSocket;
 
-  if (!socket) return
+  if (!socket) return;
 
   return new Promise((resolve, reject) => {
     if (tracks.length === 0) {
       PeersData[user.uid].consumers.forEach((item) => {
-        item.consumer.close()
-        socket.emit("consumer-closed")
-      })
+        item.consumer.close();
+        socket.emit("consumer-closed");
+      });
 
-      PeersData[user.uid].RecieverTransport.close()
+      PeersData[user.uid].RecieverTransport.close();
 
-      PeersData[user.uid].consumers = []
-      PeersData[user.uid].RecieverTransport = undefined
-      if (DEBUG_LOGS) console.log("All Consumers closed for " + user.uid)
-      return resolve("Unsubscribed to all tracks for " + user.uid)
+      PeersData[user.uid].consumers = [];
+      PeersData[user.uid].RecieverTransport = undefined;
+      if (DEBUG_LOGS) console.log("All Consumers closed for " + user.uid);
+      return resolve("Unsubscribed to all tracks for " + user.uid);
     }
 
     tracks.forEach((item) => {
       item.getTracks().forEach((track) => {
-        PeersData[user.uid].consumers = PeersData[user.uid].consumers.filter((elem) => {
-          if (elem.consumer.track.id === track.id) {
-            elem.consumer.close()
-            if (DEBUG_LOGS) console.log("Unsubscribed to track ", track, "for " + user.uid)
-            return false
+        PeersData[user.uid].consumers = PeersData[user.uid].consumers.filter(
+          (elem) => {
+            if (elem.consumer.track.id === track.id) {
+              elem.consumer.close();
+              if (DEBUG_LOGS)
+                console.log("Unsubscribed to track ", track, "for " + user.uid);
+              return false;
+            }
+            return true;
           }
-          return true
-        })
+        );
 
         if (PeersData[user.uid].consumers.length === 0) {
-          PeersData[user.uid].RecieverTransport?.close()
-          if (DEBUG_LOGS) console.log("Unsubscribed to all tracks for " + user.uid)
+          PeersData[user.uid].RecieverTransport?.close();
+          if (DEBUG_LOGS)
+            console.log("Unsubscribed to all tracks for " + user.uid);
         }
-      })
-    })
+      });
+    });
 
-    resolve("Unsubscribed to provided track")
-  })
-}
+    resolve("Unsubscribed to provided track");
+  });
+};
 
 export const handleCloseConnection = () => {
   const socket = globalSocket;
@@ -544,7 +596,7 @@ export const handleCloseConnection = () => {
     item.close();
   });
 
-  selfProducerTransport.close();
+  selfProducerTransport?.close();
 
   const allPeers = Object.keys(PeersData);
 

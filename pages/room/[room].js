@@ -76,11 +76,13 @@ export default function Room() {
     if (!socket || !roomJoined) return;
 
     socket?.on("disconnect", () => {
-      ToastHandler("dan", "Something went wrong, Disconnected");
+      ToastHandler("sus", "Left Room Succesfully");
       router.push("/");
     });
 
-    return () => { socket?.off("disconnect") }
+    return () => {
+      socket?.off("disconnect");
+    };
   }, [roomJoined, socket]);
 
   return (
