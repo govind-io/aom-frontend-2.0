@@ -1,6 +1,7 @@
 import { Grid, IconButton, Typography } from "@mui/material";
 import { useCallback } from "react";
 import PushPinIcon from "@mui/icons-material/PushPin";
+import ScrollZoom from "../../../Utils/ComponentUtilities/ScrollToZoom";
 
 export default function VideoPlayer({
   audioTrack,
@@ -14,7 +15,7 @@ export default function VideoPlayer({
     (node) => {
       if (!node || !videoTrack) return;
       node.srcObject = videoTrack;
-      console.log({ videoTrack });
+      ScrollZoom(node, 2, 0.2);
     },
     [videoTrack]
   );
@@ -35,6 +36,7 @@ export default function VideoPlayer({
         height: "100%",
         border: "1px solid black",
         position: "relative",
+        overflow: "hidden",
       }}
     >
       {(videoTrack && videoTrack?.enabled) || (!self && videoTrack) ? (
