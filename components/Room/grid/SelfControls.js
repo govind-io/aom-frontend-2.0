@@ -12,10 +12,12 @@ export default function SelfControl({
   setTracks,
   handleScreenSharing,
   stopSharingScreen,
+  screenAudioTrack,
+  screenVideoTrack,
 }) {
   const [audioState, setAudioState] = useState(false);
   const [videoState, setVideoState] = useState(false);
-  const [screenState, setSreenState] = useState(false);
+  const [screenState, setScreenState] = useState(false);
 
   useEffect(() => {
     if (!audioTrack && !videoTrack) return;
@@ -23,6 +25,20 @@ export default function SelfControl({
     setAudioState(audioTrack.enabled);
     setVideoState(videoTrack.enabled);
   }, [videoTrack, audioTrack]);
+
+  useEffect(() => {
+    if (!screenVideoTrack) return;
+
+    screenVideoTrack.onended(async () => {
+      try {
+        await stopSharingScreen();
+      } catch (e) {
+        console.log(e);
+      }
+
+      setScreenState(false);
+    });
+  }, [screenVideoTrack, screenAudioTrack]);
 
   return (
     <Grid
@@ -117,7 +133,7 @@ export default function SelfControl({
             onClick={async () => {
               try {
                 await stopSharingScreen();
-                setSreenState(false);
+                setScreenState(false);
               } catch (e) {
                 console.log(e);
               }
@@ -145,7 +161,7 @@ export default function SelfControl({
             onClick={async () => {
               try {
                 await handleScreenSharing();
-                setSreenState(true);
+                setScreenState(true);
               } catch (e) {
                 console.log(e);
               }

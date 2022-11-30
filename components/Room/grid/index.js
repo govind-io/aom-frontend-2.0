@@ -1,9 +1,11 @@
+import { CollectionsOutlined } from "@mui/icons-material";
 import { Grid, IconButton } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { CreateRtcClient } from "../../../MEET_SDK/rtc";
 import { socket } from "../../../Utils/Configs/Socket";
+import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import SelfControl from "./SelfControls";
 import VideoPlayer from "./VideoPlayer";
 export default function MainGrid() {
@@ -15,6 +17,7 @@ export default function MainGrid() {
   const [tracks, setTracks] = useState({});
   const [users, setUsers] = useState([]);
   const [sharingTracks, setSharingTracks] = useState(false);
+  const [pinnedUser, setPinnedUser] = useState({});
 
   //constants
   const router = useRouter();
@@ -120,6 +123,13 @@ export default function MainGrid() {
           } else return item;
         });
 
+        setPinnedUser((prev) => {
+          if (prev.uid?.split("@")[0] == user.uid) {
+            return {};
+          }
+          return prev;
+        });
+
         return temp.filter(
           (item) =>
             !(item.uid.split("@")[1] === "screen" && !item.audio && !item.video)
@@ -151,6 +161,7 @@ export default function MainGrid() {
             setUsers((prev) => {
               return prev.map((item) => {
                 if (item.uid === `${uid}@screen`) {
+                  setPinnedUser({ ...item, [kind]: track });
                   return { ...item, [kind]: track };
                 } else {
                   return item;
@@ -162,6 +173,7 @@ export default function MainGrid() {
               ...prev,
               { ...user, uid: `${uid}@screen`, [kind]: track },
             ]);
+            setPinnedUser({ ...user, uid: `${uid}@screen`, [kind]: track });
           }
         }
       } catch (e) {
@@ -213,7 +225,12 @@ export default function MainGrid() {
         };
       });
 
-      RtcClient.produceTracks(screenTrack, "screen");
+      await RtcClient.produceTracks(screenTrack, "screen");
+
+      ToastHandler(
+        "sus",
+        "Your screen now visible to everyone else in the room"
+      );
 
       return true;
     } catch (e) {
@@ -280,6 +297,19 @@ export default function MainGrid() {
       >
         Leave Room
       </IconButton>
+
+      {pinnedUser.uid && (
+        <Grid item xs={12}>
+          <VideoPlayer
+            videoTrack={pinnedUser.video}
+            audioTrack={pinnedUser.audio}
+            user={pinnedUser}
+            pinnedUser={pinnedUser}
+            setPinnedUser={setPinnedUser}
+          />
+        </Grid>
+      )}
+
       {userData.role === "host" && (
         <Grid
           item
@@ -295,6 +325,8 @@ export default function MainGrid() {
             audioTrack={tracks.audioTrack}
             user={{ uid: userData.uid, role: userData.role }}
             self={true}
+            pinnedUser={pinnedUser}
+            setPinnedUser={setPinnedUser}
           />
           <SelfControl
             videoTrack={tracks.videoTrack}
@@ -302,30 +334,36 @@ export default function MainGrid() {
             setTracks={setTracks}
             handleScreenSharing={handleScreenSharing}
             stopSharingScreen={stopSharingScreen}
+            screenVideoTrack={tracks.screenVideoTrack}
+            screenAudioTrack={tracks.screenAudioTrack}
           />
         </Grid>
       )}
 
-      {users.map((item) => {
-        return (
-          <Grid
-            item
-            xs={users.length >= 0 && users.length < 2 ? 6 : 3}
-            style={{
-              border: "1px solid yello",
-              aspectRatio: "1",
-              position: "relative",
-            }}
-            key={item.uid}
-          >
-            <VideoPlayer
-              videoTrack={item.video}
-              audioTrack={item.audio}
-              user={item}
-            />
-          </Grid>
-        );
-      })}
+      {users
+        .filter((item) => item.uid !== pinnedUser.uid)
+        .map((item) => {
+          return (
+            <Grid
+              item
+              xs={users.length >= 0 && users.length < 2 ? 6 : 3}
+              style={{
+                border: "1px solid yello",
+                aspectRatio: "1",
+                position: "relative",
+              }}
+              key={item.uid}
+            >
+              <VideoPlayer
+                videoTrack={item.video}
+                audioTrack={item.audio}
+                user={item}
+                pinnedUser={pinnedUser}
+                setPinnedUser={setPinnedUser}
+              />
+            </Grid>
+          );
+        })}
     </Grid>
   );
 }

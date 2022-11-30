@@ -56,6 +56,12 @@ export const handleCreateScreenTrack = async (options) => {
           throw new Error(e);
         }
       };
+
+      item.onended = (callback) => {
+        item.getTracks().forEach((elem) => {
+          elem.onended = callback;
+        });
+      };
     });
 
     return tracks;

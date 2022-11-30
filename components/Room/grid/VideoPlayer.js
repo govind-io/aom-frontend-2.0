@@ -1,7 +1,15 @@
-import { Grid, Typography } from "@mui/material";
-import { useCallback, useEffect, useRef } from "react";
+import { Grid, IconButton, Typography } from "@mui/material";
+import { useCallback } from "react";
+import PushPinIcon from "@mui/icons-material/PushPin";
 
-export default function VideoPlayer({ audioTrack, videoTrack, user, self }) {
+export default function VideoPlayer({
+  audioTrack,
+  videoTrack,
+  user,
+  self,
+  pinnedUser,
+  setPinnedUser,
+}) {
   const videoRef = useCallback(
     (node) => {
       if (!node || !videoTrack) return;
@@ -73,30 +81,56 @@ export default function VideoPlayer({ audioTrack, videoTrack, user, self }) {
         ref={audioRef}
       />
 
-      <Grid>
-        <Typography
-          style={{
-            top: "5px",
-            left: "5px",
-            position: "absolute",
-            backgroundColor: "rgba(0,0,0,0.4)",
-            padding: "0px 5px",
-            color: "white",
-            zIndex: "2",
-            borderRadius: "5px",
-            fontSize: "12px",
-          }}
-        >
-          <span
+      <Grid
+        container
+        justifyContent={"space-between"}
+        alignItems="center"
+        sx={{
+          top: "0px",
+          left: "0px",
+          position: "absolute",
+        }}
+      >
+        <Grid item>
+          <Typography
             style={{
-              fontSize: "14px",
-              fontWeight: "bold",
+              backgroundColor: "rgba(0,0,0,0.4)",
+              padding: "0px 5px",
+              color: "white",
+              zIndex: "2",
+              borderRadius: "5px",
+              fontSize: "12px",
+              marginLeft: "5px",
             }}
           >
-            {self ? "You" : `${user.uid}`}
-          </span>{" "}
-          [{user.role}]
-        </Typography>
+            <span
+              style={{
+                fontSize: "14px",
+                fontWeight: "bold",
+              }}
+            >
+              {self ? "You" : `${user.uid}`}
+            </span>{" "}
+            [{user.role}]
+          </Typography>
+        </Grid>
+        {!self && (
+          <Grid item>
+            <IconButton
+              onClick={() => {
+                if (pinnedUser.uid === user.uid) return setPinnedUser({});
+
+                setPinnedUser(user);
+              }}
+            >
+              <PushPinIcon
+                sx={{
+                  color: pinnedUser.uid === user.uid ? "black" : "grey",
+                }}
+              />
+            </IconButton>
+          </Grid>
+        )}
       </Grid>
     </Grid>
   );
