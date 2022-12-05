@@ -1,9 +1,8 @@
-import { CollectionsOutlined } from "@mui/icons-material";
 import { Grid, IconButton } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { CreateRtcClient } from "../../../MEET_SDK/rtc";
+import { RTCClient } from "../../../MEET_SDK/rtc";
 import { socket } from "../../../Utils/Configs/Socket";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import SelfControl from "./SelfControls";
@@ -26,8 +25,6 @@ export default function MainGrid() {
   useEffect(() => {
     if (RtcClient || !socket) return;
 
-    let localDevice;
-
     const userJoinedEvent = (user) => {
       if (user.role !== "host") return;
       setUsers((prev) => {
@@ -40,22 +37,13 @@ export default function MainGrid() {
       setUsers((prev) => prev.filter((item) => item.uid !== user.uid));
     };
 
-    CreateRtcClient()
-      .then((device) => {
-        localDevice = device;
-        localDevice.on("user-joined", userJoinedEvent);
-        localDevice.on("user-left", userLeftEvent);
-        setRtcClient(device);
-      })
-      .catch((e) => console.log(e.message));
+    const device = new RTCClient();
 
-    return () => {
-      if (localDevice) {
-        localDevice?.off("user-joined", userJoinedEvent);
-
-        localDevice?.off("user-left", userLeftEvent);
-      }
-    };
+    device.init().then(() => {
+      setRtcClient(device);
+      device.onUserJoined(userJoinedEvent);
+      device.onUserLeft(userLeftEvent);
+    });
   }, [socket]);
 
   //for creating tracks
@@ -66,21 +54,9 @@ export default function MainGrid() {
     )
       return;
 
-    RtcClient.createTracks({
-      audio: true,
-      video: {
-        width: {
-          min: 640,
-          max: 1920,
-        },
-        height: {
-          min: 400,
-          max: 1080,
-        },
-      },
-    })
+    RtcClient.createTracks()
       .then((tracks) => {
-        setTracks(tracks);
+        setTracks({ audioTrack: tracks[0], videoTrack: tracks[1] });
       })
       .catch((e) => {
         console.log(e.message);
@@ -181,15 +157,8 @@ export default function MainGrid() {
       }
     };
 
-    RtcClient.on("user-published", userPublishedEvents);
-    RtcClient.on("user-unpublished", userUnpublishedEvents);
-
-    return () => {
-      RtcClient?.off("user-published", userPublishedEvents);
-      RtcClient?.off("user-unpublished");
-      RtcClient?.off("user-joined");
-      RtcClient?.off("user-left");
-    };
+    RtcClient.onUserPublished(userPublishedEvents);
+    RtcClient.onUserUnpublished(userUnpublishedEvents);
   }, [RtcClient]);
 
   useEffect(() => {
@@ -203,20 +172,10 @@ export default function MainGrid() {
   //function
 
   const handleScreenSharing = async () => {
-    const options = {
-      video: {
-        cursor: "always",
-      },
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        sampleRate: 44100,
-      },
-    };
-
     if (!RtcClient) return;
     try {
-      const screenTrack = await RtcClient.createScreenTrack(options);
+      const screenTrack = await RtcClient.createScreenTrack();
+
       setTracks((prev) => {
         return {
           ...prev,
@@ -243,8 +202,8 @@ export default function MainGrid() {
       return;
     }
 
-    tracks.screenAudioTrack?.closeTrack();
-    tracks.screenVideoTrack?.closeTrack();
+    tracks.screenAudioTrack?.stop();
+    tracks.screenVideoTrack?.stop();
 
     const temp = [];
 
@@ -306,6 +265,19 @@ export default function MainGrid() {
             user={pinnedUser}
             pinnedUser={pinnedUser}
             setPinnedUser={setPinnedUser}
+          />
+        </Grid>
+      )}
+
+      {tracks.screenVideoTrack && (
+        <Grid item xs={users.length + 1 >= 0 && users.length + 1 < 2 ? 6 : 3}>
+          <VideoPlayer
+            videoTrack={tracks.screenVideoTrack}
+            pinnedUser={pinnedUser}
+            setPinnedUser={setPinnedUser}
+            user={{ uid: userData.uid, role: userData.role }}
+            selfScreen={true}
+            stopSharingScreen={stopSharingScreen}
           />
         </Grid>
       )}

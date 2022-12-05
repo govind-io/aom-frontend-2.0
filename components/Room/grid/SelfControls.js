@@ -35,10 +35,14 @@ export default function SelfControl({
       } catch (e) {
         console.log(e);
       }
-
-      setScreenState(false);
     });
   }, [screenVideoTrack, screenAudioTrack]);
+
+  useEffect(() => {
+    if (!screenVideoTrack) return setScreenState(false);
+
+    setScreenState(true);
+  }, [screenVideoTrack]);
 
   return (
     <Grid
@@ -133,7 +137,6 @@ export default function SelfControl({
             onClick={async () => {
               try {
                 await stopSharingScreen();
-                setScreenState(false);
               } catch (e) {
                 console.log(e);
               }
@@ -161,7 +164,6 @@ export default function SelfControl({
             onClick={async () => {
               try {
                 await handleScreenSharing();
-                setScreenState(true);
               } catch (e) {
                 console.log(e);
               }

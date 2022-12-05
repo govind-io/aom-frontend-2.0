@@ -6,9 +6,8 @@ import { API_BASE_URL } from "../configs/URL";
 //Global object
 export let globalSocket;
 export const updateGlobalSocket = (val) => {
-  globalSocket = val
-}
-
+  globalSocket = val;
+};
 
 //methods for the Socket IO
 const getJoinedUsers = async (token) => {
@@ -70,14 +69,13 @@ export const Connect_Meet = async ({ token, uid, role }) => {
 
       //adding custom methods
       socket.getJoinedUsers = getJoinedUsers;
-      socket.getAllMessages = getAllMessages
+      socket.getAllMessages = getAllMessages;
 
       //adding custom variables
-      socket.role = role
+      socket.role = role;
 
       //seting global socket object
       globalSocket = socket;
-
 
       resolve(socket);
     });
