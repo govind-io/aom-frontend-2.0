@@ -1,17 +1,19 @@
-import { Grid, Paper, Typography } from "@mui/material";
+import { Grid, IconButton, Paper, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { ToggleParticpantsList } from "../../Redux/Actions/Comps/CollapsibleComps";
 import { socket } from "../../Utils/Configs/Socket";
 
 export default function Participants() {
   //states here
   const [participants, setParticipants] = useState([]);
 
+  const dispatch = useDispatch();
+
   //selectors here
   const userData = useSelector((state) => state.user.data);
 
   //effects here
-
   useEffect(() => {
     if (!socket) return;
 
@@ -65,6 +67,14 @@ export default function Participants() {
             backgroundColor: "#9b7b56",
           }}
         >
+          <IconButton
+            onClick={() => {
+              dispatch(ToggleParticpantsList(false));
+            }}
+            sx={{ position: "absolute", right: "0px" }}
+          >
+            Close
+          </IconButton>
           <Typography
             style={{
               fontSize: "22px",
@@ -73,7 +83,7 @@ export default function Participants() {
               padding: "20px",
             }}
           >
-            Participants
+            Participants{" "}
           </Typography>
         </Grid>
         {participants.map((item) => {

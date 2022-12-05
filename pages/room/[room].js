@@ -1,4 +1,10 @@
-import { CircularProgress, Grid, Typography } from "@mui/material";
+import {
+  CircularProgress,
+  Drawer,
+  Grid,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,6 +16,11 @@ import { SaveUserData } from "../../Redux/Actions/User/DataAction";
 import { GetMeetToken } from "../../Utils/ApiUtilities/GetMeetToken";
 import { setSocket, socket } from "../../Utils/Configs/Socket";
 import ToastHandler from "../../Utils/Toast/ToastHandler";
+import Collapse from "@mui/material/Collapse";
+import {
+  TogglChatList,
+  ToggleParticpantsList,
+} from "../../Redux/Actions/Comps/CollapsibleComps";
 
 export default function Room() {
   //constants here
@@ -17,10 +28,18 @@ export default function Room() {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.user.data);
 
+  //comps selectors
+  const showParticipantsList = useSelector(
+    (state) => state.comps.comp.participants
+  );
+  const showChat = useSelector((state) => state.comps.comp.chat);
+
   //room name extraction
   const { room } = router.query;
 
   //states here
+  const [participantWidth, setParticipantsWidth] = useState(0);
+  const [chatWidth, setChatWidth] = useState(0);
 
   const [roomJoined, setRoomJoined] = useState(false);
 
@@ -85,6 +104,14 @@ export default function Room() {
     };
   }, [roomJoined, socket]);
 
+  useEffect(() => {
+    const fullScreen = document.body.clientWidth;
+
+    setParticipantsWidth(fullScreen / 6);
+
+    setChatWidth(fullScreen / 4);
+  }, []);
+
   return (
     <Grid
       container
@@ -95,7 +122,40 @@ export default function Room() {
     >
       {roomJoined ? (
         <>
-          <Grid item xs={12} paddingTop="20px" paddingBottom="20px">
+          <Grid
+            item
+            xs={12}
+            paddingTop="20px"
+            paddingBottom="20px"
+            style={{
+              height: "72px",
+              position: "relative",
+            }}
+          >
+            <IconButton
+              onClick={() => {
+                dispatch(ToggleParticpantsList(!showParticipantsList));
+              }}
+              sx={{
+                position: "absolute",
+                left: "5px",
+              }}
+            >
+              {showParticipantsList
+                ? "Close Participants"
+                : "Open Participants"}
+            </IconButton>
+            <IconButton
+              onClick={() => {
+                dispatch(TogglChatList(!showChat));
+              }}
+              sx={{
+                position: "absolute",
+                right: "5px",
+              }}
+            >
+              {showChat ? "Close Chat" : "Open Chat"}
+            </IconButton>
             <Typography variant="h6" textAlign={"center"}>
               You are in{" "}
               <span
@@ -120,36 +180,71 @@ export default function Room() {
                 height: "100%",
               }}
             >
-              <Grid
-                item
-                xs={2}
+              <Drawer
+                variant="persistent"
+                anchor="left"
+                open={showParticipantsList}
                 sx={{
-                  border: "1px solid red",
-                  height: "100%",
+                  width: showParticipantsList ? participantWidth : 0,
+                  flexShrink: 0,
+                  "& .MuiDrawer-paper": {
+                    width: showParticipantsList ? participantWidth : 0,
+                    boxSizing: "border-box",
+                    top: "72px",
+                  },
                 }}
               >
-                <Participants />
-              </Grid>
+                <Grid
+                  item
+                  sx={{
+                    border: "1px solid red",
+                    height: "100%",
+                    width: "100%",
+                  }}
+                >
+                  <Participants />
+                </Grid>
+              </Drawer>
               <Grid
                 item
-                xs={7}
                 sx={{
                   border: "1px solid yellow",
-                  maxHeight: "100%",
+                  height: "100%",
+                  width: `calc(100% - ${
+                    (showParticipantsList ? participantWidth : 0) +
+                    (showChat ? chatWidth : 0)
+                  }px)`,
                 }}
               >
                 <MainGrid />
               </Grid>
-              <Grid
-                item
-                xs={3}
+              <Drawer
+                variant="persistent"
+                anchor="right"
+                open={showChat}
                 sx={{
-                  border: "1px solid blue",
-                  height: "100%",
+                  width: showChat ? chatWidth : 0,
+                  flexShrink: 0,
+
+                  "& .MuiDrawer-paper": {
+                    width: showChat ? chatWidth : 0,
+                    boxSizing: "border-box",
+                    top: "72px",
+                    height: "calc(100% - 72px)",
+                  },
                 }}
               >
-                <Chat />
-              </Grid>
+                <Grid
+                  item
+                  sx={{
+                    border: "1px solid blue",
+                    height: "100%",
+                    width: "100%",
+                  }}
+                >
+                  <Chat />
+                </Grid>
+              </Drawer>
             </Grid>
           </Grid>
         </>

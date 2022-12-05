@@ -233,8 +233,10 @@ export default function MainGrid() {
     <Grid
       container
       sx={{
-        maxHeight: "100%",
+        height: "100%",
         overflowY: "auto",
+        width: "100%",
+        border: "2px solid violet",
       }}
       justifyContent="center"
     >
@@ -248,7 +250,7 @@ export default function MainGrid() {
         style={{
           position: "fixed",
           right: "10px",
-          top: "10px",
+          bottom: "10px",
           borderRadius: "10px",
           backgroundColor: "red",
         }}
@@ -258,7 +260,14 @@ export default function MainGrid() {
       </IconButton>
 
       {pinnedUser.uid && (
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+          style={{
+            aspectRatio: "16/9",
+            position: "relative",
+          }}
+        >
           <VideoPlayer
             videoTrack={pinnedUser.video}
             audioTrack={pinnedUser.audio}
@@ -270,7 +279,14 @@ export default function MainGrid() {
       )}
 
       {tracks.screenVideoTrack && (
-        <Grid item xs={users.length + 1 >= 0 && users.length + 1 < 2 ? 6 : 3}>
+        <Grid
+          item
+          xs={users.length + 1 >= 0 && users.length + 1 < 2 ? 6 : 3}
+          style={{
+            aspectRatio: "16/9",
+            position: "relative",
+          }}
+        >
           <VideoPlayer
             videoTrack={tracks.screenVideoTrack}
             pinnedUser={pinnedUser}
@@ -287,8 +303,7 @@ export default function MainGrid() {
           item
           xs={users.length >= 0 && users.length < 2 ? 6 : 3}
           style={{
-            border: "1px solid yello",
-            aspectRatio: "1",
+            aspectRatio: "16/9",
             position: "relative",
           }}
         >
@@ -320,8 +335,7 @@ export default function MainGrid() {
               item
               xs={users.length >= 0 && users.length < 2 ? 6 : 3}
               style={{
-                border: "1px solid yello",
-                aspectRatio: "1",
+                aspectRatio: "16/9",
                 position: "relative",
               }}
               key={item.uid}

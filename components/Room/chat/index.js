@@ -1,15 +1,18 @@
-import { Button, Grid, Input, Typography } from "@mui/material";
+import { Button, Grid, IconButton, Input, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import { socket } from "../../../Utils/Configs/Socket";
 import Message from "./Message";
+import { TogglChatList } from "../../../Redux/Actions/Comps/CollapsibleComps";
 
 export default function Chat() {
   //refs here
   const inputRef = useRef();
   const messagesRef = useRef();
   const messageArea = useRef();
+
+  const dispatch = useDispatch();
 
   //selector here
   const userData = useSelector((state) => state.user.data);
@@ -80,8 +83,20 @@ export default function Chat() {
         xs={12}
         style={{
           height: "fit-content",
+          position: "relative",
         }}
       >
+        <IconButton
+          onClick={() => {
+            dispatch(TogglChatList(false));
+          }}
+          sx={{
+            position: "absolute",
+            left: "0px",
+          }}
+        >
+          Close
+        </IconButton>
         <Typography
           style={{
             fontSize: "22px",
