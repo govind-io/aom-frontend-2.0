@@ -24,3 +24,28 @@ export const videoParams = {
 };
 
 export const audioParams = {};
+
+export const defaultTracksParams = {
+  audio: true,
+  video: {
+    width: {
+      min: 640,
+      max: 1920,
+    },
+    height: {
+      min: 400,
+      max: 1080,
+    },
+  },
+};
+
+export const defaultScreenTrackParams = {
+  video: {
+    cursor: "always",
+  },
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    sampleRate: 44100,
+  },
+};
