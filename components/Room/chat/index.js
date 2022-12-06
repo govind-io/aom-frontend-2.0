@@ -5,6 +5,8 @@ import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import { socket } from "../../../Utils/Configs/Socket";
 import Message from "./Message";
 import { TogglChatList } from "../../../Redux/Actions/Comps/CollapsibleComps";
+import { KeyboardDoubleArrowRight } from "@mui/icons-material";
+import { ChangeUnreadMessageCount } from "../../../Redux/Actions/Comps/DataComps";
 
 export default function Chat() {
   //refs here
@@ -16,6 +18,8 @@ export default function Chat() {
 
   //selector here
   const userData = useSelector((state) => state.user.data);
+  const chatOpen = useSelector((state) => state.comps.comp.chat);
+  const unreadMessageCount = useSelector((state) => state.comps.dataComp.chat);
 
   //messages here
   const [Messages, setMessages] = useState([]);
@@ -36,6 +40,9 @@ export default function Chat() {
 
     const socketMessageHandler = (data) => {
       setMessages([...messagesRef.current, data]);
+      if (!chatOpen) {
+        dispatch(ChangeUnreadMessageCount(unreadMessageCount + 1));
+      }
     };
 
     socket?.on("message", socketMessageHandler);
@@ -46,9 +53,11 @@ export default function Chat() {
   }, [socket]);
 
   useEffect(() => {
+    if (chatOpen) dispatch(ChangeUnreadMessageCount(0));
+
     if (!messageArea.current) return;
     messageArea.current.scrollTop = messageArea.current.scrollHeight;
-  }, [Messages]);
+  }, [Messages, chatOpen]);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -95,7 +104,7 @@ export default function Chat() {
             left: "0px",
           }}
         >
-          Close
+          <KeyboardDoubleArrowRight />
         </IconButton>
         <Typography
           style={{

@@ -1,4 +1,5 @@
 import {
+  Badge,
   CircularProgress,
   Drawer,
   Grid,
@@ -16,12 +17,12 @@ import { SaveUserData } from "../../Redux/Actions/User/DataAction";
 import { GetMeetToken } from "../../Utils/ApiUtilities/GetMeetToken";
 import { setSocket, socket } from "../../Utils/Configs/Socket";
 import ToastHandler from "../../Utils/Toast/ToastHandler";
-import Collapse from "@mui/material/Collapse";
 import {
   TogglChatList,
   ToggleParticpantsList,
 } from "../../Redux/Actions/Comps/CollapsibleComps";
-
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 export default function Room() {
   //constants here
   const router = useRouter();
@@ -33,6 +34,12 @@ export default function Room() {
     (state) => state.comps.comp.participants
   );
   const showChat = useSelector((state) => state.comps.comp.chat);
+
+  const participantsCount = useSelector(
+    (state) => state.comps.dataComp.participants
+  );
+
+  const unreadMessageCount = useSelector((state) => state.comps.dataComp.chat);
 
   //room name extraction
   const { room } = router.query;
@@ -141,9 +148,9 @@ export default function Room() {
                 left: "5px",
               }}
             >
-              {showParticipantsList
-                ? "Close Participants"
-                : "Open Participants"}
+              <Badge badgeContent={participantsCount} color="primary">
+                <PeopleAltIcon />
+              </Badge>
             </IconButton>
             <IconButton
               onClick={() => {
@@ -154,7 +161,9 @@ export default function Room() {
                 right: "5px",
               }}
             >
-              {showChat ? "Close Chat" : "Open Chat"}
+              <Badge color="primary" badgeContent={unreadMessageCount}>
+                <ChatBubbleIcon />
+              </Badge>
             </IconButton>
             <Typography variant="h6" textAlign={"center"}>
               You are in{" "}
@@ -214,6 +223,8 @@ export default function Room() {
                     (showParticipantsList ? participantWidth : 0) +
                     (showChat ? chatWidth : 0)
                   }px)`,
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
                 <MainGrid />

@@ -147,9 +147,14 @@ export default function MainGrid() {
           } else {
             setUsers((prev) => [
               ...prev,
-              { ...user, uid: `${uid}@screen`, [kind]: track },
+              { ...user, uid: `${uid}@screen`, [kind]: track, role: "host" },
             ]);
-            setPinnedUser({ ...user, uid: `${uid}@screen`, [kind]: track });
+            setPinnedUser({
+              ...user,
+              uid: `${uid}@screen`,
+              [kind]: track,
+              role: "host",
+            });
           }
         }
       } catch (e) {
@@ -233,10 +238,13 @@ export default function MainGrid() {
     <Grid
       container
       sx={{
-        height: "100%",
         overflowY: "auto",
         width: "100%",
         border: "2px solid violet",
+        height:
+          !pinnedUser.uid && users.length >= 2 && users.length < 4
+            ? "50%"
+            : "100%",
       }}
       justifyContent="center"
     >
@@ -266,6 +274,7 @@ export default function MainGrid() {
           style={{
             aspectRatio: "16/9",
             position: "relative",
+            maxHeight: "100%",
           }}
         >
           <VideoPlayer
@@ -281,7 +290,7 @@ export default function MainGrid() {
       {tracks.screenVideoTrack && (
         <Grid
           item
-          xs={users.length + 1 >= 0 && users.length + 1 < 2 ? 6 : 3}
+          xs={users.length >= 0 && users.length < 2 ? 6 : 3}
           style={{
             aspectRatio: "16/9",
             position: "relative",

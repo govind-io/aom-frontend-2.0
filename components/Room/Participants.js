@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ToggleParticpantsList } from "../../Redux/Actions/Comps/CollapsibleComps";
 import { socket } from "../../Utils/Configs/Socket";
+import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
+import { ChangeParticipantCounts } from "../../Redux/Actions/Comps/DataComps";
 
 export default function Participants() {
   //states here
@@ -47,6 +49,10 @@ export default function Participants() {
     };
   }, [socket]);
 
+  useEffect(() => {
+    dispatch(ChangeParticipantCounts(participants.length));
+  }, [participants]);
+
   return (
     <Paper
       elevation={5}
@@ -73,7 +79,7 @@ export default function Participants() {
             }}
             sx={{ position: "absolute", right: "0px" }}
           >
-            Close
+            <KeyboardDoubleArrowLeftIcon />
           </IconButton>
           <Typography
             style={{
