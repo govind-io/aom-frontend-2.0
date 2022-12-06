@@ -43,6 +43,10 @@ export default function MainGrid() {
       setRtcClient(device);
       device.onUserJoined(userJoinedEvent);
       device.onUserLeft(userLeftEvent);
+      device.onRemoteTrackStateChanged = ({ uid }) => {
+        console.log("track state changed for ", uid)
+        setUsers((prev) => [...prev])
+      }
     });
   }, [socket]);
 
@@ -62,6 +66,8 @@ export default function MainGrid() {
         console.log(e.message);
       });
   }, [RtcClient, userData]);
+
+  console.log({ RtcClient })
 
   //for producing tracks
   useEffect(() => {

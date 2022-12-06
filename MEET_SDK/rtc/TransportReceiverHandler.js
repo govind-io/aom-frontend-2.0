@@ -134,6 +134,7 @@ export const StartRecievingTheTracks = function (ref, user) {
           producerId,
           serverConsumerTransportId:
             ref.PeersData[uid].remoteReceiverTransport.id,
+          producerUid: uid
         },
         async (data, error) => {
           if (error) {
@@ -153,6 +154,10 @@ export const StartRecievingTheTracks = function (ref, user) {
 
           const track = new MediaStream([tempTrack]);
 
+          track.enabled = tempTrack.enabled
+
+
+
           ref.PeersData[uid].consumers = ref.PeersData[uid].consumers.map(
             (item) => {
               if (item.producerId === producerId) {
@@ -162,6 +167,15 @@ export const StartRecievingTheTracks = function (ref, user) {
 
                 socket.emit("resume-consumer", {
                   consumer_id: data.serverConsumerId,
+                }, ({ keepPaused }) => {
+                  if (keepPaused) {
+                    consumer.pause()
+                    track.enabled = false
+                    if (typeof ref.onRemoteTrackStateChanged === "function") {
+                      ref.onRemoteTrackStateChanged({ uid })
+                    }
+
+                  }
                 });
 
                 return { ...item, consumer, [kind]: track };
@@ -292,3 +306,47 @@ export const StopReceivingTracks = (ref, tracks, user) => {
     resolve("Unsubscribed to provided track");
   });
 };
+
+
+export const HandleProducerToConsumerPaused = (ref) => {
+  const socket = ref.rtmClient
+  socket.off("consumer-resume")
+  socket.on("consumer-resume", async ({ consumerId, uid }) => {
+    const changedConsumer = ref.PeersData[uid]?.consumers.find((item) => item.consumer?.id === consumerId)
+    if (!changedConsumer) return
+
+    if (changedConsumer.consumer.paused) {
+      await changedConsumer.consumer.resume()
+      ref.PeersData[uid].consumers = ref.PeersData[uid].consumers.map((item) => {
+        if (item.consumer?.id === consumerId) {
+          item[item.kind].enabled = changedConsumer.consumer.track.enabled
+        }
+        return item
+      })
+    }
+
+    if (typeof ref.onRemoteTrackStateChanged === "function")
+      ref.onRemoteTrackStateChanged({ uid })
+
+  })
+
+
+  socket.off("consumer-paused")
+  socket.on("consumer-paused", async ({ consumerId, uid }) => {
+    const changedConsumer = ref.PeersData[uid]?.consumers.find((item) => item.consumer?.id === consumerId)
+    if (!changedConsumer) return
+
+    if (!changedConsumer.consumer.paused) {
+      await changedConsumer.consumer.pause()
+      ref.PeersData[uid].consumers = ref.PeersData[uid].consumers.map((item) => {
+        if (item.consumer?.id === consumerId) {
+          item[item.kind].enabled = changedConsumer.consumer.track.enabled
+        }
+        return item
+      })
+    }
+
+    if (typeof ref.onRemoteTrackStateChanged === "function")
+      ref.onRemoteTrackStateChanged({ uid })
+  })
+}

@@ -1,3 +1,4 @@
+import { DEBUG_LOGS } from "../configs/SETTINGS";
 import { defaultScreenTrackParams, defaultTracksParams } from "./settings";
 
 export class Tracks {
@@ -19,10 +20,37 @@ export class Tracks {
           const newMediaStream = new MediaStream([elem]);
 
           newMediaStream.enabled = true;
+
           newMediaStream.setEnabled = (val) => {
-            elem.enabled = val ? true : false;
-            newMediaStream.enabled = val ? true : false;
+            const newState = val ? true : false;
+
+            elem.enabled = newState;
+            newMediaStream.enabled = newState;
+
+            const producer = this.parentClassRef.producers.find(
+              (item) => item.track.id === elem.id
+            );
+
+            if (!newState && producer) {
+              producer.pause();
+              if (DEBUG_LOGS)
+                console.log("producer paused associated with this track");
+              this.parentClassRef.rtmClient.emit("producer-paused", {
+                producerId: producer.id,
+              });
+            } else if (newState && producer) {
+              producer.resume();
+              if (DEBUG_LOGS)
+                console.log("producer resumed associated with this track");
+              this.parentClassRef.rtmClient.emit("producer-resume", {
+                producerId: producer.id,
+              });
+            } else {
+              if (DEBUG_LOGS)
+                console.log("No producer associated with this track");
+            }
           };
+
           newMediaStream.stop = () => {
             elem.stop();
             this.parentClassRef.selfTracks =

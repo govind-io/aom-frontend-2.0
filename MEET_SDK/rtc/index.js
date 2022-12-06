@@ -1,11 +1,15 @@
 import { Device } from "mediasoup-client";
+import { DEBUG_LOGS } from "../configs/SETTINGS";
 import { globalSocket } from "../socket";
 import { ScreenTracks, Tracks } from "./Tracks";
 import {
   handleUserPublishedEvent,
   handleUserUnPublishedEvent,
 } from "./TracksEvents";
-import { RemovingConsumerToTrack } from "./TransportReceiverHandler";
+import {
+  HandleProducerToConsumerPaused,
+  RemovingConsumerToTrack,
+} from "./TransportReceiverHandler";
 import {
   handleProduceTracks,
   handleUnproduceTracks,
@@ -38,6 +42,7 @@ export class RTCClient {
         clearTimeout(timer);
         resolve();
         RemovingConsumerToTrack(this);
+        HandleProducerToConsumerPaused(this);
         console.log("device-connected");
         socket.emit("device-connected");
       });
@@ -95,6 +100,9 @@ export class RTCClient {
   selfTracks = [];
 
   producers = [];
+
+  onRemoteTrackStateChanged;
+
 }
 
 export const handleCloseConnection = function (ref) {

@@ -3,7 +3,8 @@ import { useCallback } from "react";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import ScrollZoom from "../../../Utils/ComponentUtilities/ScrollToZoom";
 import CancelPresentation from "@mui/icons-material/CancelPresentation";
-
+import VideocamOffIcon from "@mui/icons-material/VideocamOff";
+import MicOffIcon from "@mui/icons-material/MicOff";
 export default function VideoPlayer({
   audioTrack,
   videoTrack,
@@ -42,7 +43,58 @@ export default function VideoPlayer({
         overflow: "hidden",
       }}
     >
-      {(videoTrack && videoTrack?.enabled) || (!self && videoTrack) ? (
+      {!self && (
+        <Grid
+          item
+          xs={12}
+          sx={{
+            position: "absolute",
+            bottom: "0px",
+            display: "flex",
+            justifyContent: "flex-start",
+          }}
+        >
+          {!videoTrack?.enabled && (
+            <IconButton
+              variant={"contained"}
+              sx={{
+                backgroundColor: "black",
+                ml: "10px",
+                width: "fit-content",
+                height: "fit-content",
+                borderRadius: "10px",
+              }}
+            >
+              <VideocamOffIcon
+                sx={{
+                  color: "white",
+                }}
+              />
+            </IconButton>
+          )}
+
+          {!audioTrack?.enabled && (
+            <IconButton
+              variant={"contained"}
+              sx={{
+                backgroundColor: "black",
+                ml: "10px",
+                width: "fit-content",
+                height: "fit-content",
+                borderRadius: "10px",
+              }}
+            >
+              <MicOffIcon
+                sx={{
+                  color: "white",
+                }}
+              />
+            </IconButton>
+          )}
+        </Grid>
+      )}
+
+      {videoTrack && videoTrack?.enabled ? (
         <video
           style={{
             width: "100%",
