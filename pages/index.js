@@ -12,13 +12,17 @@ import ToastHandler from "../Utils/Toast/ToastHandler";
 import { ConnectMeet } from "../MEET_SDK";
 import { useRouter } from "next/router";
 import { SaveUserData } from "../Redux/Actions/User/DataAction";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { GetMeetToken } from "../Utils/ApiUtilities/GetMeetToken";
+import { updateDeviceId } from "../Redux/Actions/Device";
 
 export default function Home() {
   //constants here
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const deviceId = useSelector((state) => state.device.id)
+
 
   //form submission handler
   const handleJoin = async (e) => {
@@ -35,11 +39,20 @@ export default function Home() {
       return ToastHandler("dan", "Name can not have spaces");
     }
 
+    let uidSuffix
+
+    if (!deviceId) {
+      uidSuffix = Date.now()
+      dispatch(updateDeviceId(uidSuffix))
+    } else {
+      uidSuffix = deviceId
+    }
+
     const token = await GetMeetToken(formData.room); //login for getting token which should be moved to backend server of client
 
     if (!token) return
 
-    ConnectMeet({ token, role: formData.role, uid: formData.name })
+    ConnectMeet({ token, role: formData.role, uid: `${formData.name}-${uidSuffix}` })
       .then((socket) => {
         setSocket(socket);
         dispatch(
@@ -48,7 +61,7 @@ export default function Home() {
             name: formData.name,
             role: formData.role,
             token,
-            uid: formData.name,
+            uid: `${formData.name}-${uidSuffix}`,
           })
         );
         router.push(`/room/${formData.room}`);

@@ -71,10 +71,10 @@ export default function Chat() {
         content: val,
       },
       (err) => {
-        if (err) return;
-        inputRef.current.childNodes[0].value = "";
+        if (err) return ToastHandler("dan", "Error Sending Your Message");
       }
     );
+    inputRef.current.childNodes[0].value = ""
   };
 
   return (

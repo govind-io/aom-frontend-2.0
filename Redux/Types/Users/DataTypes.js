@@ -1,1 +1,2 @@
 export const SAVE_USER_DATA = "SAVE_USER_DATA";
+export const UPDATE_DEVICE_ID = "UPDATE_DEVICE_ID"

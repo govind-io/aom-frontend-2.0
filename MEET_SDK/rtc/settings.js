@@ -36,6 +36,7 @@ export const defaultTracksParams = {
       min: 400,
       max: 1080,
     },
+    facingMode: "user",
   },
 };
 

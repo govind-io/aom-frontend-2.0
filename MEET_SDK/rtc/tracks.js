@@ -109,6 +109,8 @@ export class ScreenTracks {
               );
           };
 
+          newMediaStream.enabled = true
+
           clientTracksArray.push(newMediaStream);
 
           this.parentClassRef.selfTracks.push(elem);

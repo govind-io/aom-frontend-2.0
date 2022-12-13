@@ -27,7 +27,7 @@ export default function Participants() {
 
     const userLeftEvent = ({ uid, role }) => {
       setParticipants((prev) => {
-        const newParticipants = prev.filter((item) => item.name !== uid);
+        const newParticipants = prev.filter((item) => item.name !== uid || item.role !== role);
         return newParticipants;
       });
     };
@@ -113,7 +113,7 @@ export default function Participants() {
                     fontSize: "18px",
                   }}
                 >
-                  {item.name} -{" "}
+                  {item.name.split("-")[0]} -{" "}
                   <span
                     style={{
                       textTransform: "capitalize",
@@ -124,7 +124,7 @@ export default function Participants() {
                   >
                     {item.role}
                   </span>{" "}
-                  {item.name === userData.name && (
+                  {item.name === userData.uid && (
                     <>
                       -{" "}
                       <span

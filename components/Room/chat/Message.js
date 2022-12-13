@@ -43,7 +43,7 @@ export default function Message(props) {
                   fontWeight: "bold",
                 }}
               >
-                {by}:
+                {by.split("-")[0]}:
               </span>
             </Typography>
           </Grid>

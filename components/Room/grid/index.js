@@ -122,7 +122,7 @@ export default function MainGrid() {
     //Event listeners
     const userPublishedEvents = async (user) => {
       try {
-        const { track, kind } = await user.subscribe();
+        const { track, kind } = await RtcClient.subscribe(user);
 
         const { type, uid } = user;
 

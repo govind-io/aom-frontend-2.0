@@ -9,6 +9,8 @@ import {
 import {
   HandleProducerToConsumerPaused,
   RemovingConsumerToTrack,
+  StartRecievingTheTracks,
+  StopReceivingTracks,
 } from "./TransportReceiverHandler";
 import {
   handleProduceTracks,
@@ -79,8 +81,21 @@ export class RTCClient {
   produceTracks() {
     return handleProduceTracks(this, ...arguments);
   }
+
   unprodueTracks() {
     return handleUnproduceTracks(this, ...arguments);
+  }
+
+  subscribe() {
+    try {
+      return StartRecievingTheTracks(this, ...arguments);
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  unsubscribe() {
+    return StopReceivingTracks(this, ...arguments)
   }
 
   //all RTC connection closing

@@ -55,7 +55,7 @@ export default function Room() {
     const func = async () => {
       if (!room) return;
 
-      if (!userData || !userData.name || !userData.role) {
+      if (!userData || !userData.uid || !userData.role) {
         ToastHandler("dan", "Please join a room first");
         router.push("/");
       } else if (userData.room !== room) {
@@ -72,7 +72,7 @@ export default function Room() {
         dispatch(SaveUserData({ token }));
         ConnectMeet({
           role: userData.role,
-          uid: userData.name,
+          uid: userData.uid,
           token,
         }).then((socket) => {
           setSocket(socket);
@@ -83,7 +83,7 @@ export default function Room() {
         ConnectMeet({
           role: userData.role,
           token: userData.token,
-          uid: userData.name,
+          uid: userData.uid,
         }).then((socket) => {
           setSocket(socket);
           setRoomJoined(true);
@@ -101,7 +101,15 @@ export default function Room() {
   useEffect(() => {
     if (!socket || !roomJoined) return;
 
-    socket?.on("disconnect", () => {
+    socket?.on("disconnect", (reason) => {
+      console.log({ reason })
+      if (reason === "io server disconnect") {
+        router.push("/");
+        console.log("You joined using another device")
+        return ToastHandler("dan", "You joined using another device")
+      }
+
+      console.log("Left Room Succesfully")
       ToastHandler("sus", "Left Room Succesfully");
       router.push("/");
     });
@@ -219,12 +227,12 @@ export default function Room() {
                 sx={{
                   border: "1px solid yellow",
                   height: "100%",
-                  width: `calc(100% - ${
-                    (showParticipantsList ? participantWidth : 0) +
+                  width: `calc(100% - ${(showParticipantsList ? participantWidth : 0) +
                     (showChat ? chatWidth : 0)
-                  }px)`,
+                    }px)`,
                   display: "flex",
                   alignItems: "center",
+                  backgroundColor: "#202124"
                 }}
               >
                 <MainGrid />

@@ -5,6 +5,8 @@ import ScrollZoom from "../../../Utils/ComponentUtilities/ScrollToZoom";
 import CancelPresentation from "@mui/icons-material/CancelPresentation";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import MicOffIcon from "@mui/icons-material/MicOff";
+import Avatar from "@mui/material/Avatar";
+import { stringAvatar } from "../../../Utils/DesignUtilities/AvatarUtils";
 export default function VideoPlayer({
   audioTrack,
   videoTrack,
@@ -95,14 +97,24 @@ export default function VideoPlayer({
       )}
 
       {videoTrack && videoTrack?.enabled ? (
-        <video
-          style={{
-            width: "100%",
+        <Grid
+          item
+          xs={12}
+          sx={{
             height: "100%",
+            transformOrigin: "50%",
+            transform: user.uid.split("@")[1] === "screen" ? "scaleX(1)" : "scaleX(-1)",
           }}
-          ref={videoRef}
-          autoPlay={true}
-        />
+        >
+          <video
+            ref={videoRef}
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+            autoPlay={true}
+          />
+        </Grid>
       ) : (
         <Grid
           sx={{
@@ -113,20 +125,10 @@ export default function VideoPlayer({
           justifyContent="center"
           alignItems="center"
         >
-          <Typography
-            style={{
-              backgroundColor: "rgba(0,0,0,0.4)",
-              padding: "0px 5px",
-              color: "black",
-              zIndex: "2",
-              borderRadius: "5px",
-              fontSize: "12px",
-            }}
-          >
-            {self
-              ? "You have turned your camera off"
-              : `${user.uid} has turned camera off`}
-          </Typography>
+          {console.log(user.uid, "user id")}
+          <Avatar
+            {...stringAvatar(user.uid)}
+          />
         </Grid>
       )}
 
@@ -166,7 +168,7 @@ export default function VideoPlayer({
                 fontWeight: "bold",
               }}
             >
-              {self ? "You" : selfScreen ? "You@screen" : `${user.uid}`}
+              {self ? "You" : selfScreen ? "You@screen" : `${user.uid.split("-")[0]}${user.uid.split("@")[1] ? "@screen" : ""}`}
             </span>{" "}
             [{user.role}]
           </Typography>
@@ -182,7 +184,7 @@ export default function VideoPlayer({
             >
               <PushPinIcon
                 sx={{
-                  color: pinnedUser.uid === user.uid ? "black" : "grey",
+                  color: pinnedUser.uid === user.uid ? "#afafaf" : "white",
                 }}
               />
             </IconButton>

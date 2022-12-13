@@ -8,19 +8,6 @@ export const handleUserPublishedEvent = async function (ref, callback) {
   socket?.off("user-published");
 
   socket?.on("user-published", (user) => {
-    user.subscribe = async () => {
-      try {
-        const track = await StartRecievingTheTracks(ref, user);
-        return { ...track, track: track.track };
-      } catch (e) {
-        throw new Error(e);
-      }
-    };
-
-    user.unsubscribe = async (tracks) => {
-      return await StopReceivingTracks(ref, tracks, user);
-    };
-
     callback(user);
   });
 };
@@ -40,3 +27,5 @@ export const handleUserUnPublishedEvent = async function (ref, callback) {
     });
   });
 };
+
+
