@@ -7,6 +7,8 @@ import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import Avatar from "@mui/material/Avatar";
 import { stringAvatar } from "../../../Utils/DesignUtilities/AvatarUtils";
+import VolumeVisualizer from "./VolumeIndicator";
+import PulsingAvatar from "./PulsingAvatar";
 export default function VideoPlayer({
   audioTrack,
   videoTrack,
@@ -16,6 +18,7 @@ export default function VideoPlayer({
   setPinnedUser,
   selfScreen,
   stopSharingScreen,
+  volume,
 }) {
   const videoRef = useCallback(
     (node) => {
@@ -103,7 +106,8 @@ export default function VideoPlayer({
           sx={{
             height: "100%",
             transformOrigin: "50%",
-            transform: user.uid.split("@")[1] === "screen" ? "scaleX(1)" : "scaleX(-1)",
+            transform:
+              user.uid.split("@")[1] === "screen" ? "scaleX(1)" : "scaleX(-1)",
           }}
         >
           <video
@@ -116,20 +120,7 @@ export default function VideoPlayer({
           />
         </Grid>
       ) : (
-        <Grid
-          sx={{
-            width: "100%",
-            height: "100%",
-          }}
-          container
-          justifyContent="center"
-          alignItems="center"
-        >
-          {console.log(user.uid, "user id")}
-          <Avatar
-            {...stringAvatar(user.uid)}
-          />
-        </Grid>
+        <PulsingAvatar uid={user.uid} volume={volume} />
       )}
 
       <audio
@@ -168,13 +159,19 @@ export default function VideoPlayer({
                 fontWeight: "bold",
               }}
             >
-              {self ? "You" : selfScreen ? "You@screen" : `${user.uid.split("-")[0]}${user.uid.split("@")[1] ? "@screen" : ""}`}
-            </span>{" "}
+              {self
+                ? "You"
+                : selfScreen
+                  ? "You@screen"
+                  : `${user.uid.split("-")[0]}${user.uid.split("@")[1] ? "@screen" : ""
+                  }`}
+            </span>
             [{user.role}]
           </Typography>
         </Grid>
-        {!self && (
-          <Grid item>
+        <Grid item>
+          <VolumeVisualizer volume={volume} />
+          {!self && (
             <IconButton
               onClick={() => {
                 if (pinnedUser.uid === user.uid) return setPinnedUser({});
@@ -188,8 +185,8 @@ export default function VideoPlayer({
                 }}
               />
             </IconButton>
-          </Grid>
-        )}
+          )}
+        </Grid>
       </Grid>
       {selfScreen && (
         <Grid

@@ -17,6 +17,10 @@ export default function MainGrid() {
   const [users, setUsers] = useState([]);
   const [sharingTracks, setSharingTracks] = useState(false);
   const [pinnedUser, setPinnedUser] = useState({});
+  const [volumes, setVolumes] = useState({})
+
+
+
 
   //constants
   const router = useRouter();
@@ -65,9 +69,17 @@ export default function MainGrid() {
       .catch((e) => {
         console.log(e.message);
       });
+
+    RtcClient.enableAudioVolumeObserver().then((observer) => {
+      observer.onVolume((volume) => setVolumes(volume))
+    }).catch((e) => {
+      console.log("error is ", e)
+    })
+
+
   }, [RtcClient, userData]);
 
-  console.log({ RtcClient })
+  console.log({ RtcClient, volumes })
 
   //for producing tracks
   useEffect(() => {
@@ -289,6 +301,7 @@ export default function MainGrid() {
             user={pinnedUser}
             pinnedUser={pinnedUser}
             setPinnedUser={setPinnedUser}
+            volume={volumes[pinnedUser.uid]}
           />
         </Grid>
       )}
@@ -309,6 +322,7 @@ export default function MainGrid() {
             user={{ uid: userData.uid, role: userData.role }}
             selfScreen={true}
             stopSharingScreen={stopSharingScreen}
+            volume={volumes[userData.uid]}
           />
         </Grid>
       )}
@@ -329,6 +343,7 @@ export default function MainGrid() {
             self={true}
             pinnedUser={pinnedUser}
             setPinnedUser={setPinnedUser}
+            volume={volumes[userData.uid]}
           />
           <SelfControl
             videoTrack={tracks.videoTrack}
@@ -361,6 +376,7 @@ export default function MainGrid() {
                 user={item}
                 pinnedUser={pinnedUser}
                 setPinnedUser={setPinnedUser}
+                volume={volumes[item.uid]}
               />
             </Grid>
           );

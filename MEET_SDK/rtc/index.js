@@ -1,6 +1,7 @@
 import { Device } from "mediasoup-client";
 import { DEBUG_LOGS } from "../configs/SETTINGS";
 import { globalSocket } from "../socket";
+import { AudioVolumeObserver } from "./AudioVolumeObserver";
 import { ScreenTracks, Tracks } from "./Tracks";
 import {
   handleUserPublishedEvent,
@@ -48,7 +49,27 @@ export class RTCClient {
         console.log("device-connected");
         socket.emit("device-connected");
       });
+
+      socket.on("disconnect", () => {
+        this.selfTracks.forEach((item) => item.stop())
+      })
+
     });
+  }
+
+  enableAudioVolumeObserver() {
+    const volumeObserver = new AudioVolumeObserver(this)
+    return new Promise((resolve, reject) => {
+      volumeObserver.init().then(data => {
+        if (data) {
+          return resolve(volumeObserver)
+        }
+        reject(false)
+      }).catch((e) => {
+        reject(volumeObserver)
+      })
+    })
+
   }
 
   //events here
@@ -136,6 +157,8 @@ export const handleCloseConnection = function (ref) {
     });
     ref.PeersData[item].RecieverTransport?.close();
   });
+
+  ref.selfTracks.forEach((item) => item.stop())
 
   ref.producers = [];
   ref.selfProducerTransport = undefined;
