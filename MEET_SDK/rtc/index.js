@@ -1,8 +1,7 @@
 import { Device } from "mediasoup-client";
-import { DEBUG_LOGS } from "../configs/SETTINGS";
 import { globalSocket } from "../socket";
 import { AudioVolumeObserver } from "./AudioVolumeObserver";
-import { ScreenTracks, Tracks } from "./Tracks";
+import { ScreenTracks, Tracks } from "./tracks";
 import {
   handleUserPublishedEvent,
   handleUserUnPublishedEvent,
