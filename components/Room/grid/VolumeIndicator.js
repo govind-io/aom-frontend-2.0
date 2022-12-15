@@ -3,15 +3,16 @@ import { LinearProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import KeyboardVoiceOutlinedIcon from '@mui/icons-material/KeyboardVoiceOutlined';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: "10px",
+        width: "12px",
         display: "flex",
         alignItems: "flex-end",
-        height: "50px",
-        border: "1px solid white",
-        borderRadius: "2px",
+        height: "30px",
+        position: "absolute",
+        top: "3px"
     },
 }));
 
@@ -24,24 +25,10 @@ const VolumeVisualizer = ({ volume }) => {
                 display: "flex",
                 justifyContent: "center",
                 flexWrap: "wrap",
-                width: "20px",
+                position: "relative"
             }}
         >
-            {volume ? (
-                <VolumeUpIcon
-                    sx={{
-                        color: "white",
-                        maxHeight: "20px",
-                    }}
-                />
-            ) : (
-                <VolumeMuteIcon
-                    sx={{
-                        color: "white",
-                        maxHeight: "20px",
-                    }}
-                />
-            )}
+            <KeyboardVoiceOutlinedIcon sx={{ color: "#04AA6D", fontSize: "50px" }} />
 
             <div className={classes.root}>
                 <div
@@ -49,6 +36,7 @@ const VolumeVisualizer = ({ volume }) => {
                         height: volume ? `${volume * 10}%` : "0%",
                         backgroundColor: "#04AA6D",
                         width: "100%",
+                        borderRadius: "5px"
                     }}
                 ></div>
             </div>

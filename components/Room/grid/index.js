@@ -2,8 +2,7 @@ import { Grid, IconButton } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { RTCClient } from "../../../MEET_SDK/rtc";
-import { socket } from "../../../Utils/Configs/Socket";
+import { meetClient, socket } from "../../../Utils/Configs/MeetClient";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import SelfControl from "./SelfControls";
 import VideoPlayer from "./VideoPlayer";
@@ -12,22 +11,51 @@ export default function MainGrid() {
   const userData = useSelector((state) => state.user.data);
 
   //localStates
-  const [RtcClient, setRtcClient] = useState();
+  const RtcClient = meetClient
   const [tracks, setTracks] = useState({});
   const [users, setUsers] = useState([]);
-  const [sharingTracks, setSharingTracks] = useState(false);
   const [pinnedUser, setPinnedUser] = useState({});
   const [volumes, setVolumes] = useState({})
-
-
-
 
   //constants
   const router = useRouter();
 
+
+
+  //functions here
+  const handleProduceTracks = (tracks) => {
+    RtcClient.produceTracks(tracks)
+      .then(() => {
+        console.log("started sharing tracks")
+      })
+      .catch((e) => {
+        console.log({ e });
+      });
+  }
+
+
+  const handleCreateTracks = () => {
+
+
+    RtcClient.createTracks()
+      .then((tracks) => {
+        setTracks({ audioTrack: tracks[0], videoTrack: tracks[1] });
+        handleProduceTracks(tracks)
+      })
+      .catch((e) => {
+        console.log(e.message);
+      });
+
+    RtcClient.enableAudioVolumeObserver().then((observer) => {
+      observer.onVolume((volume) => setVolumes(volume))
+    }).catch((e) => {
+      console.log("error is ", e)
+    })
+  }
+
   //creating RTC client here
   useEffect(() => {
-    if (RtcClient || !socket) return;
+    if (!RtcClient) return;
 
     const userJoinedEvent = (user) => {
       if (user.role !== "host") return;
@@ -40,68 +68,6 @@ export default function MainGrid() {
       if (user.role !== "host") return;
       setUsers((prev) => prev.filter((item) => item.uid !== user.uid));
     };
-
-    const device = new RTCClient();
-
-    device.init().then(() => {
-      setRtcClient(device);
-      device.onUserJoined(userJoinedEvent);
-      device.onUserLeft(userLeftEvent);
-      device.onRemoteTrackStateChanged = ({ uid }) => {
-        console.log("track state changed for ", uid)
-        setUsers((prev) => [...prev])
-      }
-    });
-  }, [socket]);
-
-  //for creating tracks
-  useEffect(() => {
-    if (
-      !RtcClient ||
-      (userData.role !== "host" && !tracks.audioTrack && !tracks.videoTrack)
-    )
-      return;
-
-    RtcClient.createTracks()
-      .then((tracks) => {
-        setTracks({ audioTrack: tracks[0], videoTrack: tracks[1] });
-      })
-      .catch((e) => {
-        console.log(e.message);
-      });
-
-    RtcClient.enableAudioVolumeObserver().then((observer) => {
-      observer.onVolume((volume) => setVolumes(volume))
-    }).catch((e) => {
-      console.log("error is ", e)
-    })
-
-
-  }, [RtcClient, userData]);
-
-  console.log({ RtcClient, volumes })
-
-  //for producing tracks
-  useEffect(() => {
-    if (
-      !RtcClient ||
-      userData.role !== "host" ||
-      (!tracks.audioTrack && !tracks.videoTrack) ||
-      sharingTracks
-    )
-      return;
-
-    RtcClient.produceTracks([tracks.audioTrack, tracks.videoTrack])
-      .then()
-      .catch((e) => {
-        console.log({ e });
-      });
-
-    setSharingTracks(true);
-  }, [RtcClient, tracks]);
-
-  useEffect(() => {
-    if (!RtcClient) return;
 
     const userUnpublishedEvents = (user) => {
       const { kind, trackId } = user;
@@ -180,9 +146,27 @@ export default function MainGrid() {
       }
     };
 
+
+    const handleRemoteTrackStateChanged = ({ uid }) => {
+      setUsers((prev) => [...prev])
+    }
+
+    RtcClient.onUserJoined(userJoinedEvent);
+    RtcClient.onUserLeft(userLeftEvent);
     RtcClient.onUserPublished(userPublishedEvents);
     RtcClient.onUserUnpublished(userUnpublishedEvents);
-  }, [RtcClient]);
+    RtcClient.onRemoteTrackStateChanged = handleRemoteTrackStateChanged
+
+
+    //initialising RTcCLient
+    RtcClient.init().then(() => {
+      if (RtcClient.role !== "host") return
+      handleCreateTracks()
+    }).catch((e) => {
+      ToastHandler("dan", e.message || e)
+    })
+
+  }, [meetClient]);
 
   useEffect(() => {
     return () => {

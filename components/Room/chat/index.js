@@ -2,7 +2,7 @@ import { Button, Grid, IconButton, Input, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
-import { socket } from "../../../Utils/Configs/Socket";
+import { meetClient } from "../../../Utils/Configs/MeetClient";
 import Message from "./Message";
 import { TogglChatList } from "../../../Redux/Actions/Comps/CollapsibleComps";
 import { KeyboardDoubleArrowRight } from "@mui/icons-material";
@@ -29,28 +29,28 @@ export default function Chat() {
 
   //effects here
   useEffect(() => {
-    if (!socket || !userData?.token) return;
+    if (!meetClient || !userData?.token) return;
 
     const func = async () => {
-      const allMessages = await socket.getAllMessages(userData.token);
+      const allMessages = await meetClient.getAllMessages(userData.token);
       setMessages(allMessages);
     };
 
     func();
 
-    const socketMessageHandler = (data) => {
+    const meetClientMessageHandler = (data) => {
       setMessages([...messagesRef.current, data]);
       if (!chatOpen) {
         dispatch(ChangeUnreadMessageCount(unreadMessageCount + 1));
       }
     };
 
-    socket?.on("message", socketMessageHandler);
+    meetClient?.on("message", meetClientMessageHandler);
 
     return () => {
-      socket?.off("message", socketMessageHandler);
+      meetClient?.off("message", meetClientMessageHandler);
     };
-  }, [socket]);
+  }, [meetClient]);
 
   useEffect(() => {
     if (chatOpen) dispatch(ChangeUnreadMessageCount(0));
@@ -65,7 +65,7 @@ export default function Chat() {
     if (val.length < 1) {
       return ToastHandler("warn", "Message cannot be empty");
     }
-    socket.emit(
+    meetClient.emit(
       "send-message",
       {
         content: val,

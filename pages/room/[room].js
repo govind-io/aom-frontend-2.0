@@ -12,10 +12,9 @@ import { useDispatch, useSelector } from "react-redux";
 import Chat from "../../components/Room/chat";
 import MainGrid from "../../components/Room/grid";
 import Participants from "../../components/Room/Participants";
-import { ConnectMeet } from "../../MEET_SDK";
 import { SaveUserData } from "../../Redux/Actions/User/DataAction";
 import { GetMeetToken } from "../../Utils/ApiUtilities/GetMeetToken";
-import { setSocket, socket } from "../../Utils/Configs/Socket";
+import { meetClient, setMeetClient } from "../../Utils/Configs/MeetClient";
 import ToastHandler from "../../Utils/Toast/ToastHandler";
 import {
   TogglChatList,
@@ -23,6 +22,7 @@ import {
 } from "../../Redux/Actions/Comps/CollapsibleComps";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import { RTCClient } from "../../MEET_SDK/rtc";
 export default function Room() {
   //constants here
   const router = useRouter();
@@ -61,8 +61,8 @@ export default function Room() {
       } else if (userData.room !== room) {
         dispatch(SaveUserData({ room }));
 
-        if (socket) {
-          socket.disconnect();
+        if (meetClient) {
+          meetClient.close();
         }
 
         ToastHandler("info", "Room changed");
@@ -70,22 +70,25 @@ export default function Room() {
         const token = await GetMeetToken(room);
 
         dispatch(SaveUserData({ token }));
-        ConnectMeet({
+        meetClient.connect({
           role: userData.role,
           uid: userData.uid,
           token,
-        }).then((socket) => {
-          setSocket(socket);
+        }).then(() => {
+          setMeetClient(meetClient)
           setRoomJoined(true);
           ToastHandler("sus", "Joined another room succefully");
         });
-      } else if (!socket) {
-        ConnectMeet({
+      } else if (!meetClient) {
+
+        const client = new RTCClient()
+
+        client.connect({
           role: userData.role,
-          token: userData.token,
           uid: userData.uid,
-        }).then((socket) => {
-          setSocket(socket);
+          token: userData.token,
+        }).then(() => {
+          setMeetClient(client)
           setRoomJoined(true);
           ToastHandler("sus", "Joined room succefully");
         });
@@ -99,9 +102,10 @@ export default function Room() {
   }, [room]);
 
   useEffect(() => {
-    if (!socket || !roomJoined) return;
+    if (!meetClient || !roomJoined) return;
 
-    socket?.on("disconnect", (reason) => {
+
+    meetClient?.on("disconnect", (reason) => {
       console.log({ reason })
       if (reason === "io server disconnect") {
         router.push("/");
@@ -115,9 +119,9 @@ export default function Room() {
     });
 
     return () => {
-      socket?.off("disconnect");
+      meetClient?.off("disconnect");
     };
-  }, [roomJoined, socket]);
+  }, [roomJoined, meetClient]);
 
   useEffect(() => {
     const fullScreen = document.body.clientWidth;

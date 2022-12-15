@@ -6,15 +6,16 @@ import {
   Radio,
   FormControlLabel,
 } from "@mui/material";
-import { setSocket } from "../Utils/Configs/Socket";
+import { setMeetClient } from "../Utils/Configs/MeetClient";
 import { DesignForms, JoinRoomForm } from "../Utils/DesignUtilities/Form";
 import ToastHandler from "../Utils/Toast/ToastHandler";
-import { ConnectMeet } from "../MEET_SDK";
 import { useRouter } from "next/router";
 import { SaveUserData } from "../Redux/Actions/User/DataAction";
 import { useDispatch, useSelector } from "react-redux";
 import { GetMeetToken } from "../Utils/ApiUtilities/GetMeetToken";
 import { updateDeviceId } from "../Redux/Actions/Device";
+import { RTCClient } from "../MEET_SDK/rtc";
+
 
 export default function Home() {
   //constants here
@@ -52,20 +53,26 @@ export default function Home() {
 
     if (!token) return
 
-    ConnectMeet({ token, role: formData.role, uid: `${formData.name}-${uidSuffix}` })
-      .then((socket) => {
-        setSocket(socket);
-        dispatch(
-          SaveUserData({
-            room: formData.room,
-            name: formData.name,
-            role: formData.role,
-            token,
-            uid: `${formData.name}-${uidSuffix}`,
-          })
-        );
-        router.push(`/room/${formData.room}`);
-      })
+
+    const MeetClient = new RTCClient()
+
+    MeetClient.connect({ token, role: formData.role, uid: `${formData.name}-${uidSuffix}` }).then(() => {
+      dispatch(
+        SaveUserData({
+          room: formData.room,
+          name: formData.name,
+          role: formData.role,
+          token,
+          uid: `${formData.name}-${uidSuffix}`,
+        })
+      );
+
+
+
+      setMeetClient(MeetClient)
+
+      router.push(`/room/${formData.room}`);
+    })
       .catch((e) => {
         console.log(e.message);
       });

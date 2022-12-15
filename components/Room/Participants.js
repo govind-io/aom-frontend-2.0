@@ -2,7 +2,7 @@ import { Grid, IconButton, Paper, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ToggleParticpantsList } from "../../Redux/Actions/Comps/CollapsibleComps";
-import { socket } from "../../Utils/Configs/Socket";
+import { meetClient } from "../../Utils/Configs/MeetClient";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import { ChangeParticipantCounts } from "../../Redux/Actions/Comps/DataComps";
 
@@ -17,15 +17,20 @@ export default function Participants() {
 
   //effects here
   useEffect(() => {
-    if (!socket) return;
+    if (!meetClient) return;
 
     const userJoinedEvent = ({ uid, role }) => {
+
+
+
       setParticipants((prev) => {
         return [...prev, { name: uid, role }];
       });
     };
 
     const userLeftEvent = ({ uid, role }) => {
+
+
       setParticipants((prev) => {
         const newParticipants = prev.filter((item) => item.name !== uid || item.role !== role);
         return newParticipants;
@@ -33,21 +38,25 @@ export default function Participants() {
     };
 
     const func = async () => {
-      const participantsLocal = await socket.getJoinedUsers(userData.token);
+      const participantsLocal = await meetClient.getJoinedUsers(userData.token);
       setParticipants(participantsLocal);
     };
 
     func();
 
-    socket?.on("user-joined", userJoinedEvent);
+    meetClient?.on("user-joined", userJoinedEvent);
 
-    socket?.on("user-left", userLeftEvent);
+    meetClient?.on("user-left", userLeftEvent);
 
     return () => {
-      socket?.off("user-joined", userJoinedEvent);
-      socket?.off("user-left", userLeftEvent);
+      meetClient?.off("user-joined", userJoinedEvent);
+      meetClient?.off("user-left", userLeftEvent);
     };
-  }, [socket]);
+  }, [meetClient]);
+
+
+
+
 
   useEffect(() => {
     dispatch(ChangeParticipantCounts(participants.length));
