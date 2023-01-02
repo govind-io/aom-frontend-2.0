@@ -1,7 +1,11 @@
 import { Device } from "mediasoup-client";
 import { NotHost, NotJoined } from "../configs/SETTINGS";
 import { AudioVolumeObserver } from "./AudioVolumeObserver";
-import { Connect_Meet, getAllMessagesInRoom, getJoinedUsersInRoom } from "./Signaling";
+import {
+  Connect_Meet,
+  getAllMessagesInRoom,
+  getJoinedUsersInRoom,
+} from "./Signaling";
 import { ScreenTracks, Tracks } from "./tracks";
 import {
   handleUserPublishedEvent,
@@ -26,7 +30,7 @@ export class RTCClient {
   }
 
   connect() {
-    return Connect_Meet(this, ...arguments)
+    return Connect_Meet(this, ...arguments);
   }
 
   init() {
@@ -55,26 +59,27 @@ export class RTCClient {
       });
 
       socket.on("disconnect", () => {
-        this.selfTracks.forEach((item) => item.stop())
-      })
-
+        this.selfTracks.forEach((item) => item.stop());
+      });
     });
   }
 
   enableAudioVolumeObserver() {
-    const volumeObserver = new AudioVolumeObserver(this)
+    const volumeObserver = new AudioVolumeObserver(this);
     return new Promise((resolve, reject) => {
-      if (NotJoined(this)) reject("Not Joined yet")
-      volumeObserver.init().then(data => {
-        if (data) {
-          return resolve(volumeObserver)
-        }
-        reject(false)
-      }).catch((e) => {
-        reject(volumeObserver)
-      })
-    })
-
+      if (NotJoined(this)) reject("Not Joined yet");
+      volumeObserver
+        .init()
+        .then((data) => {
+          if (data) {
+            return resolve(volumeObserver);
+          }
+          reject(false);
+        })
+        .catch((e) => {
+          reject(volumeObserver);
+        });
+    });
   }
 
   //events here
@@ -95,29 +100,33 @@ export class RTCClient {
   }
 
   createTracks() {
-    if (NotJoined(this) || NotHost(this)) throw new Error("Can not perform create tracks because user not joined/user not a host")
     const track = new Tracks(this, ...arguments);
     return track.init();
   }
 
   createScreenTrack() {
-    if (NotJoined(this) || NotHost(this)) throw new Error("Can not perform create screen tracks because user not joined/user not a host")
     const screenTrack = new ScreenTracks(this, ...arguments);
     return screenTrack.init();
   }
 
   produceTracks() {
-    if (NotJoined(this) || NotHost(this)) throw new Error("Can not perform publish because user not joined/user not a host")
+    if (NotJoined(this) || NotHost(this))
+      throw new Error(
+        "Can not perform publish because user not joined/user not a host"
+      );
     return handleProduceTracks(this, ...arguments);
   }
 
   unprodueTracks() {
-    if (NotJoined(this) || NotHost(this)) throw new Error("Can not perform unpublish because user not joined/user not a host")
+    if (NotJoined(this) || NotHost(this))
+      throw new Error(
+        "Can not perform unpublish because user not joined/user not a host"
+      );
     return handleUnproduceTracks(this, ...arguments);
   }
 
   subscribe() {
-    if (NotJoined(this)) throw Error("user not joined yet")
+    if (NotJoined(this)) throw Error("user not joined yet");
     try {
       return StartRecievingTheTracks(this, ...arguments);
     } catch (e) {
@@ -126,43 +135,42 @@ export class RTCClient {
   }
 
   unsubscribe() {
-    if (NotJoined(this)) throw Error("user not joined yet")
-
-    return StopReceivingTracks(this, ...arguments)
+    return StopReceivingTracks(this, ...arguments);
   }
 
   //all RTC connection closing
   close() {
-    if (NotJoined(this)) throw Error("user not joined yet")
     handleCloseConnection(this, ...arguments);
   }
 
-
   //signaling related
   getJoinedUsers() {
-    if (NotJoined(this)) throw Error("user not joined yet")
-    return getJoinedUsersInRoom(...arguments)
+    if (NotJoined(this)) throw Error("user not joined yet");
+    return getJoinedUsersInRoom(...arguments);
   }
 
   getAllMessages() {
-    if (NotJoined(this)) throw Error("user not joined yet")
-    return getAllMessagesInRoom(...arguments)
+    if (NotJoined(this)) throw Error("user not joined yet");
+    return getAllMessagesInRoom(...arguments);
   }
 
   //redirecting all socket handlers to socket
   on() {
-    if (NotJoined(this)) throw Error("user not joined yet")
-    this.rtmClient.on(...arguments)
+    this.rtmClient.on(...arguments);
   }
 
   off() {
-    if (NotJoined(this)) throw Error("user not joined yet")
-    this.rtmClient.off(...arguments)
+    if (!this.rtmClient) return;
+    this.rtmClient.off(...arguments);
   }
 
+  emit() {
+    if (!this.rtmClient) throw new Error("Can not emit");
+    this.rtmClient.emit(...arguments);
+  }
 
   //properties
-  rtmClient
+  rtmClient;
 
   connected = false;
 
@@ -176,7 +184,7 @@ export class RTCClient {
 
   onRemoteTrackStateChanged;
 
-  role
+  role;
 }
 
 export const handleCloseConnection = function (ref) {
@@ -196,15 +204,14 @@ export const handleCloseConnection = function (ref) {
     ref.PeersData[item].RecieverTransport?.close();
   });
 
-  ref.selfTracks.forEach((item) => item.stop())
+  ref.selfTracks.forEach((item) => item.stop());
   ref.producers = [];
   ref.selfProducerTransport = undefined;
   ref.PeersData = {};
-  ref.connected = false
-  ref.selfTracks = {}
+  ref.connected = false;
+  ref.selfTracks = [];
   ref.rtmClient = undefined;
-  ref.onRemoteTrackStateChanged = undefined
+  ref.onRemoteTrackStateChanged = undefined;
 
-  socket.disconnect();
-
+  socket?.disconnect();
 };
