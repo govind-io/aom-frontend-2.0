@@ -16,14 +16,12 @@ import { GetMeetToken } from "../Utils/ApiUtilities/GetMeetToken";
 import { updateDeviceId } from "../Redux/Actions/Device";
 import { RTCClient } from "../MEET_SDK/rtc";
 
-
 export default function Home() {
   //constants here
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const deviceId = useSelector((state) => state.device.id)
-
+  const deviceId = useSelector((state) => state.device.id);
 
   //form submission handler
   const handleJoin = async (e) => {
@@ -40,39 +38,41 @@ export default function Home() {
       return ToastHandler("dan", "Name can not have spaces");
     }
 
-    let uidSuffix
+    let uidSuffix;
 
     if (!deviceId) {
-      uidSuffix = Date.now()
-      dispatch(updateDeviceId(uidSuffix))
+      uidSuffix = Date.now();
+      dispatch(updateDeviceId(uidSuffix));
     } else {
-      uidSuffix = deviceId
+      uidSuffix = deviceId;
     }
 
     const token = await GetMeetToken(formData.room); //login for getting token which should be moved to backend server of client
 
-    if (!token) return
+    if (!token) return;
 
+    const MeetClient = new RTCClient();
 
-    const MeetClient = new RTCClient()
-
-    MeetClient.connect({ token, role: formData.role, uid: `${formData.name}-${uidSuffix}` }).then(() => {
-      dispatch(
-        SaveUserData({
-          room: formData.room,
-          name: formData.name,
-          role: formData.role,
-          token,
-          uid: `${formData.name}-${uidSuffix}`,
-        })
-      );
-
-
-
-      setMeetClient(MeetClient)
-
-      router.push(`/room/${formData.room}`);
+    MeetClient.connect({
+      token,
+      role: formData.role,
+      uid: `${formData.name}-${uidSuffix}`,
     })
+      .then(() => {
+        dispatch(
+          SaveUserData({
+            room: formData.room,
+            name: formData.name,
+            role: formData.role,
+            token,
+            uid: `${formData.name}-${uidSuffix}`,
+          })
+        );
+
+        setMeetClient(MeetClient);
+
+        router.push(`/room/${formData.room}`);
+      })
       .catch((e) => {
         console.log(e.message);
       });
@@ -136,6 +136,7 @@ export default function Home() {
               marginRight: "20px",
             }}
             type="submit"
+            id="join-btn"
           >
             Join
           </Button>

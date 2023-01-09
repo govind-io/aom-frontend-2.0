@@ -14,6 +14,7 @@ export const DesignForms = (form, error) => {
             marginTop: "30px",
             ...elem.style,
           }}
+          id={elem.id}
         />
         <Typography
           textAlign="left"
@@ -43,10 +44,12 @@ export const JoinRoomForm = [
     name: "room",
     placeholder: "Room Name",
     helperText: "Please enter room name",
+    id: "room-name-field",
   },
   {
     name: "name",
     placeholder: "Your name",
     helperText: "Please enter your name",
+    id: "name-field",
   },
 ];
