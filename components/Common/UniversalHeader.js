@@ -8,6 +8,7 @@ export default function UniversalHeader({ children }) {
       sx={{
         borderBottom: "1px solid #FFFFFF",
         height: "10vh",
+        padding:"10px 5% 10px 5%"
       }}
     >
       <Grid

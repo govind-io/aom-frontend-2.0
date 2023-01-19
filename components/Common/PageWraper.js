@@ -16,13 +16,7 @@ export default function PageWraper({
         <UniversalHeader children={HeaderContent} />
       </Grid>
       {LeftSideBar && (
-        <Grid
-          item
-          xs={2}
-          sx={{
-            border: "2px solid yellow",
-          }}
-        >
+        <Grid item xs={2}>
           {LeftSideBar}
         </Grid>
       )}
@@ -30,20 +24,14 @@ export default function PageWraper({
       <Grid
         item
         xs={centerContentWidth}
-        sx={{
-          border: "2px solid blue",
+        style={{
+          height: "90vh",
         }}
       >
         {children}
       </Grid>
       {RightSideBar && (
-        <Grid
-          item
-          xs={2}
-          sx={{
-            border: "2px solid red",
-          }}
-        >
+        <Grid item xs={2}>
           {RightSideBar}
         </Grid>
       )}

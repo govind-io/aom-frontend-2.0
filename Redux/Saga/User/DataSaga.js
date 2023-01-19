@@ -1,107 +1,109 @@
-// import { all, call, put, takeLatest } from "redux-saga/effects";
-// import { SecureApiHandler } from "../../../Utils/ApiUtilities/SecureApiHandler";
-// import { Tokens } from "../../../Utils/Configs/ApiConfigs";
-// import { DeleteAll } from "../../Actions/DeleteAll";
-// import { SaveUserData } from "../../Actions/User/DataAction";
-// import {
-//   EDIT_USER_DATA,
-//   GET_OTHER_USER_DATA,
-//   GET_USER_DATA,
-// } from "../../Types/Users/DataTypes";
+import axios from "axios";
+import { all, call, put, takeLatest } from "redux-saga/effects";
+import { SecureApiHandler } from "../../../Utils/ApiUtilities/SecureApiHandler";
+import { Tokens } from "../../../Utils/Configs/ApiConfigs";
+import ToastHandler from "../../../Utils/Toast/ToastHandler";
+import { SaveUserData } from "../../Actions/User/DataAction";
+import { GET_USER_DATA, LOG_IN_ANONYMOUS } from "../../Types/Users/DataTypes";
 
-// function* GetUserSaga({ data }) {
-//   let apiConfig = {
-//     method: "GET",
-//     headers: {
-//       Authorization: `Bearer ${Tokens.refresh}`,
-//     },
-//     url: "user/data",
-//   };
+function* GetUserSaga({ data }) {
+  let apiConfig = {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${Tokens.refresh || data.data?.token}`,
+    },
+    url: "user",
+  };
 
-//   let response = yield call(
-//     SecureApiHandler,
-//     apiConfig,
-//     false,
-//     "User Data received"
-//   );
+  let response = yield call(
+    SecureApiHandler,
+    apiConfig,
+    true,
+    "Khulke Login Success"
+  );
 
-//   if (response.logout) {
-//     yield put(DeleteAll());
-//     if (!data.onFailed) return;
-//     data.onFailed();
-//   }
+  if (response.logout) {
+    yield put(DeleteAll());
+    if (!data.onFailed) return;
+    data.onFailed();
+  }
 
-//   if (!response.res || !response.success) {
-//     if (!data.onFailed) return;
-//     return data.onFailed();
-//   }
+  if (!response.res || !response.success) {
+    if (!data.onFailed) return;
+    return data.onFailed();
+  }
 
-//   yield put(SaveUserData(response.data));
+  yield put(
+    SaveUserData({
+      ...response.data,
+      token: Tokens.refresh || data.data?.token,
+    })
+  );
 
-//   if (!data.onSuccess) return;
+  if (!data.onSuccess) return;
 
-//   return data.onSuccess();
-// }
+  return data.onSuccess();
+}
 
-// function* GetOTherUserSaga({ data }) {
-//   let apiConfig = {
-//     method: "GET",
-//     headers: {
-//       Authorization: `Bearer ${Tokens.refresh}`,
-//     },
-//     url: `user/data/${data.data.email}`,
-//   };
+function* LogInAnoynmous({ data }) {
+  const ip_address =
+    Math.floor(Math.random() * 255) +
+    1 +
+    "." +
+    Math.floor(Math.random() * 255) +
+    "." +
+    Math.floor(Math.random() * 255) +
+    "." +
+    Math.floor(Math.random() * 255);
 
-//   let response = yield call(
-//     SecureApiHandler,
-//     apiConfig,
-//     false,
-//     "Other User Data received"
-//   );
+  let apiConfig = {
+    method: "POST",
+    baseurl: "https://dev.useronboarding.khulke.com/user/anonymous_user_entry/",
+    data: {
+      deviceinfo: {
+        device_name: navigator.userAgent,
+        platform: navigator.platform,
+        platform_version: "v1",
+        app_version: "1",
+        ip_address,
+      },
+    },
+    headers: {
+      Authorization:
+        "heU1kMBuURw4/SwN8RTJ8vBynw13AsDTa5XNGpJ2ipX/m3FBVHwVaBFGQNBhJiJaV950/TP+kTOAA8Ceu7IXQ3248vX4rRz14aEx8yFnmd6vrC8wHMlBpcAzgTgSKvlw2A3kgmRgnN/tpRqcCKFdf8WMMoZwhrvx9p0F2Cvic84=",
+    },
+  };
 
-//   if (response.logout) {
-//     data.onFailed(response.message);
-//     return yield put(DeleteAll());
-//   }
+  let response = yield call(
+    SecureApiHandler,
+    apiConfig,
+    true,
+    "Guest Login Sucess"
+  );
 
-//   if (!response.res || !response.success) {
-//     return data.onFailed(response.message);
-//   }
+  if (response.logout) {
+    yield put(DeleteAll());
+    if (!data.onFailed) return;
+    data.onFailed();
+  }
 
-//   return data.onSuccess(response.data);
-// }
+  if (!response.res || !response.success) {
+    if (!data.onFailed) return;
+    return data.onFailed();
+  }
 
-// function* EditUserSaga({ data }) {
-//   let apiConfig = {
-//     method: "PATCH",
-//     headers: {
-//       Authorization: `Bearer ${Tokens.refresh}`,
-//     },
-//     url: `user/data`,
-//     data: data.data,
-//   };
+  yield put(
+    SaveUserData({
+      ...response.data.data[0],
+    })
+  );
 
-//   let response = yield call(
-//     SecureApiHandler,
-//     apiConfig,
-//     false,
-//     "Edited User Data"
-//   );
+  if (!data.onSuccess) return;
 
-//   if (response.logout) {
-//     data.onFailed(response.message);
-//     return yield put(DeleteAll());
-//   }
+  return data.onSuccess();
+}
 
-//   if (!response.res || !response.success) {
-//     return data.onFailed(response.message);
-//   }
-
-//   return data.onSuccess(response.data);
-// }
-
-// export const userDataSaga = all([
-//   takeLatest(GET_USER_DATA, GetUserSaga),
-//   takeLatest(GET_OTHER_USER_DATA, GetOTherUserSaga),
-//   takeLatest(EDIT_USER_DATA, EditUserSaga),
-// ]);
+export const userDataSaga = all([
+  takeLatest(GET_USER_DATA, GetUserSaga),
+  takeLatest(LOG_IN_ANONYMOUS, LogInAnoynmous),
+]);

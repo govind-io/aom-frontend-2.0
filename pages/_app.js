@@ -3,10 +3,18 @@ import { wrapper } from "../Redux/Store";
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Provider } from "react-redux";
+import { useEffect } from "react";
+import { updateTokens } from "../Utils/Configs/ApiConfigs";
 
 function MyApp({ Component, ...other }) {
-
   const { store, pageProps, ...rest } = wrapper.useWrappedStore(other);
+
+  useEffect(() => {
+    const tokens = localStorage.getItem("tokens");
+    if (tokens) {
+      updateTokens(JSON.parse(tokens));
+    }
+  }, []);
 
   return (
     <>

@@ -1,8 +1,5 @@
-//server url
-//export const API_BASE_URL = "http://15.207.59.97";
-
 //local url
-export const API_BASE_URL = "http://localhost:3001";
+export const API_BASE_URL = "http://localhost:3002";
 
 export var Tokens = {
   refresh: "",
@@ -11,5 +8,6 @@ export var Tokens = {
 
 export const updateTokens = (tokens) => {
   localStorage.setItem("tokens", JSON.stringify(tokens));
+  console.log("token updated to ", tokens);
   return (Tokens = tokens);
 };

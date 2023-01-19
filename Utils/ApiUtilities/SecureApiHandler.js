@@ -25,7 +25,7 @@ const recallApi = async (apiConfig) => {
 };
 
 export const SecureApiHandler = async (apiConfig, alert, alertMessage) => {
-  apiConfig.url = `${API_BASE_URL}/${apiConfig.url}`;
+  apiConfig.url = apiConfig.baseurl || `${API_BASE_URL}/${apiConfig.url}`;
 
   let response;
 
