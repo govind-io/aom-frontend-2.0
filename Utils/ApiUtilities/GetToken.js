@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_BASE_URL, Tokens, updateTokens } from "../Configs/ApiConfigs";
+import { Tokens, updateTokens } from "../Configs/ApiConfigs";
 
 export default async function getToken() {
   let apiConfig = {
@@ -7,7 +7,7 @@ export default async function getToken() {
     headers: {
       Authorization: `Bearer ${Tokens.access}`,
     },
-    url: `${API_BASE_URL}/user/auth/refresh`,
+    url: `${process.env.API_BASE_URL}/user/auth/refresh`,
   };
 
   let response;

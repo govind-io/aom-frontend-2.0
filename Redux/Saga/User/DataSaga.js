@@ -1,8 +1,6 @@
-import axios from "axios";
 import { all, call, put, takeLatest } from "redux-saga/effects";
 import { SecureApiHandler } from "../../../Utils/ApiUtilities/SecureApiHandler";
 import { Tokens } from "../../../Utils/Configs/ApiConfigs";
-import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import { SaveUserData } from "../../Actions/User/DataAction";
 import { GET_USER_DATA, LOG_IN_ANONYMOUS } from "../../Types/Users/DataTypes";
 
@@ -58,7 +56,7 @@ function* LogInAnoynmous({ data }) {
 
   let apiConfig = {
     method: "POST",
-    baseurl: "https://dev.useronboarding.khulke.com/user/anonymous_user_entry/",
+    baseurl: `${process.env.KHULKE_USER_BASE_URL}/anonymous_user_entry/`,
     data: {
       deviceinfo: {
         device_name: navigator.userAgent,
@@ -69,8 +67,7 @@ function* LogInAnoynmous({ data }) {
       },
     },
     headers: {
-      Authorization:
-        "heU1kMBuURw4/SwN8RTJ8vBynw13AsDTa5XNGpJ2ipX/m3FBVHwVaBFGQNBhJiJaV950/TP+kTOAA8Ceu7IXQ3248vX4rRz14aEx8yFnmd6vrC8wHMlBpcAzgTgSKvlw2A3kgmRgnN/tpRqcCKFdf8WMMoZwhrvx9p0F2Cvic84=",
+      Authorization: process.env.KHULKE_STATIC_TOKEN,
     },
   };
 
@@ -100,7 +97,7 @@ function* LogInAnoynmous({ data }) {
 
   if (!data.onSuccess) return;
 
-  return data.onSuccess();
+  return data.onSuccess(response.data.data[0]);
 }
 
 export const userDataSaga = all([

@@ -8,6 +8,7 @@ import { DeleteAll } from "../Redux/Actions/DeleteAll";
 import { GetUserData, LogInAnoynmous } from "../Redux/Actions/User/DataAction";
 import { updateTokens } from "../Utils/Configs/ApiConfigs";
 import ToastHandler from "../Utils/Toast/ToastHandler";
+import images from "../Content/images.json";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -21,7 +22,8 @@ export default function LandingPage() {
     if (!token && !user.token) {
       dispatch(
         LogInAnoynmous({
-          onSuccess: () => {
+          onSuccess: (data) => {
+            updateTokens({ refresh: data.token, access: data.token });
             router.push("/home");
           },
         })
@@ -65,7 +67,7 @@ export default function LandingPage() {
           <Fade in={true} appear={false}>
             <Paper elevation={4}>
               <Image
-                src={"/icons/khulke.svg"}
+                src={images.global.khulke}
                 width="150px"
                 height={"150px"}
                 className="zoom-in-out"

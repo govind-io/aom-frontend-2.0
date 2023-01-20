@@ -1,0 +1,9 @@
+{
+    "login":{
+        "join":"Join Meeting",
+        "new":"New Meeting",
+        "welcome":"Welcome to Khul Ke Meet!",
+        "startVideo":"Start With Video",
+        "personalMeetId":"Use Personal Meet Id"
+    }
+}

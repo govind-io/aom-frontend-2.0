@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_BASE_URL, Tokens } from "../Configs/ApiConfigs";
+import { Tokens } from "../Configs/ApiConfigs";
 import ToastHandler from "../Toast/ToastHandler";
 import getToken from "./GetToken";
 
@@ -25,7 +25,8 @@ const recallApi = async (apiConfig) => {
 };
 
 export const SecureApiHandler = async (apiConfig, alert, alertMessage) => {
-  apiConfig.url = apiConfig.baseurl || `${API_BASE_URL}/${apiConfig.url}`;
+  apiConfig.url =
+    apiConfig.baseurl || `${process.env.API_BASE_URL}/${apiConfig.url}`;
 
   let response;
 

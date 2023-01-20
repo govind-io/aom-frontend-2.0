@@ -1,0 +1,11 @@
+{
+    "login":{
+        "join":"/icons/JoinMeeting.svg",
+        "new":"/icons/VideoButton.svg",
+        "joinAnimation":"/images/homepage.gif"
+    },
+    "global":{
+        "khulke":"/icons/khulke.svg",
+        "downArrow":"/icons/downArrow.svg"
+    }
+}

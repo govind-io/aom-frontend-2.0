@@ -1,9 +1,14 @@
 import { useRouter } from "next/router";
-import { useDispatch, useSelector } from "react-redux";
-
+import { useSelector } from "react-redux";
+import images from "../Content/images.json";
+import text from "../Content/text.json";
 import { Grid, IconButton, Typography } from "@mui/material";
 import PageWraper from "../components/Common/PageWraper";
 import { useEffect } from "react";
+import Image from "next/image";
+import HomeHeader from "../components/Home/Header";
+import NewMeetingButton from "../components/Home/NewMeetingButton";
+import JoinMeetingButton from "../components/Home/JoinMeetingButton";
 
 export default function Home() {
   //constants here
@@ -17,7 +22,7 @@ export default function Home() {
   }, []);
 
   return (
-    <PageWraper>
+    <PageWraper HeaderContent={<HomeHeader />}>
       <Grid
         container
         justifyContent={"space-around"}
@@ -26,56 +31,25 @@ export default function Home() {
       >
         <Grid item xs={4}>
           <Grid container>
-            <Grid item xs={6} textAlign="center">
-              <IconButton
-                sx={{
-                  backgroundColor: "#66B984",
-                  borderRadius: "20%",
-                  aspectRatio: "1",
-                  padding: "40px",
-                }}
-                disableRipple={true}
-              >
-                <img src="/icons/VideoButton.svg" />
-              </IconButton>
-              <Typography
-                textAlign={"center"}
-                sx={{
-                  color: "#CECECE",
-                  font: "24px",
-                  paddingTop: "10px",
-                }}
-              >
-                New Meeting
-              </Typography>
-            </Grid>
-            <Grid item xs={6} textAlign="center">
-              <IconButton
-                sx={{
-                  backgroundColor: "#F5F5F5",
-                  borderRadius: "20%",
-                  aspectRatio: "1",
-                  padding: "40px",
-                }}
-                disableRipple={true}
-              >
-                <img src="/icons/JoinMeeting.svg" />
-              </IconButton>
-              <Typography
-                textAlign={"center"}
-                sx={{
-                  color: "#CECECE",
-                  font: "24px",
-                  paddingTop: "10px",
-                }}
-              >
-                Join
-              </Typography>
-            </Grid>
+            <NewMeetingButton />
+            <JoinMeetingButton />
           </Grid>
         </Grid>
-        <Grid item xs={4}>
-          <Grid container></Grid>
+        <Grid item xs={4} height={"80%"} position="relative">
+          <Image src={images.login.joinAnimation} layout="fill" />
+          <Typography
+            sx={{
+              font: "normal normal 500 32px/38px sans-serif",
+              color: "white",
+              zIndex: "2",
+              position: "absolute",
+              bottom: "0",
+              textAlign: "center",
+              width: "100%",
+            }}
+          >
+            {text.login.welcome}
+          </Typography>
         </Grid>
       </Grid>
     </PageWraper>
