@@ -5,5 +5,16 @@
         "welcome":"Welcome to Khul Ke Meet!",
         "startVideo":"Start With Video",
         "personalMeetId":"Use Personal Meet Id"
+    },
+    "home":{
+        "joinForm":{
+            "join":"Join Meeting",
+            "meetingId":"Please enter meeting id",
+            "name":"Please enter your name",
+            "dontConnectAudio":"Don't Connect to Audio",
+            "dontConnectVideo":"Turn off my video",
+            "cancel":"Cancel",
+            "joinBtn":"Join"
+        }
     }
 }

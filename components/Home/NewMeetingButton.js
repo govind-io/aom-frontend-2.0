@@ -73,11 +73,11 @@ export default function NewMeetingButton() {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         open={openMenu}
       >
-        <ClickAwayListener
-          onClickAway={handleClose}
-          sx={{ borderRadius: "10px", bgcolor: "#2b2d2e" }}
-        >
-          <Paper elevation={4}>
+        <ClickAwayListener onClickAway={handleClose}>
+          <Paper
+            elevation={4}
+            style={{ borderRadius: "10px", bgcolor: "#2b2d2e" }}
+          >
             <MenuList sx={{ bgcolor: "#2b2d2e" }}>
               <MenuItem
                 sx={{
@@ -141,7 +141,7 @@ export default function NewMeetingButton() {
                     fontSize: "13px",
                   }}
                 >
-                  {text.login.personalMeetId} {user.meetId}
+                  {text.login.personalMeetId} {user.meetingId.toUpperCase()}
                 </Typography>
               </MenuItem>
             </MenuList>

@@ -13,17 +13,17 @@ import images from "../Content/images.json";
 export default function LandingPage() {
   const router = useRouter();
   const dispatch = useDispatch();
-
   const user = useSelector((s) => s.user.data);
 
-  const token = useRouter().query.token;
-  const { isReady } = useRouter();
+  const { token, from, name } = router.query;
+  const { isReady } = router;
 
   useEffect(() => {
     if (!isReady) return;
 
     if (token) {
       dispatch(DeleteAll());
+      updateTokens({ refresh: token, access: token });
     }
 
     if (!token && user.token) {
@@ -32,7 +32,6 @@ export default function LandingPage() {
     }
 
     if (!token && !user.token) {
-      console.log("tried login in anonymous user");
       dispatch(
         LogInAnoynmous({
           onSuccess: (data) => {
@@ -41,6 +40,11 @@ export default function LandingPage() {
               GetUserData({
                 onSuccess: () => {
                   //get user profile data
+                  if (from === "roompage" && room) {
+                    router.push(`/room/${room}`);
+                    return;
+                  }
+
                   router.push("/home");
                 },
                 onFailed: () => {
@@ -63,7 +67,10 @@ export default function LandingPage() {
         onSuccess: () => {
           //get user profile data
           updateTokens({ refresh: token, access: token });
-          console.log("navigated to home");
+          if (from === "roompage" && name) {
+            router.push(`/room/${name}`);
+            return;
+          }
           router.push("/home");
         },
         onFailed: () => {
@@ -71,6 +78,7 @@ export default function LandingPage() {
         },
         data: {
           token,
+          loggedin: token ? true : false,
         },
       })
     );

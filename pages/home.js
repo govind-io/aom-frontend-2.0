@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import HomeHeader from "../components/Home/Header";
 import NewMeetingButton from "../components/Home/NewMeetingButton";
-import JoinMeetingButton from "../components/Home/JoinMeetingButton";
+import JoinMeetingButton from "../components/Home/JoinMeeting/JoinMeetingButton";
 
 export default function Home() {
   //constants here

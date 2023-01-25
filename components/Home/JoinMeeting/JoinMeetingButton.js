@@ -1,8 +1,12 @@
-import text from "../../Content/text.json";
-import images from "../../Content/images.json";
+import text from "../../../Content/text.json";
+import images from "../../../Content/images.json";
 import { Grid, IconButton, Typography } from "@mui/material";
+import { useState } from "react";
+import JoinMeetingModal from "./JoinMeetingModal";
 
 export default function JoinMeetingButton() {
+  const [openModal, setOpenModal] = useState(false);
+
   return (
     <Grid item xs={6} textAlign="center">
       <IconButton
@@ -13,6 +17,9 @@ export default function JoinMeetingButton() {
           padding: "40px",
         }}
         disableRipple={true}
+        onClick={() => {
+          setOpenModal((prev) => !prev);
+        }}
       >
         <img src={images.login.join} />
       </IconButton>
@@ -26,6 +33,7 @@ export default function JoinMeetingButton() {
       >
         {text.login.join}
       </Typography>
+      <JoinMeetingModal open={openModal} setOpen={setOpenModal} />
     </Grid>
   );
 }

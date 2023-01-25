@@ -41,10 +41,10 @@ export const DesignForms = (form, error) => {
 
 export const JoinRoomForm = [
   {
-    name: "room",
-    placeholder: "Room Name",
-    helperText: "Please enter room name",
-    id: "room-name-field",
+    name: "meetingid",
+    placeholder: "Meet Id",
+    helperText: "Please enter meeting Id",
+    id: "meetinf-id-field",
   },
   {
     name: "name",

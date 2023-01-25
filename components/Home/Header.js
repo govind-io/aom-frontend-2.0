@@ -52,7 +52,7 @@ export default function HomeHeader() {
 
         <Popover
           anchorEl={anchorRef.current}
-          anchorOrigin={{ vertical: "bottom" }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
           open={openMenu}
         >
           <ClickAwayListener onClickAway={handleClose}>

@@ -21,6 +21,15 @@ export default function Room() {
       return;
     }
 
+    if (!user.username) {
+      router.push({
+        pathname: "/",
+        query: { from: "roompage", name: room },
+      });
+
+      return;
+    }
+
     //other room joining functionality here
     ToastHandler("sus", "Joined Room " + room);
   }, [room, isReady]);

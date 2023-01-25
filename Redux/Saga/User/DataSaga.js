@@ -17,7 +17,7 @@ function* GetUserSaga({ data }) {
   let response = yield call(
     SecureApiHandler,
     apiConfig,
-    true,
+    data.data.loggedin,
     "Khulke Login Success"
   );
 
