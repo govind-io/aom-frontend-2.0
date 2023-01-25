@@ -17,32 +17,53 @@ export default function LandingPage() {
   const user = useSelector((s) => s.user.data);
 
   const token = useRouter().query.token;
+  const { isReady } = useRouter();
 
   useEffect(() => {
-    if (!token && !user.token) {
-      dispatch(
-        LogInAnoynmous({
-          onSuccess: (data) => {
-            updateTokens({ refresh: data.token, access: data.token });
-            router.push("/home");
-          },
-        })
-      );
-      return;
+    if (!isReady) return;
+
+    if (token) {
+      dispatch(DeleteAll());
     }
 
-    if (user.token && !token) {
+    if (!token && user.token) {
       router.push("/home");
       return;
     }
 
-    dispatch(DeleteAll());
+    if (!token && !user.token) {
+      console.log("tried login in anonymous user");
+      dispatch(
+        LogInAnoynmous({
+          onSuccess: (data) => {
+            updateTokens({ refresh: data.token, access: data.token });
+            dispatch(
+              GetUserData({
+                onSuccess: () => {
+                  //get user profile data
+                  router.push("/home");
+                },
+                onFailed: () => {
+                  ToastHandler("dan", "Something went wrong");
+                },
+                data: {
+                  token: data.token,
+                },
+              })
+            );
+          },
+        })
+      );
+
+      return;
+    }
 
     dispatch(
       GetUserData({
         onSuccess: () => {
           //get user profile data
           updateTokens({ refresh: token, access: token });
+          console.log("navigated to home");
           router.push("/home");
         },
         onFailed: () => {
@@ -53,7 +74,7 @@ export default function LandingPage() {
         },
       })
     );
-  }, [token]);
+  }, [token, isReady]);
 
   return (
     <PageWraper>

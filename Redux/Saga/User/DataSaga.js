@@ -1,6 +1,7 @@
 import { all, call, put, takeLatest } from "redux-saga/effects";
 import { SecureApiHandler } from "../../../Utils/ApiUtilities/SecureApiHandler";
 import { Tokens } from "../../../Utils/Configs/ApiConfigs";
+import { DeleteAll } from "../../Actions/DeleteAll";
 import { SaveUserData } from "../../Actions/User/DataAction";
 import { GET_USER_DATA, LOG_IN_ANONYMOUS } from "../../Types/Users/DataTypes";
 

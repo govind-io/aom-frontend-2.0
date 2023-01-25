@@ -12,6 +12,7 @@ const recallApi = async (apiConfig) => {
   }
 
   if (!getToken.success) {
+    localStorage.removeItem("tokens");
     ToastHandler("warn", "Login Session expired");
     return { res: false, success: false, logout: true };
   }
