@@ -10,11 +10,19 @@ const intialState = {
 export const CollapsibleCompsReducer = (state = intialState, action) => {
   const data = action.data || action.payload;
   switch (action.type) {
-    case TOGGLE_PARTICIPANTS: {
-      return { ...state, participants: data };
-    }
+    case TOGGLE_PARTICIPANTS:
+      return {
+        ...state,
+        participants: !state.participants,
+        chat: !state.participants ? false : state.chat,
+      };
+
     case TOGGLE_CHAT: {
-      return { ...state, chat: data };
+      return {
+        ...state,
+        chat: !state.chat,
+        participants: !state.chat ? false : state.participants,
+      };
     }
     case HYDRATE: {
       return { ...state, ...data.comps.comp };

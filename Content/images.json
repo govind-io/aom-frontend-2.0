@@ -7,5 +7,12 @@
     "global":{
         "khulke":"/icons/khulke.svg",
         "downArrow":"/icons/downArrow.svg"
+    },
+    "room":{
+        "galleryview":"/icons/ViewsIcon.svg",
+        "speakerview":"/icons/SpeakerView.svg",
+        "check":"/icons/Check.svg",
+        "fullscreenview":"/icons/fullScreen.svg",
+        "copy":"/icons/Copy.svg"
     }
 }

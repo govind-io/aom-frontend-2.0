@@ -69,11 +69,7 @@ function* CreateRoomSaga({ data }) {
     return data.onFailed();
   }
 
-  yield put(
-    SaveRoomData({
-      ...response.data.data,
-    })
-  );
+  yield put(SaveRoomData(response.data.data));
 
   if (!data.onSuccess) return;
 

@@ -3,12 +3,16 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import RoomMain from "../../components/Room/RoomMain";
-import { GetRoomDetails } from "../../Redux/Actions/Room/RoomDataAction";
+import {
+  GetRoomDetails,
+  SaveRoomControls,
+  SaveRoomData,
+} from "../../Redux/Actions/Room/RoomDataAction";
 import ToastHandler from "../../Utils/Toast/ToastHandler";
 
 export default function Room() {
   const user = useSelector((s) => s.user.data);
-  const roomData = useSelector((s) => s.room);
+  const roomData = useSelector((s) => s.room.data);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -21,6 +25,14 @@ export default function Room() {
 
   useEffect(() => {
     if (!isReady) return;
+
+    dispatch(
+      SaveRoomControls({
+        screen: false,
+        audio: false,
+        video: false,
+      })
+    );
 
     if (!room) {
       ToastHandler("dan", "Please Join a Room");
@@ -51,8 +63,6 @@ export default function Room() {
           },
           onSuccess: (data) => {
             setLoading(false);
-
-            ToastHandler("Joined Meeting Succefully");
           },
           onFailed: (data) => {
             if (data.message.includes(404)) {
@@ -68,8 +78,6 @@ export default function Room() {
 
       return;
     }
-
-    ToastHandler("Joined Meeting Succefully");
   }, [room, isReady]);
 
   return (

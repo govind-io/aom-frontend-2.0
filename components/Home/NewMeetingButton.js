@@ -109,15 +109,18 @@ export default function NewMeetingButton() {
       {/* Menu UI here */}
       <Popover
         anchorEl={anchorRef.current}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
         open={openMenu}
       >
         <ClickAwayListener onClickAway={handleClose}>
           <Paper
             elevation={4}
-            style={{ borderRadius: "10px", bgcolor: "#2b2d2e" }}
+            style={{ borderRadius: "10px", backgroundColor: "#2b2d2e" }}
           >
-            <MenuList sx={{ bgcolor: "#2b2d2e" }}>
+            <MenuList sx={{ backgroundColor: "#2b2d2e", borderRadius: "10px" }}>
               <MenuItem
                 sx={{
                   paddingBottom: "5px",

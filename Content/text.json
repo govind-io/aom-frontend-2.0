@@ -16,5 +16,12 @@
             "cancel":"Cancel",
             "joinBtn":"Join"
         }
+    },
+    "room":{
+        "view":"View",
+        "galleryView":"Gallery",
+        "speakerView":"Speaker",
+        "fullScreen":"Fullscreen",
+        "leave":"Leave Meet"
     }
 }

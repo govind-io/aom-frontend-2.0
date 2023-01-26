@@ -9,6 +9,7 @@ export default function UniversalHeader({ children }) {
         borderBottom: "1px solid #474749",
         height: "10vh",
         padding: "10px 5% 10px 5%",
+        flexWrap: "nowrap",
       }}
     >
       <Grid
@@ -16,7 +17,6 @@ export default function UniversalHeader({ children }) {
         sx={{
           height: "80%",
         }}
-        xs={2}
       >
         <Avatar
           src={images.global.khulke}
@@ -26,7 +26,7 @@ export default function UniversalHeader({ children }) {
           }}
         />
       </Grid>
-      <Grid item xs={10}>
+      <Grid container sx={{ height: "100%" }}>
         {children}
       </Grid>
     </Grid>
