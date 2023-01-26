@@ -8,36 +8,69 @@ import MicIcon from "@mui/icons-material/Mic";
 import text from "../../../Content/text.json";
 import { useDispatch, useSelector } from "react-redux";
 import { SaveRoomControls } from "../../../Redux/Actions/Room/RoomDataAction";
+import { meetClient } from "../../../Utils/Configs/MeetClient";
+import { useRouter } from "next/router";
+import ToastHandler from "../../../Utils/Toast/ToastHandler";
+import {
+  handleCloseAndUnPublishTrack,
+  handleCreateAndPublishAudioTrack,
+  handleCreateAndPublishVideoTrack,
+} from "../../../Utils/MeetingUtils/Tracks";
 
 export default function Controls() {
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const { audio, screen, video } = useSelector((s) => s.room.controls);
 
-  const toggleVideo = () => {
-    dispatch(SaveRoomControls({ video: !video }));
+  const toggleVideo = async () => {
+    if (video && video?.enabled) {
+      await video.setEnabled(false);
+      dispatch(SaveRoomControls({ video }));
+    } else {
+      dispatch(
+        SaveRoomControls({ video: await handleCreateAndPublishVideoTrack() })
+      );
+    }
   };
 
-  const toggleAudio = () => {
-    dispatch(SaveRoomControls({ audio: !audio }));
+  const toggleAudio = async () => {
+    if (audio && audio.enabled) {
+      await audio.setEnabled(false);
+      dispatch(SaveRoomControls({ audio }));
+    } else {
+      dispatch(
+        SaveRoomControls({ audio: await handleCreateAndPublishAudioTrack() })
+      );
+    }
   };
 
   const toggleScreen = () => {
     dispatch(SaveRoomControls({ screen: !screen }));
   };
 
+  const leaveRoom = () => {
+    if (!meetClient) return;
+
+    meetClient.close();
+
+    ToastHandler("sus", "Left Meeting Succefully");
+
+    return router.push("/home");
+  };
+
   return (
     <Grid item>
       <IconButton
         sx={{
-          backgroundColor: audio ? "#27292B" : "#CC3425",
+          backgroundColor: audio && audio?.enabled ? "#27292B" : "#CC3425",
           borderRadius: "8px",
           marginRight: "20px",
         }}
         disableRipple={true}
         onClick={toggleAudio}
       >
-        {audio ? (
+        {audio && audio?.enabled ? (
           <MicIcon sx={{ color: "white" }} />
         ) : (
           <MicOffIcon sx={{ color: "white" }} />
@@ -45,14 +78,14 @@ export default function Controls() {
       </IconButton>
       <IconButton
         sx={{
-          backgroundColor: video ? "#27292B" : "#CC3425",
+          backgroundColor: video && video.enabled ? "#27292B" : "#CC3425",
           borderRadius: "8px",
           marginRight: "20px",
         }}
         disableRipple={true}
         onClick={toggleVideo}
       >
-        {video ? (
+        {video && video.enabled ? (
           <VideocamIcon sx={{ color: "white" }} />
         ) : (
           <VideocamOffIcon sx={{ color: "white" }} />
@@ -82,6 +115,7 @@ export default function Controls() {
           color: "#F5F5F5",
         }}
         disableRipple={true}
+        onClick={leaveRoom}
       >
         {text.room.leave}
       </IconButton>

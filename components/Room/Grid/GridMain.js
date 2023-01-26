@@ -3,23 +3,32 @@ import { meetClient, setMeetClient } from "../../../Utils/Configs/MeetClient";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import { useEffect, useState } from "react";
 import { RTCClient } from "../../../MEET_SDK/rtc";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { SaveRoomControls } from "../../../Redux/Actions/Room/RoomDataAction";
+import {
+  handleCreateAndPublishAudioTrack,
+  handleCreateAndPublishVideoTrack,
+} from "../../../Utils/MeetingUtils/Tracks";
 
 export default function GridMain({ profilename, audio, video }) {
   const userData = useSelector((s) => s.user.data);
   const roomData = useSelector((s) => s.room.data);
+
+  const { audio: ReduxAudio, video: ReduxVideo } = useSelector(
+    (s) => s.room.controls
+  );
+
+  const dispatch = useDispatch();
 
   //global states for all grid
 
   const [users, setUsers] = useState([]);
 
   const [selfTracks, setSelfTracks] = useState({
-    audio: "",
-    video: "",
+    audio: ReduxVideo,
+    video: ReduxAudio,
     screen: "",
   });
-
-  console.log({ users });
 
   const attachEventListener = (client) => {
     const userJoinedEvent = (user) => {
@@ -78,6 +87,14 @@ export default function GridMain({ profilename, audio, video }) {
   };
 
   useEffect(() => {
+    setSelfTracks((prev) => ({
+      ...prev,
+      video: ReduxVideo,
+      audio: ReduxAudio,
+    }));
+  }, [ReduxAudio, ReduxVideo]);
+
+  useEffect(() => {
     const connectMeet = async () => {
       const client = new RTCClient();
 
@@ -96,6 +113,22 @@ export default function GridMain({ profilename, audio, video }) {
 
         setMeetClient(client);
 
+        if (video?.toLowerCase() === "true") {
+          dispatch(
+            SaveRoomControls({
+              video: await handleCreateAndPublishVideoTrack(),
+            })
+          );
+        }
+
+        if (audio?.toLowerCase() === "true") {
+          dispatch(
+            SaveRoomControls({
+              audio: await handleCreateAndPublishAudioTrack(),
+            })
+          );
+        }
+
         ToastHandler("sus", "Connected to meeting succefully");
       } catch (e) {
         ToastHandler("dan", "Something went wrong");
@@ -104,6 +137,13 @@ export default function GridMain({ profilename, audio, video }) {
     };
 
     connectMeet();
+
+    return () => {
+      if (meetClient) {
+        meetClient.close();
+        ToastHandler("warn", "Meeting Left Succefully");
+      }
+    };
   }, []);
 
   return <Grid container>main grid content</Grid>;

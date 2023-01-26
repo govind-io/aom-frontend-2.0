@@ -17,7 +17,7 @@ export const handleUserLeft = (ref, callback) => {
 
   if (userJoinedFunction) {
     socket?.off("user-left", userJoinedFunction);
-    console.log("turned of user-left")
+    console.log("turned of user-left");
   }
 
   socket?.on("user-left", userJoinedFunction);
