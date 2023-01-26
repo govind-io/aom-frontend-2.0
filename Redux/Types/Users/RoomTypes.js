@@ -1,0 +1,3 @@
+export const GET_ROOM_DETAILS = "GET_ROOM_DETAILS";
+export const CREATE_ROOM = "CREATE_ROOM";
+export const SAVE_ROOM_DATA = "SAVE_ROOM_DATA";

@@ -1,4 +1,3 @@
 export const SAVE_USER_DATA = "SAVE_USER_DATA";
-export const UPDATE_DEVICE_ID = "UPDATE_DEVICE_ID";
 export const GET_USER_DATA = "GET_USER_DATA";
 export const LOG_IN_ANONYMOUS = "LOG_IN_ANONYMOUSE";

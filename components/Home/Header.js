@@ -57,7 +57,7 @@ export default function HomeHeader() {
         >
           <ClickAwayListener onClickAway={handleClose}>
             <MenuList>
-              <MenuItem>Hi @{user.username || user.user_id}</MenuItem>
+              <MenuItem>Hi @{user.username}</MenuItem>
             </MenuList>
           </ClickAwayListener>
         </Popover>

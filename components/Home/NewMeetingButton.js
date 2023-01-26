@@ -2,6 +2,7 @@ import text from "../../Content/text.json";
 import images from "../../Content/images.json";
 import {
   Checkbox,
+  CircularProgress,
   ClickAwayListener,
   Divider,
   Grid,
@@ -13,13 +14,20 @@ import {
   Typography,
 } from "@mui/material";
 import { useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fontSize } from "@mui/system";
+import { useRouter } from "next/router";
+import { CreateRoom } from "../../Redux/Actions/Room/RoomDataAction";
+import ToastHandler from "../../Utils/Toast/ToastHandler";
 
 export default function NewMeetingButton() {
   const [openMenu, setOpenMenu] = useState(false);
   const [useMeetId, setUseMeetId] = useState(false);
   const [startVideo, setStartVideo] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const user = useSelector((s) => s.user.data);
 
@@ -37,6 +45,31 @@ export default function NewMeetingButton() {
     setOpenMenu(false);
   };
 
+  const handleNewMeeting = () => {
+    setLoading(true);
+    dispatch(
+      CreateRoom({
+        data: {
+          personal: useMeetId,
+        },
+        onFailed: () => {
+          ToastHandler("dan", "Something went wrong");
+          setLoading(false);
+        },
+        onSuccess: (data) => {
+          setLoading(false);
+          router.push(
+            {
+              pathname: `/room/${data.meetingId}`,
+              query: { startVideo, audio: true },
+            },
+            { pathname: `/room/${data.meetingId}` }
+          );
+        },
+      })
+    );
+  };
+
   return (
     <Grid item xs={6} textAlign="center">
       <IconButton
@@ -47,8 +80,14 @@ export default function NewMeetingButton() {
           padding: "40px",
         }}
         disableRipple={true}
+        onClick={handleNewMeeting}
+        disabled={loading}
       >
-        <img src={images.login.new} />
+        {loading ? (
+          <CircularProgress sx={{ color: "white" }} />
+        ) : (
+          <img src={images.login.new} />
+        )}
       </IconButton>
       <IconButton
         sx={{ width: "100%", display: "flex", alignItems: "center" }}
@@ -141,7 +180,7 @@ export default function NewMeetingButton() {
                     fontSize: "13px",
                   }}
                 >
-                  {text.login.personalMeetId} {user.meetingId.toUpperCase()}
+                  {text.login.personalMeetId} {user.meetingId?.toUpperCase()}
                 </Typography>
               </MenuItem>
             </MenuList>

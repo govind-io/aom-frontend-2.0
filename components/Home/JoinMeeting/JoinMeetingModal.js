@@ -6,32 +6,74 @@ import {
   Modal,
   Typography,
   Zoom,
+  CircularProgress,
 } from "@mui/material";
+import { useRouter } from "next/router";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import text from "../../../Content/text.json";
+import { GetRoomDetails } from "../../../Redux/Actions/Room/RoomDataAction";
+import ToastHandler from "../../../Utils/Toast/ToastHandler";
 
 //Mui Styles here
 
 export default function JoinMeetingModal({ open, setOpen }) {
   const user = useSelector((s) => s.user.data);
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const [meetingId, setMeetingId] = useState("");
-  const [profilename, setProfileName] = useState(
-    user.username || user.name || user.user_id
-  );
+  const [profilename, setProfileName] = useState(user.username || user.name);
   const [audio, setAudio] = useState(false);
   const [video, setVideo] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ target: e.target });
+
+    if (!meetingId || !profilename) {
+      ToastHandler("dan", "Meeting Id and Name is required");
+      return;
+    }
+
+    setLoading(true);
+
+    dispatch(
+      GetRoomDetails({
+        data: {
+          meetingId,
+        },
+        onSuccess: (data) => {
+          setLoading(false);
+          router.push(
+            {
+              pathname: `/room/${data.meetingId}`,
+              query: {
+                video,
+                audio,
+                profilename,
+              },
+            },
+            { pathname: `/room/${data.meetingId}` }
+          );
+        },
+        onFailed: (data) => {
+          console.log({ data });
+          if (data.message.includes(404)) {
+            ToastHandler("dan", "Invalid Meeting Id");
+          } else {
+            ToastHandler("dan", "Something went wrong");
+          }
+          setLoading(false);
+        },
+      })
+    );
   };
 
   const handleCloseModal = () => {
     setOpen(false);
     setMeetingId("");
-    setProfileName(user.username || user.name || user.user_id);
+    setProfileName(user.username || user.name);
   };
 
   return (
@@ -100,7 +142,34 @@ export default function JoinMeetingModal({ open, setOpen }) {
                   }}
                   variant="outlined"
                   onChange={(e) => {
-                    setMeetingId(e.target.value);
+                    const addHyphen = (str) => {
+                      var result = "";
+                      for (var i = 0; i < str.length; i++) {
+                        result += str[i];
+                        if ((i + 1) % 3 == 0 && i != str.length - 1) {
+                          result += "-";
+                        }
+                      }
+                      return result;
+                    };
+
+                    const text = e.target.value.replace(/-/g, "");
+
+                    if (text.length > 0 && !/^[a-zA-Z0-9]+$/.test(text)) {
+                      return ToastHandler(
+                        "dan",
+                        "Meeting Id should not contain any special characters"
+                      );
+                    }
+
+                    if (text.length > 9) {
+                      return ToastHandler(
+                        "warn",
+                        "Meeting Id Can not be Longer than 9 characters"
+                      );
+                    }
+
+                    setMeetingId(addHyphen(text).toUpperCase());
                   }}
                 />
               </Grid>
@@ -232,8 +301,17 @@ export default function JoinMeetingModal({ open, setOpen }) {
                   }}
                   type="submit"
                   disableRipple={true}
+                  disabled={loading}
                 >
-                  {text.home.joinForm.joinBtn}
+                  {loading ? (
+                    <CircularProgress
+                      sx={{
+                        color: "white",
+                      }}
+                    />
+                  ) : (
+                    text.home.joinForm.joinBtn
+                  )}
                 </Button>
               </Grid>
             </Grid>
