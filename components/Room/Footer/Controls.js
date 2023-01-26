@@ -28,9 +28,14 @@ export default function Controls() {
       await video.setEnabled(false);
       dispatch(SaveRoomControls({ video }));
     } else {
-      dispatch(
-        SaveRoomControls({ video: await handleCreateAndPublishVideoTrack() })
-      );
+      if (!video) {
+        return dispatch(
+          SaveRoomControls({ video: await handleCreateAndPublishVideoTrack() })
+        );
+      } else if (video && video.setEnabled) {
+        await video.setEnabled(true);
+        dispatch(SaveRoomControls({ video }));
+      }
     }
   };
 
@@ -39,9 +44,14 @@ export default function Controls() {
       await audio.setEnabled(false);
       dispatch(SaveRoomControls({ audio }));
     } else {
-      dispatch(
-        SaveRoomControls({ audio: await handleCreateAndPublishAudioTrack() })
-      );
+      if (!audio) {
+        return dispatch(
+          SaveRoomControls({ video: await handleCreateAndPublishVideoTrack() })
+        );
+      } else if (audio && audio.setEnabled) {
+        await audio.setEnabled(true);
+        dispatch(SaveRoomControls({ audio }));
+      }
     }
   };
 
