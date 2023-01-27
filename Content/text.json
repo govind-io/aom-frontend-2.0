@@ -25,6 +25,10 @@
         "leave":"Leave Meet",
         "stay":"Stay",
         "leaveConfirm":"Leave",
-        "sureLeave":"Are you sure, you want to leave the meeting?"
+        "sureLeave":"Are you sure, you want to leave the meeting?",
+        "leftMeeting":"You’ve left the meeting",
+        "redirection":"Returning to Home Screen",
+        "rejoin":"Rejoin",
+        "redirectionButton":"Return to Home Screen"
     }
 }

@@ -1,4 +1,4 @@
-import { CircularProgress, Grid, Typography } from "@mui/material";
+import { CircularProgress, Grid, IconButton, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import PageWraper from "../../../components/Common/PageWraper";
 import HomeHeader from "../../../components/Home/Header";
 import { WAITING_TIME } from "../../../Utils/Contants/Conditional";
+import text from "../../../Content/text.json";
 
 export default function LeftLobby() {
   const roomData = useSelector((s) => s.room.data);
@@ -21,7 +22,7 @@ export default function LeftLobby() {
     if (!isReady) return;
 
     if (roomData.meetingId !== room) {
-      //router.push("/home");
+      router.push("/home");
     }
 
     const interval = setInterval(() => {
@@ -45,6 +46,7 @@ export default function LeftLobby() {
         sx={{
           height: "100%",
           padding: "50px 100px",
+          position: "relative",
         }}
       >
         <Grid item xs={12}>
@@ -85,9 +87,66 @@ export default function LeftLobby() {
                   marginLeft: "20px",
                 }}
               >
-                Returning to Home Screen
+                {text.room.redirection}
               </Typography>
             </Grid>
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%,-50%)",
+          }}
+          justifyContent={"center"}
+        >
+          <Grid item xs={12}>
+            <Typography
+              textAlign={"center"}
+              sx={{
+                font: "normal normal 500 48px/57px Work Sans",
+                color: "#F5F5F5",
+              }}
+            >
+              {text.room.leftMeeting}
+            </Typography>
+          </Grid>
+          <Grid sx={{ marginTop: "50px" }}>
+            <IconButton
+              sx={{
+                border: "1px solid #797979",
+                borderRadius: "8px",
+                backgroundColor: "transparent",
+                font: "normal normal normal 20px/24px Work Sans",
+                color: "#F5F5F5",
+                padding: "10px 15px",
+              }}
+              disableRipple={true}
+              onClick={() => {
+                router.push(`/room/${room}`);
+              }}
+            >
+              {text.room.rejoin}
+            </IconButton>
+            <IconButton
+              sx={{
+                marginLeft: "50px",
+                border: "1px solid #797979",
+                borderRadius: "8px",
+                background: "#66B984 0% 0% no-repeat padding-box",
+                font: "normal normal normal 20px/24px Work Sans",
+                color: "#F5F5F5",
+                padding: "10px 15px",
+              }}
+              disableRipple={true}
+              onClick={() => {
+                router.push(`/home`);
+              }}
+            >
+              {text.room.redirectionButton}
+            </IconButton>
           </Grid>
         </Grid>
       </Grid>
