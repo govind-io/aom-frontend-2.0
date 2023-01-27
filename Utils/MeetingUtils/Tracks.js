@@ -49,3 +49,22 @@ export const handleCreateAndPublishAudioTrack = async () => {
     return false;
   }
 };
+
+export const handleCreateAndPublishScreenTrack = async () => {
+  if (!meetClient) return ToastHandler("dan", "Something went wrong");
+
+  try {
+    const tracks = await meetClient.createScreenTrack(undefined, "screen");
+
+    await meetClient.produceTracks(tracks);
+
+    return tracks;
+  } catch (e) {
+    if (e.message === "NotAllowedError: Permission denied") {
+      return ToastHandler("dan", "Permission denied");
+    }
+
+    ToastHandler("dan", "Something went wrong");
+    return false;
+  }
+};

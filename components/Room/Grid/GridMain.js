@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { meetClient, setMeetClient } from "../../../Utils/Configs/MeetClient";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import { useEffect, useState } from "react";
@@ -9,26 +9,20 @@ import {
   handleCreateAndPublishAudioTrack,
   handleCreateAndPublishVideoTrack,
 } from "../../../Utils/MeetingUtils/Tracks";
+import { GALLERY, SPEAKER } from "../../../Utils/Contants/Conditional";
+import GalleryView from "./GalleryView";
+import SpeakerView from "./SpeakerView";
 
 export default function GridMain({ profilename, audio, video }) {
   const userData = useSelector((s) => s.user.data);
   const roomData = useSelector((s) => s.room.data);
-
-  const { audio: ReduxAudio, video: ReduxVideo } = useSelector(
-    (s) => s.room.controls
-  );
+  const roomLayout = useSelector((s) => s.room.layout);
 
   const dispatch = useDispatch();
 
   //global states for all grid
 
   const [users, setUsers] = useState([]);
-
-  const [selfTracks, setSelfTracks] = useState({
-    audio: ReduxVideo,
-    video: ReduxAudio,
-    screen: "",
-  });
 
   const attachEventListener = (client) => {
     const userJoinedEvent = (user) => {
@@ -44,12 +38,12 @@ export default function GridMain({ profilename, audio, video }) {
     };
 
     const userUnpublishedEvents = (user) => {
-      const { kind, trackId, uid } = user;
+      const { kind, trackId, uid, type } = user;
 
       setUsers((prev) => {
         return prev.map((item) => {
-          if (item.uid === uid && item[kind]?.id === trackId) {
-            item[kind] = undefined;
+          if (item.uid === uid && item[type || kind]?.id === trackId) {
+            item[type || kind] = undefined;
             return item;
           } else return item;
         });
@@ -85,14 +79,6 @@ export default function GridMain({ profilename, audio, video }) {
     client.onUserUnpublished(userUnpublishedEvents);
     client.onRemoteTrackStateChanged = handleRemoteTrackStateChanged;
   };
-
-  useEffect(() => {
-    setSelfTracks((prev) => ({
-      ...prev,
-      video: ReduxVideo,
-      audio: ReduxAudio,
-    }));
-  }, [ReduxAudio, ReduxVideo]);
 
   useEffect(() => {
     const connectMeet = async () => {
@@ -146,5 +132,15 @@ export default function GridMain({ profilename, audio, video }) {
     };
   }, []);
 
-  return <Grid container>main grid content</Grid>;
+  return (
+    <Grid container>
+      {roomLayout.view === GALLERY ? (
+        <GalleryView users={users} />
+      ) : roomLayout.view === SPEAKER ? (
+        <SpeakerView users={users} />
+      ) : (
+        <Typography>Soemthing went wrong</Typography>
+      )}
+    </Grid>
+  );
 }

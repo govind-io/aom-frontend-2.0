@@ -14,6 +14,7 @@ import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import {
   handleCloseAndUnPublishTrack,
   handleCreateAndPublishAudioTrack,
+  handleCreateAndPublishScreenTrack,
   handleCreateAndPublishVideoTrack,
 } from "../../../Utils/MeetingUtils/Tracks";
 
@@ -24,6 +25,8 @@ export default function Controls() {
   const { audio, screen, video } = useSelector((s) => s.room.controls);
 
   const toggleVideo = async () => {
+    if (!meetClient) return;
+
     if (video && video?.enabled) {
       await video.setEnabled(false);
       dispatch(SaveRoomControls({ video }));
@@ -40,13 +43,15 @@ export default function Controls() {
   };
 
   const toggleAudio = async () => {
+    if (!meetClient) return;
+
     if (audio && audio.enabled) {
       await audio.setEnabled(false);
       dispatch(SaveRoomControls({ audio }));
     } else {
       if (!audio) {
         return dispatch(
-          SaveRoomControls({ video: await handleCreateAndPublishVideoTrack() })
+          SaveRoomControls({ audio: await handleCreateAndPublishAudioTrack() })
         );
       } else if (audio && audio.setEnabled) {
         await audio.setEnabled(true);
@@ -55,8 +60,23 @@ export default function Controls() {
     }
   };
 
-  const toggleScreen = () => {
-    dispatch(SaveRoomControls({ screen: !screen }));
+  const toggleScreen = async () => {
+    if (!meetClient) return;
+
+    if (screen) {
+      try {
+        await meetClient.unprodueTracks(screen);
+        await screen.forEach(async (item) => await item.stop());
+        dispatch(SaveRoomControls({ screen: !screen }));
+      } catch (e) {
+        ToastHandler("dan", "Something went wrong");
+        console.log({ e });
+      }
+    } else {
+      return dispatch(
+        SaveRoomControls({ screen: await handleCreateAndPublishScreenTrack() })
+      );
+    }
   };
 
   const leaveRoom = () => {
