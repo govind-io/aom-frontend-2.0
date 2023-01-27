@@ -2,13 +2,13 @@ import { CircularProgress, Grid } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import RoomMain from "../../components/Room/RoomMain";
+import RoomMain from "../../../components/Room/RoomMain";
 import {
   GetRoomDetails,
   SaveRoomControls,
   SaveRoomData,
-} from "../../Redux/Actions/Room/RoomDataAction";
-import ToastHandler from "../../Utils/Toast/ToastHandler";
+} from "../../../Redux/Actions/Room/RoomDataAction";
+import ToastHandler from "../../../Utils/Toast/ToastHandler";
 
 export default function Room() {
   const user = useSelector((s) => s.user.data);

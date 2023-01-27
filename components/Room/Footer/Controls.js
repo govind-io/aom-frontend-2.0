@@ -8,21 +8,28 @@ import MicIcon from "@mui/icons-material/Mic";
 import text from "../../../Content/text.json";
 import { useDispatch, useSelector } from "react-redux";
 import { SaveRoomControls } from "../../../Redux/Actions/Room/RoomDataAction";
-import { meetClient } from "../../../Utils/Configs/MeetClient";
+import { meetClient, setMeetClient } from "../../../Utils/Configs/MeetClient";
 import { useRouter } from "next/router";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import {
-  handleCloseAndUnPublishTrack,
   handleCreateAndPublishAudioTrack,
   handleCreateAndPublishScreenTrack,
   handleCreateAndPublishVideoTrack,
 } from "../../../Utils/MeetingUtils/Tracks";
+import ConfirmationModal from "../../Common/ConfirmationModal";
+import { useState } from "react";
 
 export default function Controls() {
   const dispatch = useDispatch();
   const router = useRouter();
 
   const { audio, screen, video } = useSelector((s) => s.room.controls);
+
+  const [openLeaveRoom, setOpenLeaveRoom] = useState(false);
+
+  const handleCloseLeaveRoom = () => {
+    setOpenLeaveRoom(false);
+  };
 
   const toggleVideo = async () => {
     if (!meetClient) return;
@@ -76,9 +83,11 @@ export default function Controls() {
 
     meetClient.close();
 
+    setMeetClient("");
+
     ToastHandler("sus", "Left Meeting Succefully");
 
-    return router.push("/home");
+    return router.push(`/room/${router.query.room}/left`);
   };
 
   return (
@@ -137,10 +146,20 @@ export default function Controls() {
           color: "#F5F5F5",
         }}
         disableRipple={true}
-        onClick={leaveRoom}
+        onClick={() => setOpenLeaveRoom(true)}
       >
         {text.room.leave}
       </IconButton>
+      <ConfirmationModal
+        open={openLeaveRoom}
+        handleCloseModal={handleCloseLeaveRoom}
+        title={text.room.leave}
+        text={text.room.sureLeave}
+        confirm={leaveRoom}
+        reject={handleCloseLeaveRoom}
+        confirmText={text.room.leaveConfirm}
+        rejectText={text.room.stay}
+      />
     </Grid>
   );
 }

@@ -22,7 +22,7 @@ import ToastHandler from "../../Utils/Toast/ToastHandler";
 
 export default function NewMeetingButton() {
   const [openMenu, setOpenMenu] = useState(false);
-  const [useMeetId, setUseMeetId] = useState(false);
+  const [useMeetId, setUseMeetId] = useState(true);
   const [startVideo, setStartVideo] = useState(false);
   const [loading, setLoading] = useState(false);
 
