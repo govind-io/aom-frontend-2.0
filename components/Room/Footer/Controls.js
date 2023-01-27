@@ -27,36 +27,28 @@ export default function Controls() {
   const toggleVideo = async () => {
     if (!meetClient) return;
 
-    if (video && video?.enabled) {
-      await video.setEnabled(false);
-      dispatch(SaveRoomControls({ video }));
+    if (video) {
+      video.stop();
+      await meetClient.unprodueTracks([video]);
+      dispatch(SaveRoomControls({ video: false }));
     } else {
-      if (!video) {
-        return dispatch(
-          SaveRoomControls({ video: await handleCreateAndPublishVideoTrack() })
-        );
-      } else if (video && video.setEnabled) {
-        await video.setEnabled(true);
-        dispatch(SaveRoomControls({ video }));
-      }
+      return dispatch(
+        SaveRoomControls({ video: await handleCreateAndPublishVideoTrack() })
+      );
     }
   };
 
   const toggleAudio = async () => {
     if (!meetClient) return;
 
-    if (audio && audio.enabled) {
-      await audio.setEnabled(false);
-      dispatch(SaveRoomControls({ audio }));
+    if (audio) {
+      audio.stop();
+      await meetClient.unprodueTracks([audio]);
+      dispatch(SaveRoomControls({ audio: false }));
     } else {
-      if (!audio) {
-        return dispatch(
-          SaveRoomControls({ audio: await handleCreateAndPublishAudioTrack() })
-        );
-      } else if (audio && audio.setEnabled) {
-        await audio.setEnabled(true);
-        dispatch(SaveRoomControls({ audio }));
-      }
+      return dispatch(
+        SaveRoomControls({ audio: await handleCreateAndPublishAudioTrack() })
+      );
     }
   };
 

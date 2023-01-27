@@ -20,9 +20,10 @@ export const handleUnproduceTracks = async (ref, data) => {
           return elem.track.id !== track.id;
         });
 
-        if (ref.producers.length === 0) {
-          ref.selfProducerTransport.close();
-        }
+        // if (ref.producers.length === 0) {
+        //   ref.selfProducerTransport.close();
+        //   ref.selfProducerTransport = undefined;
+        // }
 
         ref.selfTracks = ref.selfTracks.filter((item) => item.id !== track.id);
       });
@@ -218,7 +219,7 @@ export const handleProduceTracks = function (ref, data, type) {
       });
       return;
     }
-
+    console.log("directly called connect ref.producers");
     handleProduceTransportConnection(resolve, reject);
   });
 };
