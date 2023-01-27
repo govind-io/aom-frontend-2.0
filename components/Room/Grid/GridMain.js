@@ -133,7 +133,14 @@ export default function GridMain({ profilename, audio, video }) {
   }, []);
 
   return (
-    <Grid container>
+    <Grid
+      container
+      sx={{
+        border: "1px solid white",
+        height: "90%",
+        width: "95%",
+      }}
+    >
       {roomLayout.view === GALLERY ? (
         <GalleryView users={users} />
       ) : roomLayout.view === SPEAKER ? (

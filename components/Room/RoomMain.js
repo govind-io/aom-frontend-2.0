@@ -4,7 +4,7 @@ import PageWraper from "../Common/PageWraper";
 import FooterMain from "./Footer/FooterMain";
 import GridMain from "./Grid/GridMain";
 import RoomHeader from "./RoomHeader";
-import Chat from "./Sidebars/Chat";
+import Chat from "./Sidebars/Chat/Chat";
 import Participants from "./Sidebars/ParticipantsList";
 
 export default function RoomMain({ video, audio, profilename }) {
@@ -35,9 +35,10 @@ export default function RoomMain({ video, audio, profilename }) {
           height="100%"
           sx={{
             width: "100%",
-            maxWidth: "1800px",
             margin: "auto",
           }}
+          alignItems="center"
+          justifyContent={"center"}
         >
           <GridMain profilename={profilename} audio={audio} video={video} />
         </Grid>

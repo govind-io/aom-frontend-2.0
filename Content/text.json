@@ -29,6 +29,10 @@
         "leftMeeting":"You’ve left the meeting",
         "redirection":"Returning to Home Screen",
         "rejoin":"Rejoin",
-        "redirectionButton":"Return to Home Screen"
+        "redirectionButton":"Return to Home Screen",
+        "chat":{
+            "messages":"Messages",
+            "sendMessage":"Send a message to everyone"
+        }
     }
 }

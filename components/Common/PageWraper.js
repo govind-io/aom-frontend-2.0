@@ -9,7 +9,7 @@ export default function PageWraper({
   Footer,
 }) {
   const centerContentWidth =
-    LeftSideBar && RightSideBar ? 8 : LeftSideBar || RightSideBar ? 10 : 12;
+    LeftSideBar && RightSideBar ? 6 : LeftSideBar || RightSideBar ? 9 : 12;
 
   return (
     <Grid container>
@@ -17,7 +17,7 @@ export default function PageWraper({
         <UniversalHeader children={HeaderContent} />
       </Grid>
       {LeftSideBar && (
-        <Grid item xs={2}>
+        <Grid item xs={3}>
           {LeftSideBar}
         </Grid>
       )}
@@ -32,7 +32,7 @@ export default function PageWraper({
         {children}
       </Grid>
       {RightSideBar && (
-        <Grid item xs={2}>
+        <Grid item xs={3}>
           {RightSideBar}
         </Grid>
       )}
