@@ -65,7 +65,7 @@ export default function Controls() {
 
     if (screen) {
       try {
-        await screen.forEach(async (item) => await item.stop());
+        screen.forEach((item) => item.stop());
         await meetClient.unprodueTracks(screen);
         dispatch(SaveRoomControls({ screen: !screen }));
       } catch (e) {
