@@ -54,9 +54,9 @@ export const handleCreateAndPublishScreenTrack = async () => {
   if (!meetClient) return ToastHandler("dan", "Something went wrong");
 
   try {
-    const tracks = await meetClient.createScreenTrack(undefined, "screen");
+    const tracks = await meetClient.createScreenTrack();
 
-    await meetClient.produceTracks(tracks);
+    await meetClient.produceTracks(tracks, "screen");
 
     return tracks;
   } catch (e) {

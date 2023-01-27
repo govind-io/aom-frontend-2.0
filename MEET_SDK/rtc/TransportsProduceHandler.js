@@ -87,11 +87,11 @@ export const handleProduceTracks = function (ref, data, type) {
               ...videoParams,
               codec: videoTrack.label.includes("screen")
                 ? device.rtpCapabilities.codecs.find(
-                  (codec) => codec.mimeType.toLowerCase() === "video/vp8"
-                )
+                    (codec) => codec.mimeType.toLowerCase() === "video/vp8"
+                  )
                 : device.rtpCapabilities.codecs.find(
-                  (codec) => codec.mimeType.toLowerCase() === "video/h264"
-                ),
+                    (codec) => codec.mimeType.toLowerCase() === "video/h264"
+                  ),
             });
             ref.producers.push(videoProducer);
           } catch (e) {
@@ -135,8 +135,7 @@ export const handleProduceTracks = function (ref, data, type) {
 
     const socket = ref.rtmClient;
 
-    if (ref.role !== "host")
-      return reject(new Error("Only Hosts can Publish"));
+    if (ref.role !== "host") return reject(new Error("Only Hosts can Publish"));
 
     if (!ref.selfProducerTransport) {
       socket.emit("create-producer-transport", async (data, error) => {
@@ -219,7 +218,7 @@ export const handleProduceTracks = function (ref, data, type) {
       });
       return;
     }
-    console.log("directly called connect ref.producers");
+
     handleProduceTransportConnection(resolve, reject);
   });
 };

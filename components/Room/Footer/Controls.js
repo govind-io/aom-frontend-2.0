@@ -65,8 +65,8 @@ export default function Controls() {
 
     if (screen) {
       try {
-        await meetClient.unprodueTracks(screen);
         await screen.forEach(async (item) => await item.stop());
+        await meetClient.unprodueTracks(screen);
         dispatch(SaveRoomControls({ screen: !screen }));
       } catch (e) {
         ToastHandler("dan", "Something went wrong");
