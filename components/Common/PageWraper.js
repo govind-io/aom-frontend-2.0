@@ -12,12 +12,23 @@ export default function PageWraper({
     LeftSideBar && RightSideBar ? 6 : LeftSideBar || RightSideBar ? 9 : 12;
 
   return (
-    <Grid container>
+    <Grid
+      container
+      sx={{
+        maxHeight: "100vh",
+      }}
+    >
       <Grid item xs={12}>
         <UniversalHeader children={HeaderContent} />
       </Grid>
       {LeftSideBar && (
-        <Grid item xs={3}>
+        <Grid
+          item
+          xs={3}
+          sx={{
+            height: Footer ? "80vh" : "90vh",
+          }}
+        >
           {LeftSideBar}
         </Grid>
       )}
@@ -32,7 +43,13 @@ export default function PageWraper({
         {children}
       </Grid>
       {RightSideBar && (
-        <Grid item xs={3}>
+        <Grid
+          item
+          xs={3}
+          sx={{
+            height: Footer ? "80vh" : "90vh",
+          }}
+        >
           {RightSideBar}
         </Grid>
       )}

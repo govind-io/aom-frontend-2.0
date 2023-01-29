@@ -33,6 +33,11 @@
         "chat":{
             "messages":"Messages",
             "sendMessage":"Send a message to everyone"
+        },
+        "participants":{
+            "participants":"Participants",
+            "search":"Search here…",
+            "thisCall":"On This Call"
         }
     }
 }

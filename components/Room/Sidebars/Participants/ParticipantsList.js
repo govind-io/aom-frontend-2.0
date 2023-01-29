@@ -1,12 +1,15 @@
 import { Divider, Grid, IconButton, Typography } from "@mui/material";
-import text from "../../../../Content/text.json";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import text from "../../../../Content/text.json";
+import { useState } from "react";
+import Search from "./Search";
+import List from "./List";
+import { ToggleParticpantsList } from "../../../../Redux/Actions/Comps/CollapsibleComps";
 import { useDispatch } from "react-redux";
-import { TogglChatList } from "../../../../Redux/Actions/Comps/CollapsibleComps";
-import SendMessage from "./SendMessage";
-import Messages from "./Messages";
 
-export default function Chat() {
+export default function Participants() {
+  const [searchQuery, setSearchQuery] = useState("");
+
   const dispatch = useDispatch();
 
   return (
@@ -45,12 +48,12 @@ export default function Chat() {
               color: "#F5F5F5",
             }}
           >
-            {text.room.chat.messages}
+            {text.room.participants.participants}
           </Typography>
 
           <IconButton
             onClick={() => {
-              dispatch(TogglChatList());
+              dispatch(ToggleParticpantsList());
             }}
           >
             <CancelOutlinedIcon
@@ -65,26 +68,31 @@ export default function Chat() {
           xs={12}
           sx={{
             paddingRight: "20px",
+            height: "fit-content",
+            backgroundColor: "#79797980",
           }}
         >
-          <Divider
-            sx={{
-              backgroundColor: "#79797980",
-            }}
-          />
+          <Divider />
         </Grid>
-
-        <Messages />
-
+        <Search setSearchQuery={setSearchQuery} />
         <Grid
           item
           xs={12}
           sx={{
-            height: "60px",
-            marginRight: "20px",
+            height: "calc(100% - 80px)",
+            paddingRight: "20px",
+            overflowY: "auto",
+            "::-webkit-scrollbar": {
+              width: "0.5em",
+              backgroundColor: "#F5F5F5",
+            },
+            "::-webkit-scrollbar-thumb": {
+              borderRadius: "10px",
+              backgroundColor: "#000000",
+            },
           }}
         >
-          <SendMessage />
+          <List searchQuery={searchQuery} />
         </Grid>
       </Grid>
     </Grid>

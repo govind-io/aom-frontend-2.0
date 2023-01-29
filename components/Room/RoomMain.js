@@ -1,14 +1,31 @@
 import { Grid } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  TogglChatList,
+  ToggleParticpantsList,
+} from "../../Redux/Actions/Comps/CollapsibleComps";
 import PageWraper from "../Common/PageWraper";
 import FooterMain from "./Footer/FooterMain";
 import GridMain from "./Grid/GridMain";
 import RoomHeader from "./RoomHeader";
 import Chat from "./Sidebars/Chat/Chat";
-import Participants from "./Sidebars/ParticipantsList";
+import Participants from "./Sidebars/Participants/ParticipantsList";
 
 export default function RoomMain({ video, audio, profilename }) {
   const { chat, participants } = useSelector((s) => s.comps.comp);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (chat) {
+      dispatch(TogglChatList());
+    }
+
+    if (participants) {
+      dispatch(ToggleParticpantsList());
+    }
+  }, []);
 
   return (
     <>
