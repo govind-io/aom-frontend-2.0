@@ -1,15 +1,18 @@
 import { Grid } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { meetClient } from "../../../../Utils/Configs/MeetClient";
 
 export default function Messages() {
   const [message, setMessage] = useState([]);
 
+  const roomData = useSelector((s) => s.room.data);
+
   useEffect(() => {
     if (!meetClient) return;
 
     const setIntialMessage = async () => {
-      setMessage(await meetClient.getAllMessages(userData.token));
+      setMessage(await meetClient.getAllMessages(roomData.token));
     };
 
     const MessageListener = (data) => {
