@@ -72,9 +72,13 @@ export default function Controls() {
         console.log({ e });
       }
     } else {
-      return dispatch(
-        SaveRoomControls({ screen: await handleCreateAndPublishScreenTrack() })
-      );
+      const screenTrack = await handleCreateAndPublishScreenTrack();
+
+      screenTrack[0].onended(() => {
+        dispatch(SaveRoomControls({ screen: false }));
+      });
+
+      return dispatch(SaveRoomControls({ screen: screenTrack }));
     }
   };
 

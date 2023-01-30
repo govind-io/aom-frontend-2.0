@@ -1,11 +1,9 @@
 import { Grid } from "@mui/material";
 import { useCallback } from "react";
-import { useSelector } from "react-redux";
+
 import ScrollZoom from "../../../Utils/ComponentUtilities/ScrollToZoom";
 
-export default function MeetVideoPlayer({ audioTrack, videoTrack, username }) {
-  const userData = useSelector((s) => s.user.data);
-
+export default function MeetVideoPlayer({ videoTrack }) {
   const videoRef = useCallback(
     (node) => {
       console.log({ videoTrack });
@@ -14,15 +12,6 @@ export default function MeetVideoPlayer({ audioTrack, videoTrack, username }) {
       ScrollZoom(node, 2, 0.2);
     },
     [videoTrack]
-  );
-
-  const audioRef = useCallback(
-    (node) => {
-      console.log({ audioTrack });
-      if (!node || !audioTrack || userData.username === username) return;
-      node.srcObject = audioTrack;
-    },
-    [audioTrack]
   );
 
   return (
@@ -40,7 +29,6 @@ export default function MeetVideoPlayer({ audioTrack, videoTrack, username }) {
         ref={videoRef}
         autoPlay={true}
       />
-      <audio ref={audioRef} autoPlay={true} />
     </Grid>
   );
 }

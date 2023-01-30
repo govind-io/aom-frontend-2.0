@@ -136,7 +136,6 @@ export default function GridMain({ profilename, audio, video }) {
     <Grid
       container
       sx={{
-        border: "1px solid white",
         height: "90%",
         width: "95%",
       }}
