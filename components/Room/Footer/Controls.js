@@ -74,8 +74,10 @@ export default function Controls() {
     } else {
       const screenTrack = await handleCreateAndPublishScreenTrack();
 
-      screenTrack[0].onended(() => {
-        dispatch(SaveRoomControls({ screen: false }));
+      screenTrack[0].onended(async () => {
+        screen.forEach((item) => item.stop());
+        await meetClient.unprodueTracks(screen);
+        dispatch(SaveRoomControls({ screen: !screen }));
       });
 
       return dispatch(SaveRoomControls({ screen: screenTrack }));
