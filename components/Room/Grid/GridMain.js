@@ -12,7 +12,6 @@ import {
 import { GALLERY, SPEAKER } from "../../../Utils/Contants/Conditional";
 import GalleryView from "./GalleryView";
 import SpeakerView from "./SpeakerView";
-import Boxes from "./TempView";
 
 export default function GridMain({ profilename, audio, video }) {
   const userData = useSelector((s) => s.user.data);
