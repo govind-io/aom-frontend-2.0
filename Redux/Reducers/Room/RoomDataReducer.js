@@ -30,6 +30,8 @@ const initialState = {
 export const RoomReducer = (state = initialState, action) => {
   const data = action.payload || action.data;
 
+  console.log("updating room data to ", data);
+
   switch (action.type) {
     case SAVE_ROOM_DATA:
       return { ...state, data: { ...state.data, ...data } };
@@ -39,10 +41,6 @@ export const RoomReducer = (state = initialState, action) => {
 
     case SAVE_ROOM_LAYOUT:
       return { ...state, layout: { ...state.layout, ...data } };
-
-    case HYDRATE: {
-      return { ...state, ...data.room };
-    }
 
     case DELETE_ALL: {
       return initialState;

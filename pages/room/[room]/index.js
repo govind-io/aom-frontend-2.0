@@ -24,8 +24,6 @@ export default function Room() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!isReady) return;
-
     dispatch(
       SaveRoomControls({
         screen: false,
@@ -33,6 +31,8 @@ export default function Room() {
         video: false,
       })
     );
+
+    if (!isReady) return;
 
     if (!room) {
       ToastHandler("dan", "Please Join a Room");

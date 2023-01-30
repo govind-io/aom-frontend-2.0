@@ -8,6 +8,7 @@ export default function MeetVideoPlayer({ audioTrack, videoTrack, username }) {
 
   const videoRef = useCallback(
     (node) => {
+      console.log({ videoTrack });
       if (!node || !videoTrack) return;
       node.srcObject = videoTrack;
       ScrollZoom(node, 2, 0.2);
@@ -17,6 +18,7 @@ export default function MeetVideoPlayer({ audioTrack, videoTrack, username }) {
 
   const audioRef = useCallback(
     (node) => {
+      console.log({ audioTrack });
       if (!node || !audioTrack || userData.username === username) return;
       node.srcObject = audioTrack;
     },
@@ -36,8 +38,9 @@ export default function MeetVideoPlayer({ audioTrack, videoTrack, username }) {
           height: "100%",
         }}
         ref={videoRef}
+        autoPlay={true}
       />
-      <audio ref={audioRef} />
+      <audio ref={audioRef} autoPlay={true} />
     </Grid>
   );
 }
