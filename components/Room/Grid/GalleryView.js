@@ -1,28 +1,17 @@
 import { Grid } from "@mui/material";
 import { useSelector } from "react-redux";
 import IndividualSpeaker from "./IndividualSpeaker";
-import MeetVideoPlayer from "./VideoPlayer";
 
-export default function GalleryView({}) {
+export default function GalleryView({ volumes, selfUID, users }) {
   const { audio, video, screen } = useSelector((s) => s.room.controls);
 
-  const users = Array.from({ length: 1 }, (_, i) => i);
-
-  const user = useSelector((s) => s.user.data);
-
   const gridHeightandWidthCalculator = (num) => {
-    const nearestSquareRoot = Math.round(Math.sqrt(num));
-
-    if (num === 2) {
-      return {
-        height: "100%",
-        width: "50%",
-      };
-    }
+    const columns = Math.ceil(Math.sqrt(num));
+    const rows = Math.ceil(num / columns);
 
     return {
-      height: `${100 / nearestSquareRoot}%`,
-      width: `${100 / nearestSquareRoot}%`,
+      height: `${100 / rows}%`,
+      width: `${100 / columns}%`,
     };
   };
 
@@ -35,20 +24,39 @@ export default function GalleryView({}) {
       }}
       justifyContent="center"
     >
-      {users.map(() => (
-        <Grid
-          item
-          sx={{
-            ...gridHeightandWidthCalculator(users.length + 1),
-          }}
-        >
-          <IndividualSpeaker
-            audio={audio}
-            video={video}
-            username={user.username}
-          />
-        </Grid>
-      ))}
+      <Grid
+        item
+        sx={{
+          ...gridHeightandWidthCalculator(users.length + 1),
+        }}
+      >
+        <IndividualSpeaker
+          audio={audio}
+          video={video}
+          name={selfUID.split("-")[1]}
+          username={selfUID.split("-")[0]}
+          volume={volumes[selfUID]}
+        />
+      </Grid>
+      {users.map((item) => {
+        console.log({ item });
+        return (
+          <Grid
+            item
+            sx={{
+              ...gridHeightandWidthCalculator(users.length + 1),
+            }}
+          >
+            <IndividualSpeaker
+              audio={item.audio}
+              video={item.video}
+              name={item.uid.split("-")[1]}
+              username={item.uid.split("-")[0]}
+              volume={volumes[item.uid]}
+            />
+          </Grid>
+        );
+      })}
     </Grid>
   );
 }

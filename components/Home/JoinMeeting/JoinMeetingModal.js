@@ -23,7 +23,7 @@ export default function JoinMeetingModal({ open, setOpen }) {
   const dispatch = useDispatch();
 
   const [meetingId, setMeetingId] = useState("");
-  const [profilename, setProfileName] = useState(user.username || user.name);
+  const [profilename, setProfileName] = useState(user.name || "");
   const [audio, setAudio] = useState(false);
   const [video, setVideo] = useState(false);
   const [loading, setLoading] = useState(false);

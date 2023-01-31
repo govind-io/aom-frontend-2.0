@@ -1,10 +1,19 @@
-import { Avatar, Grid, Typography } from "@mui/material";
+import { Avatar, Box, Grid, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import MeetAudioPlayer from "./AudioPlayer";
 import MeetVideoPlayer from "./VideoPlayer";
+import MicOffIcon from "@mui/icons-material/MicOff";
 
-export default function IndividualSpeaker({ username, volume, video, audio }) {
+export default function IndividualSpeaker({
+  username,
+  volume,
+  video,
+  audio,
+  name,
+}) {
   const userData = useSelector((s) => s.user.data);
+
+  console.log({ volume });
 
   return (
     <Grid
@@ -12,7 +21,7 @@ export default function IndividualSpeaker({ username, volume, video, audio }) {
       sx={{
         height: "100%",
         position: "relative",
-        border: volume ? "2px solid #66B984" : "none",
+        border: volume && volume > 2 ? "2px solid #66B984" : "none",
         borderRadius: "12px",
       }}
       justifyContent={"center"}
@@ -27,13 +36,35 @@ export default function IndividualSpeaker({ username, volume, video, audio }) {
         />
       )}
 
+      {!audio && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            backgroundColor: "rgba(0,0,0,0.8)",
+            borderRadius: "50%",
+            padding: "10px",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <MicOffIcon
+            sx={{
+              color: "white",
+            }}
+          />
+        </Box>
+      )}
+
       {username !== userData.username && <MeetAudioPlayer audioTrack={audio} />}
 
       <Typography
         sx={{
-          background: volume
-            ? "#66B984 0% 0% no-repeat padding-box"
-            : "#000000e6 0% 0% no-repeat padding-box",
+          background:
+            volume && volume > 2
+              ? "#66B984 0% 0% no-repeat padding-box"
+              : "#000000e6 0% 0% no-repeat padding-box",
           borderRadius: "16px",
           font: "normal normal medium 14px/16px Work Sans",
           color: "#F5F5F5",
@@ -43,7 +74,7 @@ export default function IndividualSpeaker({ username, volume, video, audio }) {
           padding: "10px 15px",
         }}
       >
-        @{username}
+        {name}
       </Typography>
     </Grid>
   );

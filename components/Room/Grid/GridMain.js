@@ -23,6 +23,7 @@ export default function GridMain({ profilename, audio, video }) {
   //global states for all grid
 
   const [users, setUsers] = useState([]);
+  const [volumes, setVolumes] = useState({});
 
   const attachEventListener = (client) => {
     const userJoinedEvent = (user) => {
@@ -40,6 +41,8 @@ export default function GridMain({ profilename, audio, video }) {
     const userUnpublishedEvents = (user) => {
       const { kind, trackId, uid, type } = user;
 
+      if (type === "screen") return;
+
       setUsers((prev) => {
         return prev.map((item) => {
           if (item.uid === uid && item[type || kind]?.id === trackId) {
@@ -56,6 +59,8 @@ export default function GridMain({ profilename, audio, video }) {
         const { track, kind } = await client.subscribe(user);
 
         const { type, uid } = user;
+
+        if (type === "screen") return;
 
         setUsers((prev) => {
           return prev.map((item) => {
@@ -96,6 +101,13 @@ export default function GridMain({ profilename, audio, video }) {
         attachEventListener(client);
 
         await client.init();
+
+        try {
+          const observer = await client.enableAudioVolumeObserver();
+          observer.onVolume((allVolumes) => setVolumes(allVolumes));
+        } catch (e) {
+          console.log("could not enable volume observer");
+        }
 
         setMeetClient(client);
 
@@ -141,7 +153,13 @@ export default function GridMain({ profilename, audio, video }) {
       }}
     >
       {roomLayout.view === GALLERY ? (
-        <GalleryView users={users} />
+        <GalleryView
+          users={users}
+          volumes={volumes}
+          selfUID={`${userData.username}-${
+            profilename || userData.name || userData.username
+          }`}
+        />
       ) : roomLayout.view === SPEAKER ? (
         <SpeakerView users={users} />
       ) : (
