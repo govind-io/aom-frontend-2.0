@@ -25,6 +25,7 @@ export default function MeetVideoPlayer({ videoTrack }) {
         style={{
           width: "100%",
           height: "100%",
+          objectFit: "contain",
         }}
         ref={videoRef}
         autoPlay={true}

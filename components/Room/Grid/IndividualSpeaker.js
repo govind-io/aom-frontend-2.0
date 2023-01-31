@@ -21,6 +21,7 @@ export default function IndividualSpeaker({
         position: "relative",
         border: volume && volume > 1 ? "2px solid #66B984" : "none",
         borderRadius: "12px",
+        backgroundColor: "#3c4043",
       }}
       justifyContent={"center"}
       alignItems={"center"}

@@ -15,7 +15,10 @@ export default function SpeakerView({ users, presenters, volumes, selfUID }) {
 
   useEffect(() => {
     if (presenters.length !== 0) {
-      setActiveSpeaker(presenters[0]);
+      setActiveSpeaker({
+        ...presenters[0],
+        uid: `${presenters[0].uid} (Screen)`,
+      });
       return;
     }
 
@@ -55,7 +58,7 @@ export default function SpeakerView({ users, presenters, volumes, selfUID }) {
         item
         xs={12}
         sx={{
-          height: "15%",
+          height: "30%",
         }}
       >
         <Grid
@@ -65,26 +68,29 @@ export default function SpeakerView({ users, presenters, volumes, selfUID }) {
             overflowX: "auto",
           }}
           justifyContent="center"
+          spacing={1}
         >
+          {activeSpeaker?.uid !== selfUID && (
+            <Grid
+              item
+              xs={3}
+              sx={{
+                height: "100%",
+              }}
+            >
+              <IndividualSpeaker
+                audio={audio}
+                video={video}
+                name={selfUID.split("-")[1]}
+                username={selfUID.split("-")[0]}
+                volume={volumes[selfUID]}
+              />
+            </Grid>
+          )}
+
           {users.map((item) => {
-            if (item.uid === activeSpeaker?.uid) {
-              return (
-                <Grid
-                  item
-                  xs={3}
-                  sx={{
-                    height: "100%",
-                  }}
-                >
-                  <IndividualSpeaker
-                    audio={audio}
-                    video={video}
-                    name={selfUID.split("-")[1]}
-                    username={selfUID.split("-")[0]}
-                    volume={volumes[selfUID]}
-                  />
-                </Grid>
-              );
+            if (item.uid === activeSpeaker?.uid && !presenters.length > 0) {
+              return;
             }
             return (
               <Grid
@@ -110,7 +116,7 @@ export default function SpeakerView({ users, presenters, volumes, selfUID }) {
         item
         xs={12}
         sx={{
-          height: "85%",
+          height: "70%",
         }}
       >
         {activeSpeaker && (

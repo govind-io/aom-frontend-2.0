@@ -23,6 +23,7 @@ export default function GalleryView({ volumes, selfUID, users, presenters }) {
         height: "100%",
       }}
       justifyContent="center"
+      spacing={1}
     >
       <Grid
         item

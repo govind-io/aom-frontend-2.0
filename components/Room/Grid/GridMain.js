@@ -190,7 +190,7 @@ export default function GridMain({ profilename, audio, video }) {
         width: "95%",
       }}
     >
-      {roomLayout.view === GALLERY ? (
+      {roomLayout.view === GALLERY && !presenters.length > 0 ? (
         <GalleryView
           users={users}
           volumes={volumes}
