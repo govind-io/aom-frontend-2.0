@@ -23,6 +23,8 @@ export default function GridMain({ profilename, audio, video }) {
   //global states for all grid
 
   const [users, setUsers] = useState([]);
+  const [presenters, setPresenters] = useState([]);
+
   const [volumes, setVolumes] = useState({});
 
   const attachEventListener = (client) => {
@@ -36,20 +38,30 @@ export default function GridMain({ profilename, audio, video }) {
     const userLeftEvent = (user) => {
       if (user.role !== "host") return;
       setUsers((prev) => prev.filter((item) => item.uid !== user.uid));
+      setPresenters((prev) => prev.filter((item) => item.uid !== user.uid));
     };
 
     const userUnpublishedEvents = (user) => {
       const { kind, trackId, uid, type } = user;
 
-      if (type === "screen") return;
-
       setUsers((prev) => {
         return prev.map((item) => {
-          if (item.uid === uid && item[type || kind]?.id === trackId) {
-            item[type || kind] = undefined;
+          if (item.uid === uid && item[kind]?.id === trackId) {
+            item[kind] = undefined;
             return item;
           } else return item;
         });
+      });
+
+      setPresenters((prev) => {
+        return prev
+          .map((item) => {
+            if (item.uid === uid && item[kind]?.id === trackId) {
+              item[kind] = undefined;
+              return item;
+            } else return item;
+          })
+          .filter((item) => item.video || item.audio);
       });
     };
 
@@ -60,12 +72,26 @@ export default function GridMain({ profilename, audio, video }) {
 
         const { type, uid } = user;
 
-        if (type === "screen") return;
+        if (type === "screen") {
+          return setPresenters((prev) => {
+            const existingPresenter = prev.find((item) => item.uid === uid);
+
+            if (existingPresenter) {
+              return prev.map((item) => {
+                if (item.uid === uid) {
+                  return { ...item, [kind]: track };
+                } else return item;
+              });
+            }
+
+            return [...prev, { uid, [kind]: track, role: "host" }];
+          });
+        }
 
         setUsers((prev) => {
           return prev.map((item) => {
             if (item.uid === uid) {
-              return { ...item, [type || kind]: track };
+              return { ...item, [kind]: track };
             } else return item;
           });
         });
@@ -159,6 +185,7 @@ export default function GridMain({ profilename, audio, video }) {
           selfUID={`${userData.username}-${
             profilename || userData.name || userData.username
           }`}
+          presenters={presenters}
         />
       ) : roomLayout.view === SPEAKER ? (
         <SpeakerView users={users} />

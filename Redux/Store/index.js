@@ -22,7 +22,7 @@ function loadFromLocalStorage() {
 
     const state = JSON.parse(serialState);
 
-    state.room.controls = { video: false, audio: false };
+    state.room.controls = { video: false, audio: false, screen: false };
 
     return state;
   } catch (e) {

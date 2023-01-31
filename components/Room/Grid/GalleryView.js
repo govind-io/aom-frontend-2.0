@@ -2,7 +2,7 @@ import { Grid } from "@mui/material";
 import { useSelector } from "react-redux";
 import IndividualSpeaker from "./IndividualSpeaker";
 
-export default function GalleryView({ volumes, selfUID, users }) {
+export default function GalleryView({ volumes, selfUID, users, presenters }) {
   const { audio, video, screen } = useSelector((s) => s.room.controls);
 
   const gridHeightandWidthCalculator = (num) => {
@@ -27,7 +27,7 @@ export default function GalleryView({ volumes, selfUID, users }) {
       <Grid
         item
         sx={{
-          ...gridHeightandWidthCalculator(users.length + 1),
+          ...gridHeightandWidthCalculator(users.length + presenters.length + 1),
         }}
       >
         <IndividualSpeaker
@@ -43,7 +43,9 @@ export default function GalleryView({ volumes, selfUID, users }) {
           <Grid
             item
             sx={{
-              ...gridHeightandWidthCalculator(users.length + 1),
+              ...gridHeightandWidthCalculator(
+                users.length + presenters.length + 1
+              ),
             }}
           >
             <IndividualSpeaker
@@ -52,6 +54,27 @@ export default function GalleryView({ volumes, selfUID, users }) {
               name={item.uid.split("-")[1]}
               username={item.uid.split("-")[0]}
               volume={volumes[item.uid]}
+            />
+          </Grid>
+        );
+      })}
+
+      {presenters.map((item) => {
+        return (
+          <Grid
+            item
+            sx={{
+              ...gridHeightandWidthCalculator(
+                users.length + presenters.length + 1
+              ),
+            }}
+          >
+            <IndividualSpeaker
+              audio={item.audio}
+              video={item.video}
+              name={item.uid.split("-")[1]}
+              username={item.uid.split("-")[0]}
+              volume={{}}
             />
           </Grid>
         );

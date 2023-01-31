@@ -75,9 +75,9 @@ export default function Controls() {
       const screenTrack = await handleCreateAndPublishScreenTrack();
 
       screenTrack[0].onended(async () => {
-        screen.forEach((item) => item.stop());
-        await meetClient.unprodueTracks(screen);
-        dispatch(SaveRoomControls({ screen: !screen }));
+        screenTrack.forEach((item) => item.stop());
+        await meetClient.unprodueTracks(screenTrack);
+        dispatch(SaveRoomControls({ screen: !screenTrack }));
       });
 
       return dispatch(SaveRoomControls({ screen: screenTrack }));
