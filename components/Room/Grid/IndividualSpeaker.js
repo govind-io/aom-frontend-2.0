@@ -13,8 +13,6 @@ export default function IndividualSpeaker({
 }) {
   const userData = useSelector((s) => s.user.data);
 
-  console.log({ volume });
-
   return (
     <Grid
       container

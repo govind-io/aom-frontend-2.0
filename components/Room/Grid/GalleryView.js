@@ -39,7 +39,6 @@ export default function GalleryView({ volumes, selfUID, users }) {
         />
       </Grid>
       {users.map((item) => {
-        console.log({ item });
         return (
           <Grid
             item
