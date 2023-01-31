@@ -4,7 +4,10 @@ import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import { useEffect, useState } from "react";
 import { RTCClient } from "../../../MEET_SDK/rtc";
 import { useDispatch, useSelector } from "react-redux";
-import { SaveRoomControls } from "../../../Redux/Actions/Room/RoomDataAction";
+import {
+  SaveRoomControls,
+  SaveRoomMetaData,
+} from "../../../Redux/Actions/Room/RoomDataAction";
 import {
   handleCreateAndPublishAudioTrack,
   handleCreateAndPublishVideoTrack,
@@ -25,7 +28,7 @@ export default function GridMain({ profilename, audio, video }) {
   const [users, setUsers] = useState([]);
   const [presenters, setPresenters] = useState([]);
 
-  const [volumes, setVolumes] = useState({});
+  const { volumes } = useSelector((s) => s.room.metaData);
 
   const attachEventListener = (client) => {
     const userJoinedEvent = (user) => {
@@ -42,7 +45,7 @@ export default function GridMain({ profilename, audio, video }) {
     };
 
     const userUnpublishedEvents = (user) => {
-      const { kind, trackId, uid, type } = user;
+      const { kind, trackId, uid } = user;
 
       setUsers((prev) => {
         return prev.map((item) => {
@@ -130,7 +133,9 @@ export default function GridMain({ profilename, audio, video }) {
 
         try {
           const observer = await client.enableAudioVolumeObserver();
-          observer.onVolume((allVolumes) => setVolumes(allVolumes));
+          observer.onVolume((allVolumes) =>
+            dispatch(SaveRoomMetaData({ volumes: allVolumes }))
+          );
         } catch (e) {
           console.log("could not enable volume observer");
         }
@@ -169,6 +174,13 @@ export default function GridMain({ profilename, audio, video }) {
       }
     };
   }, []);
+
+  //updating presenter and volumes
+  useEffect(() => {
+    dispatch(SaveRoomMetaData({ existingPresenter: presenters.length > 0 }));
+  }, [presenters]);
+
+  console.log({ presenters: presenters.length });
 
   return (
     <Grid

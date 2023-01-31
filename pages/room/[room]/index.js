@@ -7,6 +7,7 @@ import {
   GetRoomDetails,
   SaveRoomControls,
   SaveRoomData,
+  SaveRoomMetaData,
 } from "../../../Redux/Actions/Room/RoomDataAction";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
 
@@ -29,6 +30,13 @@ export default function Room() {
         screen: false,
         audio: false,
         video: false,
+      })
+    );
+
+    dispatch(
+      SaveRoomMetaData({
+        existingPresenter: false,
+        volumes: {},
       })
     );
 

@@ -5,6 +5,7 @@ import {
   SAVE_ROOM_CONTROLS,
   SAVE_ROOM_DATA,
   SAVE_ROOM_LAYOUT,
+  SAVE_ROOM_META_DATA,
 } from "../../Types/Users/RoomTypes";
 
 const initialState = {
@@ -25,6 +26,10 @@ const initialState = {
     audio: false,
     video: false,
   },
+  metaData: {
+    existingPresenter: false,
+    volumes: {},
+  },
 };
 
 export const RoomReducer = (state = initialState, action) => {
@@ -41,6 +46,9 @@ export const RoomReducer = (state = initialState, action) => {
 
     case SAVE_ROOM_LAYOUT:
       return { ...state, layout: { ...state.layout, ...data } };
+
+    case SAVE_ROOM_META_DATA:
+      return { ...state, metaData: { ...state.metaData, ...data } };
 
     case DELETE_ALL: {
       return initialState;

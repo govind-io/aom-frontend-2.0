@@ -24,6 +24,7 @@ export default function Controls() {
   const router = useRouter();
 
   const { audio, screen, video } = useSelector((s) => s.room.controls);
+  const { existingPresenter } = useSelector((s) => s.room.metaData);
 
   const [openLeaveRoom, setOpenLeaveRoom] = useState(false);
 
@@ -72,6 +73,12 @@ export default function Controls() {
         console.log({ e });
       }
     } else {
+      if (existingPresenter) {
+        return ToastHandler(
+          "warn",
+          "Please wait for others to stop sharing screen"
+        );
+      }
       const screenTrack = await handleCreateAndPublishScreenTrack();
 
       screenTrack[0].onended(async () => {
