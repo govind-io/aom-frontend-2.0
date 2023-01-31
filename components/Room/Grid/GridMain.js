@@ -187,8 +187,15 @@ export default function GridMain({ profilename, audio, video }) {
           }`}
           presenters={presenters}
         />
-      ) : roomLayout.view === SPEAKER ? (
-        <SpeakerView users={users} />
+      ) : roomLayout.view === SPEAKER || presenters.length > 0 ? (
+        <SpeakerView
+          users={users}
+          volumes={volumes}
+          selfUID={`${userData.username}-${
+            profilename || userData.name || userData.username
+          }`}
+          presenters={presenters}
+        />
       ) : (
         <Typography>Soemthing went wrong</Typography>
       )}

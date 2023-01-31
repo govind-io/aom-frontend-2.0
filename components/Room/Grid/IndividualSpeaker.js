@@ -19,7 +19,7 @@ export default function IndividualSpeaker({
       sx={{
         height: "100%",
         position: "relative",
-        border: volume && volume > 2 ? "2px solid #66B984" : "none",
+        border: volume && volume > 1 ? "2px solid #66B984" : "none",
         borderRadius: "12px",
       }}
       justifyContent={"center"}
@@ -27,14 +27,14 @@ export default function IndividualSpeaker({
     >
       {video && video?.enabled && <MeetVideoPlayer videoTrack={video} />}
 
-      {!video && (
+      {(!video || !video.enabled) && (
         <Avatar
           src={`${process.env.KHULKE_USER_PROFILE_PIC_URL}/${username}/pp`}
           sx={{ width: "100px", height: "100px" }}
         />
       )}
 
-      {!audio && (
+      {(!audio || !audio.enabled) && (
         <Box
           sx={{
             position: "absolute",
@@ -60,7 +60,7 @@ export default function IndividualSpeaker({
       <Typography
         sx={{
           background:
-            volume && volume > 2
+            volume && volume > 1
               ? "#66B984 0% 0% no-repeat padding-box"
               : "#000000e6 0% 0% no-repeat padding-box",
           borderRadius: "16px",

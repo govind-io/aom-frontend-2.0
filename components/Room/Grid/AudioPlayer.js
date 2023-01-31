@@ -5,8 +5,9 @@ export default function MeetAudioPlayer({ audioTrack }) {
     (node) => {
       if (!node || !audioTrack) return;
       node.srcObject = audioTrack;
+      node.play();
     },
-    [audioTrack]
+    [audioTrack, audioTrack?.enabled]
   );
 
   return (

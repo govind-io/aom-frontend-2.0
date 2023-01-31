@@ -9,8 +9,9 @@ export default function MeetVideoPlayer({ videoTrack }) {
       if (!node || !videoTrack) return;
       node.srcObject = videoTrack;
       ScrollZoom(node, 2, 0.2);
+      node.play();
     },
-    [videoTrack]
+    [videoTrack, videoTrack?.enabled]
   );
 
   return (
@@ -27,6 +28,7 @@ export default function MeetVideoPlayer({ videoTrack }) {
         }}
         ref={videoRef}
         autoPlay={true}
+        muted={true}
       />
     </Grid>
   );
