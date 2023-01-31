@@ -15,6 +15,7 @@ import {
 import { GALLERY, SPEAKER } from "../../../Utils/Contants/Conditional";
 import GalleryView from "./GalleryView";
 import SpeakerView from "./SpeakerView";
+import { useRouter } from "next/router";
 
 export default function GridMain({ profilename, audio, video }) {
   const userData = useSelector((s) => s.user.data);
@@ -22,6 +23,7 @@ export default function GridMain({ profilename, audio, video }) {
   const roomLayout = useSelector((s) => s.room.layout);
 
   const dispatch = useDispatch();
+  const router = useRouter();
 
   //global states for all grid
 
@@ -106,6 +108,13 @@ export default function GridMain({ profilename, audio, video }) {
     const handleRemoteTrackStateChanged = ({ uid }) => {
       setUsers((prev) => [...prev]);
     };
+
+    client.on("disconnect", (reason) => {
+      if (reason === "io server disconnect") {
+        router.push("/home");
+        return ToastHandler("dan", "You joined using another device");
+      }
+    });
 
     client.onUserJoined(userJoinedEvent);
     client.onUserLeft(userLeftEvent);
