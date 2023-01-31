@@ -10,6 +10,7 @@ export default function IndividualSpeaker({
   video,
   audio,
   name,
+  selfScreen,
 }) {
   const userData = useSelector((s) => s.user.data);
 
@@ -75,6 +76,33 @@ export default function IndividualSpeaker({
       >
         {name}
       </Typography>
+
+      {selfScreen && (
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+            opacity: "0.7",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "black",
+          }}
+        >
+          <Typography
+            sx={{
+              textAlign: "center",
+              color: "white",
+              fontSize: "20px",
+            }}
+          >
+            Your Screen is Now Visible to everyone
+          </Typography>
+        </Box>
+      )}
     </Grid>
   );
 }

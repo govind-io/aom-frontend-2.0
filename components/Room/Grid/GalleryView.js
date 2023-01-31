@@ -5,6 +5,10 @@ import IndividualSpeaker from "./IndividualSpeaker";
 export default function GalleryView({ volumes, selfUID, users, presenters }) {
   const { audio, video, screen } = useSelector((s) => s.room.controls);
 
+  const totalUsers = screen
+    ? users.length + presenters.length + 2
+    : users.length + presenters.length + 1;
+
   const gridHeightandWidthCalculator = (num) => {
     const columns = Math.ceil(Math.sqrt(num));
     const rows = Math.ceil(num / columns);
@@ -25,10 +29,27 @@ export default function GalleryView({ volumes, selfUID, users, presenters }) {
       justifyContent="center"
       spacing={1}
     >
+      {screen && (
+        <Grid
+          item
+          sx={{
+            ...gridHeightandWidthCalculator(totalUsers),
+          }}
+        >
+          <IndividualSpeaker
+            video={screen[1] || screen[0]}
+            name={`${selfUID.split("-")[1]} (Screen)`}
+            username={selfUID.split("-")[0]}
+            volume={volumes[selfUID]}
+            selfScreen={true}
+          />
+        </Grid>
+      )}
+
       <Grid
         item
         sx={{
-          ...gridHeightandWidthCalculator(users.length + presenters.length + 1),
+          ...gridHeightandWidthCalculator(totalUsers),
         }}
       >
         <IndividualSpeaker
@@ -44,9 +65,7 @@ export default function GalleryView({ volumes, selfUID, users, presenters }) {
           <Grid
             item
             sx={{
-              ...gridHeightandWidthCalculator(
-                users.length + presenters.length + 1
-              ),
+              ...gridHeightandWidthCalculator(totalUsers),
             }}
           >
             <IndividualSpeaker

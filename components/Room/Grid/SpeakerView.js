@@ -14,6 +14,16 @@ export default function SpeakerView({ users, presenters, volumes, selfUID }) {
   });
 
   useEffect(() => {
+    if (screen) {
+      setActiveSpeaker({
+        uid: `${selfUID} (Screen)`,
+        role: "host",
+        selfScreen: true,
+        video: screen[1] || screen[0],
+      });
+      return;
+    }
+
     if (presenters.length !== 0) {
       setActiveSpeaker({
         ...presenters[0],
@@ -45,7 +55,7 @@ export default function SpeakerView({ users, presenters, volumes, selfUID }) {
     };
 
     setActiveSpeaker(speaker);
-  }, [presenters, users, volumes]);
+  }, [presenters, users, volumes, screen]);
 
   return (
     <Grid
@@ -58,7 +68,7 @@ export default function SpeakerView({ users, presenters, volumes, selfUID }) {
         item
         xs={12}
         sx={{
-          height: "30%",
+          height: users.length + presenters.length > 0 || screen ? "30%" : "0%",
         }}
       >
         <Grid
@@ -116,7 +126,8 @@ export default function SpeakerView({ users, presenters, volumes, selfUID }) {
         item
         xs={12}
         sx={{
-          height: "70%",
+          height:
+            users.length + presenters.length > 0 || screen ? "70%" : "100%",
         }}
       >
         {activeSpeaker && (
@@ -126,6 +137,7 @@ export default function SpeakerView({ users, presenters, volumes, selfUID }) {
             name={activeSpeaker?.uid.split("-")[1]}
             username={activeSpeaker?.uid.split("-")[0]}
             volume={volumes[activeSpeaker?.uid]}
+            selfScreen={activeSpeaker.selfScreen}
           />
         )}
       </Grid>
