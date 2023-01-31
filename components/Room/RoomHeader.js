@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import images from "../../Content/images.json";
 import text from "../../Content/text.json";
@@ -26,11 +26,18 @@ export default function RoomHeader() {
 
   const [openMenu, setOpenMenu] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
+  const [roomTitle, setRoomTitle] = useState("");
 
   const handleViewChange = (view) => {
     dispatch(SaveRoomLayout({ view }));
     setOpenMenu(false);
   };
+
+  useEffect(() => {
+    setRoomTitle(
+      `${room.data.moderator?.name || room.data.moderator?.username}'s Meeting`
+    );
+  }, [room]);
 
   return (
     <Grid
@@ -60,7 +67,7 @@ export default function RoomHeader() {
               font: "normal normal 600 20px/24px Work Sans",
             }}
           >
-            {room.data.name}
+            {roomTitle}
           </Typography>
         </Grid>
         <Grid item>
