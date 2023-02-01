@@ -203,6 +203,7 @@ export default function GridMain({ profilename, audio, video }) {
         height: "90%",
         width: "95%",
       }}
+      id="main-grid"
     >
       {roomLayout.view === GALLERY && !presenters.length > 0 ? (
         <GalleryView

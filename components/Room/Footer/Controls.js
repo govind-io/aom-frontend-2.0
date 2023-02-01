@@ -18,6 +18,12 @@ import {
 } from "../../../Utils/MeetingUtils/Tracks";
 import ConfirmationModal from "../../Common/ConfirmationModal";
 import { useState } from "react";
+import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
+import SquareIcon from "@mui/icons-material/Square";
+import {
+  handleStartRecording,
+  handleStopRecording,
+} from "../../../Utils/MeetingUtils/Recorder";
 
 export default function Controls() {
   const dispatch = useDispatch();
@@ -26,6 +32,7 @@ export default function Controls() {
   const { audio, screen, video } = useSelector((s) => s.room.controls);
   const { existingPresenter } = useSelector((s) => s.room.metaData);
 
+  const [recording, setRecording] = useState(false);
   const [openLeaveRoom, setOpenLeaveRoom] = useState(false);
 
   const handleCloseLeaveRoom = () => {
@@ -103,6 +110,18 @@ export default function Controls() {
     return router.push(`/room/${router.query.room}/left`);
   };
 
+  const toggleRecording = async () => {
+    if (!recording) {
+      setRecording(await handleStartRecording(setRecording));
+      return;
+    }
+
+    if (recording) {
+      setRecording(await handleStopRecording());
+      return;
+    }
+  };
+
   return (
     <Grid item>
       <IconButton
@@ -148,6 +167,21 @@ export default function Controls() {
           <CancelPresentationIcon sx={{ color: "white" }} />
         ) : (
           <PresentToAllIcon sx={{ color: "white" }} />
+        )}
+      </IconButton>
+      <IconButton
+        sx={{
+          backgroundColor: recording ? "#27292B" : "#CC3425",
+          borderRadius: "8px",
+          marginRight: "20px",
+        }}
+        disableRipple={true}
+        onClick={toggleRecording}
+      >
+        {recording ? (
+          <SquareIcon sx={{ color: "white" }} />
+        ) : (
+          <RadioButtonCheckedIcon sx={{ color: "white" }} />
         )}
       </IconButton>
       <IconButton
