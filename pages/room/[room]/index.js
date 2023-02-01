@@ -10,10 +10,11 @@ import {
 import {
   GetRoomDetails,
   SaveRoomControls,
-  SaveRoomData,
   SaveRoomMetaData,
 } from "../../../Redux/Actions/Room/RoomDataAction";
+import MetaTagsGenerator from "../../../Utils/ComponentUtilities/MetaTagsGenerator";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
+import metaTags from "../../../Content/metaTags.json";
 
 export default function Room() {
   const user = useSelector((s) => s.user.data);
@@ -105,6 +106,7 @@ export default function Room() {
       justifyContent={"center"}
       alignItems="center"
     >
+      <MetaTagsGenerator metaTags={metaTags["/"]} />
       {loading ? (
         <CircularProgress sx={{ color: "white" }} />
       ) : (

@@ -1,14 +1,16 @@
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import images from "../Content/images.json";
+import metaTags from "../Content/metaTags.json";
 import text from "../Content/text.json";
-import { Grid, IconButton, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import PageWraper from "../components/Common/PageWraper";
 import { useEffect } from "react";
 import Image from "next/image";
 import HomeHeader from "../components/Home/Header";
 import NewMeetingButton from "../components/Home/NewMeetingButton";
 import JoinMeetingButton from "../components/Home/JoinMeeting/JoinMeetingButton";
+import MetaTagsGenerator from "../Utils/ComponentUtilities/MetaTagsGenerator";
 
 export default function Home() {
   //constants here
@@ -23,6 +25,7 @@ export default function Home() {
 
   return (
     <PageWraper HeaderContent={<HomeHeader />}>
+      <MetaTagsGenerator metaTags={metaTags["/"]} />
       <Grid
         container
         justifyContent={"space-around"}

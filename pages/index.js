@@ -9,6 +9,8 @@ import { GetUserData, LogInAnoynmous } from "../Redux/Actions/User/DataAction";
 import { updateTokens } from "../Utils/Configs/ApiConfigs";
 import ToastHandler from "../Utils/Toast/ToastHandler";
 import images from "../Content/images.json";
+import metaTags from "../Content/metaTags.json";
+import MetaTagsGenerator from "../Utils/ComponentUtilities/MetaTagsGenerator";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -97,6 +99,7 @@ export default function LandingPage() {
 
   return (
     <PageWraper>
+      <MetaTagsGenerator metaTags={metaTags["/"]} />
       <Grid
         container
         height={"100%"}

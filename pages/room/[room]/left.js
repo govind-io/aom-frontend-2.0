@@ -7,6 +7,8 @@ import PageWraper from "../../../components/Common/PageWraper";
 import HomeHeader from "../../../components/Home/Header";
 import { WAITING_TIME } from "../../../Utils/Contants/Conditional";
 import text from "../../../Content/text.json";
+import metaTags from "../../../Content/metaTags.json";
+import MetaTagsGenerator from "../../../Utils/ComponentUtilities/MetaTagsGenerator";
 
 export default function LeftLobby() {
   const roomData = useSelector((s) => s.room.data);
@@ -41,6 +43,7 @@ export default function LeftLobby() {
 
   return (
     <PageWraper HeaderContent={<HomeHeader />}>
+      <MetaTagsGenerator metaTags={metaTags["/"]} />
       <Grid
         container
         sx={{
