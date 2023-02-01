@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import text from "../../../../Content/text.json";
 import { meetClient } from "../../../../Utils/Configs/MeetClient";
+import VolumeIndicator from "../../../Common/VolumeIndicator";
 
 export default function List({ searchQuery }) {
   const [users, setUsers] = useState([]);
@@ -10,6 +11,8 @@ export default function List({ searchQuery }) {
   const [showUsers, setShowUsers] = useState(users);
 
   const roomData = useSelector((s) => s.room.data);
+
+  const { volumes } = useSelector((s) => s.room.metaData);
 
   useEffect(() => {
     if (!meetClient) return;
@@ -112,7 +115,7 @@ export default function List({ searchQuery }) {
             </Grid>
             <Grid
               sx={{
-                width: "calc(100% - 60px)",
+                width: "calc(100% - 70px)",
                 paddingLeft: "20px",
               }}
             >
@@ -148,12 +151,13 @@ export default function List({ searchQuery }) {
             </Grid>
             <Grid
               sx={{
-                width: "20px",
+                width: "30px",
                 display: "flex",
                 alignItems: "center",
+                height: "30px",
               }}
             >
-              Vls
+              <VolumeIndicator volume={volumes[item.name || item.uid]} />
             </Grid>
           </Grid>
         );

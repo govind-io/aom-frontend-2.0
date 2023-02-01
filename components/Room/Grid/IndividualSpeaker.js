@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import MeetAudioPlayer from "./AudioPlayer";
 import MeetVideoPlayer from "./VideoPlayer";
 import MicOffIcon from "@mui/icons-material/MicOff";
+import VolumeIndicator from "../../Common/VolumeIndicator";
 
 export default function IndividualSpeaker({
   username,
@@ -22,7 +23,7 @@ export default function IndividualSpeaker({
       sx={{
         height: "100%",
         position: "relative",
-        border: volume && volume > 1 ? "2px solid #66B984" : "none",
+        border: volume && volume > 3 ? "2px solid #66B984" : "none",
         borderRadius: "12px",
         backgroundColor: "#3c4043",
       }}
@@ -59,12 +60,26 @@ export default function IndividualSpeaker({
         </Box>
       )}
 
+      {audio && audio.enabled && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            width: "30px",
+            height: "30px",
+          }}
+        >
+          <VolumeIndicator volume={volume} />
+        </Box>
+      )}
+
       {username !== userData.username && <MeetAudioPlayer audioTrack={audio} />}
 
       <Typography
         sx={{
           background:
-            volume && volume > 1
+            volume && volume > 3
               ? "#66B984 0% 0% no-repeat padding-box"
               : "#000000e6 0% 0% no-repeat padding-box",
           borderRadius: "16px",
