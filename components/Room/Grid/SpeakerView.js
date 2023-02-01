@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import IndividualSpeaker from "./IndividualSpeaker";
 
-export default function SpeakerView({ users, presenters, volumes, selfUID }) {
+export default function SpeakerView({ users, presenters, selfUID }) {
   const { audio, video, screen } = useSelector((s) => s.room.controls);
+
+  const { volumes } = useSelector((s) => s.room.metaData);
 
   const [activeSpeaker, setActiveSpeaker] = useState({
     uid: selfUID,

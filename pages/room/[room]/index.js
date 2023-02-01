@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import RoomMain from "../../../components/Room/RoomMain";
 import {
+  ChangeParticipantCounts,
+  ChangeUnreadMessageCount,
+} from "../../../Redux/Actions/Comps/DataComps";
+import {
   GetRoomDetails,
   SaveRoomControls,
   SaveRoomData,
@@ -25,6 +29,9 @@ export default function Room() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    dispatch(ChangeUnreadMessageCount(0));
+    dispatch(ChangeParticipantCounts(1));
+
     dispatch(
       SaveRoomControls({
         screen: false,

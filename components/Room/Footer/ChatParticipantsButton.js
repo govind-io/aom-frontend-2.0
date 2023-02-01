@@ -9,6 +9,7 @@ import {
 
 export default function ChatParticipantsButton() {
   const { chat, participants } = useSelector((s) => s.comps.dataComp);
+
   const dispatch = useDispatch();
 
   const toggleParticipants = () => {
@@ -21,17 +22,22 @@ export default function ChatParticipantsButton() {
 
   return (
     <Grid item>
-      <Badge badgeContent={participants} color={"success"}>
+      <Badge
+        badgeContent={participants}
+        color={"success"}
+        max={1000}
+        sx={{
+          marginRight: "20px",
+        }}
+      >
         <IconButton onClick={toggleParticipants}>
-          <PeopleAltOutlinedIcon
-            sx={{ color: " white", marginRight: "20px" }}
-          />
+          <PeopleAltOutlinedIcon sx={{ color: " white" }} />
         </IconButton>
       </Badge>
 
-      <Badge badgeContent={chat} color={"success"}>
+      <Badge badgeContent={chat} color={"success"} max={10}>
         <IconButton onClick={toggleChat}>
-          <ChatOutlinedIcon sx={{ color: " white" }} />
+          <ChatOutlinedIcon sx={{ color: "white" }} />
         </IconButton>
       </Badge>
     </Grid>

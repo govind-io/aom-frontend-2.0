@@ -2,8 +2,10 @@ import { Grid } from "@mui/material";
 import { useSelector } from "react-redux";
 import IndividualSpeaker from "./IndividualSpeaker";
 
-export default function GalleryView({ volumes, selfUID, users, presenters }) {
+export default function GalleryView({ selfUID, users, presenters }) {
   const { audio, video, screen } = useSelector((s) => s.room.controls);
+
+  const { volumes } = useSelector((s) => s.room.metaData);
 
   const totalUsers = screen
     ? users.length + presenters.length + 2
@@ -94,7 +96,7 @@ export default function GalleryView({ volumes, selfUID, users, presenters }) {
               video={item.video}
               name={item.uid.split("-")[1]}
               username={item.uid.split("-")[0]}
-              volume={{}}
+              volume={null}
             />
           </Grid>
         );

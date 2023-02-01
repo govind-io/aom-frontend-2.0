@@ -16,6 +16,10 @@ import { GALLERY, SPEAKER } from "../../../Utils/Contants/Conditional";
 import GalleryView from "./GalleryView";
 import SpeakerView from "./SpeakerView";
 import { useRouter } from "next/router";
+import {
+  ChangeParticipantCounts,
+  ChangeUnreadMessageCount,
+} from "../../../Redux/Actions/Comps/DataComps";
 
 export default function GridMain({ profilename, audio, video }) {
   const userData = useSelector((s) => s.user.data);
@@ -26,11 +30,8 @@ export default function GridMain({ profilename, audio, video }) {
   const router = useRouter();
 
   //global states for all grid
-
   const [users, setUsers] = useState([]);
   const [presenters, setPresenters] = useState([]);
-
-  const { volumes } = useSelector((s) => s.room.metaData);
 
   const attachEventListener = (client) => {
     const userJoinedEvent = (user) => {
@@ -116,6 +117,8 @@ export default function GridMain({ profilename, audio, video }) {
       }
     });
 
+    client.on("message", () => dispatch(ChangeUnreadMessageCount(1)));
+
     client.onUserJoined(userJoinedEvent);
     client.onUserLeft(userLeftEvent);
     client.onUserPublished(userPublishedEvents);
@@ -189,7 +192,9 @@ export default function GridMain({ profilename, audio, video }) {
     dispatch(SaveRoomMetaData({ existingPresenter: presenters.length > 0 }));
   }, [presenters]);
 
-  console.log({ presenters: presenters.length });
+  useEffect(() => {
+    dispatch(ChangeParticipantCounts(users.length + 1));
+  }, [users]);
 
   return (
     <Grid
@@ -202,7 +207,6 @@ export default function GridMain({ profilename, audio, video }) {
       {roomLayout.view === GALLERY && !presenters.length > 0 ? (
         <GalleryView
           users={users}
-          volumes={volumes}
           selfUID={`${userData.username}-${
             profilename || userData.name || userData.username
           }`}
@@ -211,7 +215,6 @@ export default function GridMain({ profilename, audio, video }) {
       ) : roomLayout.view === SPEAKER || presenters.length > 0 ? (
         <SpeakerView
           users={users}
-          volumes={volumes}
           selfUID={`${userData.username}-${
             profilename || userData.name || userData.username
           }`}

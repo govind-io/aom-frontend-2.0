@@ -1,14 +1,19 @@
 import { Grid, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { ChangeUnreadMessageCount } from "../../../../Redux/Actions/Comps/DataComps";
 import { meetClient } from "../../../../Utils/Configs/MeetClient";
 import convertDateToLocalTime from "../../../../Utils/DesignUtilities/DateManipulation";
 
 export default function Messages() {
+  const dispatch = useDispatch();
+
   const [message, setMessage] = useState([]);
 
   const roomData = useSelector((s) => s.room.data);
   const userData = useSelector((s) => s.user.data);
+
+  const containerRef = useRef();
 
   useEffect(() => {
     if (!meetClient) return;
@@ -30,6 +35,18 @@ export default function Messages() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    containerRef.current.scrollBy({
+      left: 0,
+      top: containerRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+
+    dispatch(ChangeUnreadMessageCount(0));
+  }, [message]);
+
   return (
     <Grid
       item
@@ -49,6 +66,7 @@ export default function Messages() {
           backgroundColor: "#000000",
         },
       }}
+      ref={containerRef}
     >
       {message.map((item) => {
         const selfMessage = item.by.split("-")[0] === userData.username;
