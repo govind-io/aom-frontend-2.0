@@ -69,6 +69,7 @@ export default function GalleryView({ selfUID, users, presenters }) {
             sx={{
               ...gridHeightandWidthCalculator(totalUsers),
             }}
+            key={item.uid}
           >
             <IndividualSpeaker
               audio={item.audio}
@@ -90,6 +91,7 @@ export default function GalleryView({ selfUID, users, presenters }) {
                 users.length + presenters.length + 1
               ),
             }}
+            key={item.uid}
           >
             <IndividualSpeaker
               audio={item.audio}

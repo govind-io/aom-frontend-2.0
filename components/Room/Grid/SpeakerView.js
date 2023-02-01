@@ -111,6 +111,7 @@ export default function SpeakerView({ users, presenters, selfUID }) {
                 sx={{
                   height: "100%",
                 }}
+                key={item.uid}
               >
                 <IndividualSpeaker
                   audio={item.audio}

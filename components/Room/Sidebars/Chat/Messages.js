@@ -84,6 +84,7 @@ export default function Messages() {
               padding: "10px",
             }}
             container
+            key={item.by}
           >
             <Grid
               item

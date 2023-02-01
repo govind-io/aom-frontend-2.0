@@ -100,6 +100,7 @@ export default function List({ searchQuery }) {
               height: "50px",
               flexWrap: "wrap",
             }}
+            key={item.name || item.uid}
           >
             <Grid
               sx={{
