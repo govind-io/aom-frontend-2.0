@@ -2,6 +2,8 @@ let stream = null;
 let chunks = [];
 let mediaRecorder = null;
 
+let recordingName = "";
+
 export const handleStopRecording = async () => {
   mediaRecorder?.stop();
   stream?.getTracks().forEach((track) => track.stop());
@@ -21,15 +23,16 @@ const handleSaveRecording = async () => {
   const blob = new Blob(chunks, { type: chunks[0].type });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "recording.mp4";
+  link.download = recordingName;
   document.body.appendChild(link);
   link.click();
   link.remove();
   chunks = [];
+  recordingName = "";
   return true;
 };
 
-export const handleStartRecording = async (setRecording) => {
+export const handleStartRecording = async (setRecording, name) => {
   try {
     const localStreamstream = await navigator.mediaDevices.getDisplayMedia({
       audio: true,
@@ -46,7 +49,7 @@ export const handleStartRecording = async (setRecording) => {
     mediaRecorder = new MediaRecorder(stream);
     mediaRecorder.ondataavailable = handleDataAvailable;
     mediaRecorder.start();
-
+    recordingName = name;
     return true;
   } catch (error) {
     console.error("Error starting recording", error);

@@ -112,7 +112,12 @@ export default function Controls() {
 
   const toggleRecording = async () => {
     if (!recording) {
-      setRecording(await handleStartRecording(setRecording));
+      setRecording(
+        await handleStartRecording(
+          setRecording,
+          `${router.query.room}'s Recording.mp4`
+        )
+      );
       return;
     }
 
