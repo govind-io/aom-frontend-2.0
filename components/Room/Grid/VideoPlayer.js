@@ -19,6 +19,7 @@ export default function MeetVideoPlayer({ videoTrack }) {
       container
       sx={{
         height: "100%",
+        overflow: "hidden",
       }}
     >
       <video

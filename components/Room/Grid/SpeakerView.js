@@ -5,7 +5,7 @@ import IndividualSpeaker from "./IndividualSpeaker";
 
 export default function SpeakerView({ users, presenters, selfUID }) {
   const { audio, video, screen } = useSelector((s) => s.room.controls);
-
+  const { chat, participants } = useSelector((s) => s.comps.comp);
   const { volumes } = useSelector((s) => s.room.metaData);
 
   const [activeSpeaker, setActiveSpeaker] = useState({
@@ -14,6 +14,12 @@ export default function SpeakerView({ users, presenters, selfUID }) {
     audio,
     role: "host",
   });
+
+  const widthCalculator = () => {
+    if (chat || participants) return "20%";
+
+    return "16.66%";
+  };
 
   useEffect(() => {
     if (screen) {
@@ -39,7 +45,13 @@ export default function SpeakerView({ users, presenters, selfUID }) {
     let loudestSpeaker = allUsers[0];
 
     if (!loudestSpeaker) {
-      setActiveSpeaker({ uid: selfUID, video, audio, role: "host" });
+      if (activeSpeaker.uid.includes("(Screen)")) {
+        setActiveSpeaker({
+          uid: selfUID,
+          role: "host",
+          video: video,
+        });
+      }
       return;
     }
 
@@ -70,7 +82,7 @@ export default function SpeakerView({ users, presenters, selfUID }) {
         item
         xs={12}
         sx={{
-          height: users.length + presenters.length > 0 || screen ? "30%" : "0%",
+          height: users.length + presenters.length > 0 || screen ? "25%" : "0%",
         }}
       >
         <Grid
@@ -78,16 +90,25 @@ export default function SpeakerView({ users, presenters, selfUID }) {
           sx={{
             height: "100%",
             overflowX: "auto",
+            flexDirection: "column",
+            "::-webkit-scrollbar": {
+              width: "0.5em",
+              backgroundColor: "#F5F5F5",
+            },
+            "::-webkit-scrollbar-thumb": {
+              borderRadius: "10px",
+              backgroundColor: "#000000",
+            },
           }}
-          justifyContent="center"
+          alignContent="center"
           spacing={1}
         >
           {activeSpeaker?.uid !== selfUID && (
             <Grid
               item
-              xs={3}
               sx={{
                 height: "100%",
+                width: `calc(${widthCalculator()} - 10px)`,
               }}
             >
               <IndividualSpeaker
@@ -96,6 +117,7 @@ export default function SpeakerView({ users, presenters, selfUID }) {
                 name={selfUID.split("-")[1]}
                 username={selfUID.split("-")[0]}
                 volume={volumes[selfUID]}
+                smallTile={true}
               />
             </Grid>
           )}
@@ -107,9 +129,9 @@ export default function SpeakerView({ users, presenters, selfUID }) {
             return (
               <Grid
                 item
-                xs={3}
                 sx={{
                   height: "100%",
+                  width: `calc(${widthCalculator()} - 10px)`,
                 }}
                 key={item.uid}
               >
@@ -119,6 +141,7 @@ export default function SpeakerView({ users, presenters, selfUID }) {
                   name={item.uid.split("-")[1]}
                   username={item.uid.split("-")[0]}
                   volume={volumes[item.uid]}
+                  smallTile={true}
                 />
               </Grid>
             );
@@ -130,7 +153,7 @@ export default function SpeakerView({ users, presenters, selfUID }) {
         xs={12}
         sx={{
           height:
-            users.length + presenters.length > 0 || screen ? "70%" : "100%",
+            users.length + presenters.length > 0 || screen ? "75%" : "100%",
         }}
       >
         {activeSpeaker && (

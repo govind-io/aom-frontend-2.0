@@ -1,17 +1,23 @@
 import { Grid } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { getTopUsers } from "../../../Utils/DesignUtilities/CalculationManipulation";
 import IndividualSpeaker from "./IndividualSpeaker";
 
-export default function GalleryView({ selfUID, users, presenters }) {
+export default function GalleryView({ selfUID, users }) {
   const { audio, video, screen } = useSelector((s) => s.room.controls);
+
+  const { chat, participants } = useSelector((s) => s.comps.comp);
 
   const { volumes } = useSelector((s) => s.room.metaData);
 
-  const totalUsers = screen
-    ? users.length + presenters.length + 2
-    : users.length + presenters.length + 1;
+  const [gridUsers, setGridUsers] = useState([]);
 
-  const gridHeightandWidthCalculator = (num) => {
+  const [bottomUsers, setBottomUsers] = useState([]);
+
+  const gridHeightandWidthCalculator = () => {
+    const num = gridUsers.length;
+
     const columns = Math.ceil(Math.sqrt(num));
     const rows = Math.ceil(num / columns);
 
@@ -21,6 +27,37 @@ export default function GalleryView({ selfUID, users, presenters }) {
     };
   };
 
+  const widthCalculator = () => {
+    if (chat || participants) return "25%";
+
+    return "20%";
+  };
+
+  useEffect(() => {
+    if (screen) {
+      setGridUsers([]);
+      setBottomUsers(users);
+      return;
+    }
+
+    const totalNumberOfGridUsers = chat || participants ? 9 : 12;
+
+    if (users.length <= totalNumberOfGridUsers) {
+      setGridUsers(users);
+      setBottomUsers([]);
+      return;
+    }
+
+    const [topUsers, restUsers] = getTopUsers(
+      volumes,
+      users,
+      totalNumberOfGridUsers
+    );
+
+    setGridUsers(topUsers);
+    setBottomUsers(restUsers);
+  }, [users, chat, participants, volumes, screen]);
+
   return (
     <Grid
       container
@@ -29,80 +66,162 @@ export default function GalleryView({ selfUID, users, presenters }) {
         height: "100%",
       }}
       justifyContent="center"
-      spacing={1}
     >
-      {screen && (
-        <Grid
-          item
-          sx={{
-            ...gridHeightandWidthCalculator(totalUsers),
-          }}
-        >
-          <IndividualSpeaker
-            video={screen[1] || screen[0]}
-            name={`${selfUID.split("-")[1]} (Screen)`}
-            username={selfUID.split("-")[0]}
-            volume={volumes[selfUID]}
-            selfScreen={true}
-          />
-        </Grid>
-      )}
-
       <Grid
         item
+        xs={12}
         sx={{
-          ...gridHeightandWidthCalculator(totalUsers),
+          height: bottomUsers.length === 0 ? "100%" : "75%",
+          display: "flex",
+          flexWrap: "wrap",
+          position: "relative",
         }}
       >
-        <IndividualSpeaker
-          audio={audio}
-          video={video}
-          name={selfUID.split("-")[1]}
-          username={selfUID.split("-")[0]}
-          volume={volumes[selfUID]}
-        />
-      </Grid>
-      {users.map((item) => {
-        return (
-          <Grid
-            item
-            sx={{
-              ...gridHeightandWidthCalculator(totalUsers),
-            }}
-            key={item.uid}
-          >
+        {!screen && gridUsers.length === 0 && (
+          <Grid item sx={{ width: "100%", height: "100%" }}>
             <IndividualSpeaker
-              audio={item.audio}
-              video={item.video}
-              name={item.uid.split("-")[1]}
-              username={item.uid.split("-")[0]}
-              volume={volumes[item.uid]}
+              video={video}
+              audio={audio}
+              name={selfUID.split("-")[1]}
+              username={selfUID.split("-")[0]}
+              volume={volumes[selfUID]}
             />
           </Grid>
-        );
-      })}
+        )}
 
-      {presenters.map((item) => {
-        return (
-          <Grid
-            item
-            sx={{
-              ...gridHeightandWidthCalculator(
-                users.length + presenters.length + 1
-              ),
-            }}
-            key={item.uid}
-          >
+        {screen ? (
+          <Grid item sx={{ width: "100%", height: "100%" }}>
             <IndividualSpeaker
-              audio={item.audio}
-              video={item.video}
-              name={item.uid.split("-")[1]}
-              username={item.uid.split("-")[0]}
-              volume={null}
+              video={screen[1] || screen[0]}
+              name={`${selfUID.split("-")[1]} (Screen)`}
+              username={selfUID.split("-")[0]}
+              volume={volumes[selfUID]}
+              selfScreen={true}
             />
           </Grid>
-        );
-      })}
+        ) : (
+          gridUsers.map((item) => {
+            return (
+              <Grid
+                item
+                sx={{
+                  ...gridHeightandWidthCalculator(),
+                }}
+                key={item.uid}
+              >
+                <IndividualSpeaker
+                  audio={item.audio}
+                  video={item.video}
+                  name={item.uid.split("-")[1]}
+                  username={item.uid.split("-")[0]}
+                  volume={volumes[item.uid]}
+                />
+              </Grid>
+            );
+          })
+        )}
+
+        {(screen || gridUsers.length > 0) && bottomUsers.length === 0 && (
+          <Grid
+            sx={{
+              width: "20%",
+              height: "20%",
+              position: "absolute",
+              right: "20px",
+              bottom: "20px",
+              border: "1px solid white",
+            }}
+          >
+            <IndividualSpeaker
+              video={video}
+              audio={audio}
+              name={selfUID.split("-")[1]}
+              username={selfUID.split("-")[0]}
+              volume={volumes[selfUID]}
+            />
+          </Grid>
+        )}
+      </Grid>
+
+      {bottomUsers.length > 0 && (
+        <Grid
+          item
+          xs={12}
+          sx={{
+            height: bottomUsers.length === 0 ? "0%" : "25%",
+            display: "flex",
+            flexWrap: "nowrap",
+          }}
+        >
+          <Grid
+            container
+            sx={{
+              height: "100%",
+              overflowX: "auto",
+              width: "80%",
+              flexWrap: "wrap",
+              flexDirection: "column",
+              "::-webkit-scrollbar": {
+                width: "0.5em",
+                backgroundColor: "#F5F5F5",
+              },
+              "::-webkit-scrollbar-thumb": {
+                borderRadius: "10px",
+                backgroundColor: "#000000",
+              },
+            }}
+            alignContent="flex-end"
+          >
+            {bottomUsers.map((item) => {
+              return (
+                <Grid
+                  item
+                  sx={{
+                    width: `calc(${widthCalculator()} - 10px)`,
+                    height: "100%",
+                  }}
+                  key={item.uid}
+                >
+                  <IndividualSpeaker
+                    audio={item.audio}
+                    video={item.video}
+                    name={item.uid.split("-")[1]}
+                    username={item.uid.split("-")[0]}
+                    volume={volumes[item.uid]}
+                    smallTile={true}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+
+          <Grid
+            container
+            sx={{
+              height: "100%",
+              width: "20%",
+            }}
+            justifyContent="center"
+          >
+            <Grid
+              item
+              sx={{
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <IndividualSpeaker
+                video={video}
+                name={selfUID.split("-")[1]}
+                username={selfUID.split("-")[0]}
+                volume={volumes[selfUID]}
+                audio={audio}
+                smallTile={true}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+      )}
     </Grid>
   );
 }

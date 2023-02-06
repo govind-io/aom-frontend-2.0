@@ -205,13 +205,12 @@ export default function GridMain({ profilename, audio, video }) {
       }}
       id="main-grid"
     >
-      {roomLayout.view === GALLERY && !presenters.length > 0 ? (
+      {roomLayout.view === GALLERY && presenters.length === 0 ? (
         <GalleryView
           users={users}
           selfUID={`${userData.username}-${
             profilename || userData.name || userData.username
           }`}
-          presenters={presenters}
         />
       ) : roomLayout.view === SPEAKER || presenters.length > 0 ? (
         <SpeakerView

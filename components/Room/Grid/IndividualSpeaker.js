@@ -4,6 +4,7 @@ import MeetAudioPlayer from "./AudioPlayer";
 import MeetVideoPlayer from "./VideoPlayer";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VolumeIndicator from "../../Common/VolumeIndicator";
+import { useRef } from "react";
 
 export default function IndividualSpeaker({
   username,
@@ -12,10 +13,11 @@ export default function IndividualSpeaker({
   audio,
   name,
   selfScreen,
+  smallTile,
 }) {
   const userData = useSelector((s) => s.user.data);
 
-  console.log({ name: volume });
+  const containerRef = useRef();
 
   return (
     <Grid
@@ -23,19 +25,25 @@ export default function IndividualSpeaker({
       sx={{
         height: "100%",
         position: "relative",
-        border: volume && volume > 3 ? "2px solid #66B984" : "none",
+        border: volume ? "2px solid #66B984" : "none",
         borderRadius: "12px",
         backgroundColor: "#3c4043",
       }}
       justifyContent={"center"}
       alignItems={"center"}
+      ref={containerRef}
     >
       {video && video?.enabled && <MeetVideoPlayer videoTrack={video} />}
 
       {(!video || !video.enabled) && (
         <Avatar
           src={`${process.env.KHULKE_USER_PROFILE_PIC_URL}/${username}/pp`}
-          sx={{ width: "100px", height: "100px" }}
+          sx={{
+            width: "100px",
+            height: "100px",
+            maxWidth: "40%",
+            maxHeight: "50%",
+          }}
         />
       )}
 
@@ -78,12 +86,12 @@ export default function IndividualSpeaker({
 
       <Typography
         sx={{
-          background:
-            volume && volume > 3
-              ? "#66B984 0% 0% no-repeat padding-box"
-              : "#000000e6 0% 0% no-repeat padding-box",
+          background: volume
+            ? "#66B984 0% 0% no-repeat padding-box"
+            : "#000000e6 0% 0% no-repeat padding-box",
           borderRadius: "16px",
-          font: "normal normal medium 14px/16px Work Sans",
+          font: "normal normal medium 10px/16px Work Sans",
+          fontSize: smallTile ? "12px" : "14px",
           color: "#F5F5F5",
           position: "absolute",
           left: "10px",
