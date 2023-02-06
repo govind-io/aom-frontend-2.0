@@ -68,14 +68,14 @@ export default function GalleryView({ selfUID, users }) {
       justifyContent="center"
     >
       <Grid
-        item
-        xs={12}
+        container
         sx={{
           height: bottomUsers.length === 0 ? "100%" : "75%",
           display: "flex",
           flexWrap: "wrap",
           position: "relative",
         }}
+        spacing={1}
       >
         {!screen && gridUsers.length === 0 && (
           <Grid item sx={{ width: "100%", height: "100%" }}>
