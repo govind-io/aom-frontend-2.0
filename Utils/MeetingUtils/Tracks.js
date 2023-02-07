@@ -69,3 +69,9 @@ export const handleCreateAndPublishScreenTrack = async () => {
     return false;
   }
 };
+
+export const handleUnPublishTrack = async (track) => {
+  track.stop();
+  await meetClient.unprodueTracks([track]);
+  return true;
+};

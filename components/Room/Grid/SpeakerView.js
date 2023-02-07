@@ -83,6 +83,7 @@ export default function SpeakerView({ users, presenters, selfUID }) {
         xs={12}
         sx={{
           height: users.length + presenters.length > 0 || screen ? "25%" : "0%",
+          paddingBottom: "10px",
         }}
       >
         <Grid
@@ -100,6 +101,12 @@ export default function SpeakerView({ users, presenters, selfUID }) {
             },
             flexWrap: "wrap",
             alignItems: "center",
+            alignContent:
+              (chat || participants) && users.length > 4
+                ? "none"
+                : !chat && !participants && users.length > 5
+                ? "none"
+                : "center",
             display: "flex",
             flexDirection: "column",
           }}

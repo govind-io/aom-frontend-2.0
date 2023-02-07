@@ -15,6 +15,7 @@ import {
   handleCreateAndPublishAudioTrack,
   handleCreateAndPublishScreenTrack,
   handleCreateAndPublishVideoTrack,
+  handleUnPublishTrack,
 } from "../../../Utils/MeetingUtils/Tracks";
 import ConfirmationModal from "../../Common/ConfirmationModal";
 import { useState } from "react";
@@ -24,6 +25,7 @@ import {
   handleStartRecording,
   handleStopRecording,
 } from "../../../Utils/MeetingUtils/Recorder";
+import DotMenu from "./DotMenu";
 
 export default function Controls() {
   const dispatch = useDispatch();
@@ -43,8 +45,7 @@ export default function Controls() {
     if (!meetClient) return;
 
     if (video) {
-      video.stop();
-      await meetClient.unprodueTracks([video]);
+      await handleUnPublishTrack(video);
       dispatch(SaveRoomControls({ video: false }));
     } else {
       return dispatch(
@@ -57,8 +58,7 @@ export default function Controls() {
     if (!meetClient) return;
 
     if (audio) {
-      audio.stop();
-      await meetClient.unprodueTracks([audio]);
+      await handleUnPublishTrack(audio);
       dispatch(SaveRoomControls({ audio: false }));
     } else {
       return dispatch(
@@ -189,6 +189,7 @@ export default function Controls() {
           <RadioButtonCheckedIcon sx={{ color: "white" }} />
         )}
       </IconButton>
+      <DotMenu />
       <IconButton
         sx={{
           padding: "10px 15px",

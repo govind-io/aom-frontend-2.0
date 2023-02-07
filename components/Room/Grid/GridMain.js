@@ -1,7 +1,7 @@
 import { Grid, Typography } from "@mui/material";
 import { meetClient, setMeetClient } from "../../../Utils/Configs/MeetClient";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RTCClient } from "../../../MEET_SDK/rtc";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -11,6 +11,7 @@ import {
 import {
   handleCreateAndPublishAudioTrack,
   handleCreateAndPublishVideoTrack,
+  handleUnPublishTrack,
 } from "../../../Utils/MeetingUtils/Tracks";
 import { GALLERY, SPEAKER } from "../../../Utils/Contants/Conditional";
 import GalleryView from "./GalleryView";
@@ -20,11 +21,17 @@ import {
   ChangeParticipantCounts,
   ChangeUnreadMessageCount,
 } from "../../../Redux/Actions/Comps/DataComps";
+import {
+  MESSAGE_EVENT,
+  MUTE_ALL_EVENT,
+  NOTIFICATION_EVENT,
+} from "../../../Utils/Contants/Constants";
 
 export default function GridMain({ profilename, audio, video }) {
   const userData = useSelector((s) => s.user.data);
   const roomData = useSelector((s) => s.room.data);
   const roomLayout = useSelector((s) => s.room.layout);
+  const { audio: audioTrack } = useSelector((s) => s.room.controls);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -32,6 +39,28 @@ export default function GridMain({ profilename, audio, video }) {
   //global states for all grid
   const [users, setUsers] = useState([]);
   const [presenters, setPresenters] = useState([]);
+
+  //refs for event handling
+  const audioRef = useRef();
+  audioRef.current = audioTrack;
+
+  console.log("audio is ", audioRef.current);
+
+  const handleNotificationEvents = async ({ content }) => {
+    switch (content) {
+      case MUTE_ALL_EVENT:
+        if (audioRef.current) {
+          await handleUnPublishTrack(audioRef.current);
+          dispatch(SaveRoomControls({ audio: false }));
+          ToastHandler("warn", "You have been muted by owner");
+        }
+
+        break;
+
+      default:
+        break;
+    }
+  };
 
   const attachEventListener = (client) => {
     const userJoinedEvent = (user) => {
@@ -117,7 +146,8 @@ export default function GridMain({ profilename, audio, video }) {
       }
     });
 
-    client.on("message", () => dispatch(ChangeUnreadMessageCount(1)));
+    client.on(MESSAGE_EVENT, () => dispatch(ChangeUnreadMessageCount(1)));
+    client.on(NOTIFICATION_EVENT, handleNotificationEvents);
 
     client.onUserJoined(userJoinedEvent);
     client.onUserLeft(userLeftEvent);

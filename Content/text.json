@@ -38,6 +38,7 @@
             "participants":"Participants",
             "search":"Search here…",
             "thisCall":"On This Call"
-        }
+        },
+        "mute":"Mute All"
     }
 }
