@@ -38,7 +38,7 @@ export default function RoomMain({ video, audio, profilename }) {
           <Grid
             container
             sx={{
-              width: "100%",
+              width: "95%",
               maxWidth: "1800px",
               margin: "auto",
             }}

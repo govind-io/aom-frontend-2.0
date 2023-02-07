@@ -16,7 +16,8 @@ export default function GalleryView({ selfUID, users }) {
   const [bottomUsers, setBottomUsers] = useState([]);
 
   const gridHeightandWidthCalculator = () => {
-    const num = gridUsers.length;
+    const num =
+      bottomUsers.length === 0 ? gridUsers.length + 1 : gridUsers.length;
 
     const columns = Math.ceil(Math.sqrt(num));
     const rows = Math.ceil(num / columns);
@@ -33,14 +34,14 @@ export default function GalleryView({ selfUID, users }) {
     return "20%";
   };
 
+  const totalNumberOfGridUsers = chat || participants ? 9 : 12;
+
   useEffect(() => {
     if (screen) {
       setGridUsers([]);
       setBottomUsers(users);
       return;
     }
-
-    const totalNumberOfGridUsers = chat || participants ? 9 : 12;
 
     if (users.length <= totalNumberOfGridUsers) {
       setGridUsers(users);
@@ -70,10 +71,14 @@ export default function GalleryView({ selfUID, users }) {
       <Grid
         container
         sx={{
-          height: bottomUsers.length === 0 ? "100%" : "75%",
+          height:
+            gridUsers.length >= totalNumberOfGridUsers || screen
+              ? "75%"
+              : "100%",
           display: "flex",
           flexWrap: "wrap",
           position: "relative",
+          justifyContent: "center",
         }}
         spacing={1}
       >
@@ -121,34 +126,35 @@ export default function GalleryView({ selfUID, users }) {
           })
         )}
 
-        {(screen || gridUsers.length > 0) && bottomUsers.length === 0 && (
-          <Grid
-            sx={{
-              width: "20%",
-              height: "20%",
-              position: "absolute",
-              right: "20px",
-              bottom: "20px",
-              border: "1px solid white",
-            }}
-          >
-            <IndividualSpeaker
-              video={video}
-              audio={audio}
-              name={selfUID.split("-")[1]}
-              username={selfUID.split("-")[0]}
-              volume={volumes[selfUID]}
-            />
-          </Grid>
-        )}
+        {!screen &&
+          gridUsers.length < totalNumberOfGridUsers &&
+          gridUsers.length > 0 && (
+            <Grid
+              sx={{
+                ...gridHeightandWidthCalculator(),
+              }}
+              item
+            >
+              <IndividualSpeaker
+                video={video}
+                audio={audio}
+                name={selfUID.split("-")[1]}
+                username={selfUID.split("-")[0]}
+                volume={volumes[selfUID]}
+              />
+            </Grid>
+          )}
       </Grid>
 
-      {bottomUsers.length > 0 && (
+      {(gridUsers.length >= totalNumberOfGridUsers || screen) && (
         <Grid
           item
           xs={12}
           sx={{
-            height: bottomUsers.length === 0 ? "0%" : "25%",
+            height:
+              gridUsers.length >= totalNumberOfGridUsers || screen
+                ? "25%"
+                : "0%",
             display: "flex",
             flexWrap: "nowrap",
           }}
@@ -179,6 +185,8 @@ export default function GalleryView({ selfUID, users }) {
                   sx={{
                     width: `calc(${widthCalculator()} - 10px)`,
                     height: "100%",
+                    marginRight: "10px",
+                    marginLeft: "10px",
                   }}
                   key={item.uid}
                 >

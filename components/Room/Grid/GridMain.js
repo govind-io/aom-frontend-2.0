@@ -177,7 +177,9 @@ export default function GridMain({ profilename, audio, video }) {
       }
     };
 
-    connectMeet();
+    if (roomData.token) {
+      connectMeet();
+    }
 
     return () => {
       if (meetClient) {

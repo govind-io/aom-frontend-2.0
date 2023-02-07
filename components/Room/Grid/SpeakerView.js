@@ -101,7 +101,6 @@ export default function SpeakerView({ users, presenters, selfUID }) {
             },
           }}
           alignContent="center"
-          spacing={1}
         >
           {activeSpeaker?.uid !== selfUID && (
             <Grid
@@ -109,6 +108,8 @@ export default function SpeakerView({ users, presenters, selfUID }) {
               sx={{
                 height: "100%",
                 width: `calc(${widthCalculator()} - 10px)`,
+                marginRight: "10px",
+                marginLeft: "10px",
               }}
             >
               <IndividualSpeaker
@@ -132,6 +133,8 @@ export default function SpeakerView({ users, presenters, selfUID }) {
                 sx={{
                   height: "100%",
                   width: `calc(${widthCalculator()} - 10px)`,
+                  marginRight: "10px",
+                  marginLeft: "10px",
                 }}
                 key={item.uid}
               >
