@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { getTopUsers } from "../../../Utils/DesignUtilities/CalculationManipulation";
 import IndividualSpeaker from "./IndividualSpeaker";
 
-export default function GalleryView({ selfUID /*users*/ }) {
+export default function GalleryView({ selfUID, users }) {
   const { audio, video, screen } = useSelector((s) => s.room.controls);
 
   const { chat, participants } = useSelector((s) => s.comps.comp);
@@ -14,9 +14,6 @@ export default function GalleryView({ selfUID /*users*/ }) {
   const [gridUsers, setGridUsers] = useState([]);
 
   const [bottomUsers, setBottomUsers] = useState([]);
-
-  //temporary testing items
-  const users = Array.from({ length: 10 }, (_, index) => index + 1);
 
   const totalNumberOfGridUsers = chat || participants ? 9 : 12;
 
@@ -116,17 +113,16 @@ export default function GalleryView({ selfUID /*users*/ }) {
                 item
                 sx={{
                   ...gridHeightandWidthCalculator(),
-                  border: "1px solid white",
                 }}
                 key={item.uid}
               >
-                {/* <IndividualSpeaker
+                <IndividualSpeaker
                   audio={item.audio}
                   video={item.video}
                   name={item.uid.split("-")[1]}
                   username={item.uid.split("-")[0]}
                   volume={volumes[item.uid]}
-                /> */}
+                />
               </Grid>
             );
           })
@@ -193,18 +189,17 @@ export default function GalleryView({ selfUID /*users*/ }) {
                     height: "100%",
                     marginRight: "10px",
                     marginLeft: "10px",
-                    border: "1px solid white",
                   }}
                   key={item.uid}
                 >
-                  {/* <IndividualSpeaker
+                  <IndividualSpeaker
                     audio={item.audio}
                     video={item.video}
                     name={item.uid.split("-")[1]}
                     username={item.uid.split("-")[0]}
                     volume={volumes[item.uid]}
                     smallTile={true}
-                  /> */}
+                  />
                 </Grid>
               );
             })}
