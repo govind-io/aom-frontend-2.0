@@ -15,9 +15,13 @@ export default function GalleryView({ selfUID, users }) {
 
   const [bottomUsers, setBottomUsers] = useState([]);
 
+  const totalNumberOfGridUsers = chat || participants ? 9 : 12;
+
   const gridHeightandWidthCalculator = () => {
     const num =
-      bottomUsers.length === 0 ? gridUsers.length + 1 : gridUsers.length;
+      gridUsers.length >= totalNumberOfGridUsers
+        ? gridUsers.length
+        : gridUsers.length + 1;
 
     const columns = Math.ceil(Math.sqrt(num));
     const rows = Math.ceil(num / columns);
@@ -33,8 +37,6 @@ export default function GalleryView({ selfUID, users }) {
 
     return "20%";
   };
-
-  const totalNumberOfGridUsers = chat || participants ? 9 : 12;
 
   useEffect(() => {
     if (screen) {
