@@ -86,11 +86,10 @@ export default function SpeakerView({ users, presenters, selfUID }) {
         }}
       >
         <Grid
-          container
           sx={{
             height: "100%",
+            width: "100%",
             overflowX: "auto",
-            flexDirection: "column",
             "::-webkit-scrollbar": {
               width: "0.5em",
               backgroundColor: "#F5F5F5",
@@ -99,8 +98,11 @@ export default function SpeakerView({ users, presenters, selfUID }) {
               borderRadius: "10px",
               backgroundColor: "#000000",
             },
+            flexWrap: "wrap",
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
           }}
-          alignContent="center"
         >
           {activeSpeaker?.uid !== selfUID && (
             <Grid
