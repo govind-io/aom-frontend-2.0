@@ -17,7 +17,8 @@ export default function LandingPage() {
   const dispatch = useDispatch();
   const user = useSelector((s) => s.user.data);
 
-  const { token, from, name: room } = router.query;
+  const { token, from, room, passcode, profilename, audio, video } =
+    router.query;
   const { isReady } = router;
 
   useEffect(() => {
@@ -47,10 +48,10 @@ export default function LandingPage() {
                       {
                         pathname: `/room/${room}`,
                         query: {
-                          create: false,
-                          video: false,
-                          audio: false,
-                          personal: false,
+                          video,
+                          audio,
+                          passcode,
+                          profilename,
                         },
                       },
                       { pathname: `/room/${room}` }
@@ -80,8 +81,19 @@ export default function LandingPage() {
         onSuccess: () => {
           //get user profile data
           updateTokens({ refresh: token, access: token });
-          if (from === "roompage" && name) {
-            router.push(`/room/${name}`);
+          if (from === "roompage" && room) {
+            router.push(
+              {
+                pathname: `/room/${room}`,
+                query: {
+                  video,
+                  audio,
+                  passcode,
+                  profilename,
+                },
+              },
+              { pathname: `/room/${room}` }
+            );
             return;
           }
           router.push("/home");

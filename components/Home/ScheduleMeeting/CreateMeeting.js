@@ -27,8 +27,6 @@ export default forwardRef(function CreateMeeting(
 ) {
   const dispatch = useDispatch();
 
-  const user = useSelector((s) => s.user.data);
-
   const [loading, setLoading] = useState();
 
   const [startDate, setStartDate] = useState(new Date());
@@ -106,6 +104,7 @@ export default forwardRef(function CreateMeeting(
         onSuccess: (data) => {
           setLoading(false);
           setPage(2);
+          resetFormValues();
         },
       })
     );

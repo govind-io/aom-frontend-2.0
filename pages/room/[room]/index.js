@@ -59,7 +59,14 @@ export default function Room() {
     if (!user.username) {
       router.push({
         pathname: "/",
-        query: { from: "roompage", name: room },
+        query: {
+          from: "roompage",
+          room,
+          passcode,
+          profilename,
+          video,
+          audio,
+        },
       });
 
       return;
@@ -67,10 +74,6 @@ export default function Room() {
 
     if (room !== roomData.meetingId || !roomData.token) {
       setLoading(true);
-
-      //resetting video and audio for user directly trying to join a room
-      video = "false";
-      audio = "false";
 
       dispatch(
         GetRoomDetails({
@@ -85,12 +88,21 @@ export default function Room() {
             if (data.message.includes(404)) {
               ToastHandler("dan", "Invalid Meeting Id");
             } else if (data.message.includes(400)) {
-              if (!passcode)
+              if (!passcode) {
+                router.push(
+                  {
+                    pathname: `/room/${room}/join`,
+                    query: { profilename, passcode, audio, video },
+                  },
+                  { pathname: `/room/${room}/join` }
+                );
                 return ToastHandler(
                   "dan",
                   "This is a protected meeting, please enter passcode"
                 );
-              ToastHandler("dan", "Invalid Passcode, please try again");
+              } else {
+                ToastHandler("dan", "Invalid Passcode, please try again");
+              }
             } else {
               ToastHandler("dan", "Something went wrong");
             }

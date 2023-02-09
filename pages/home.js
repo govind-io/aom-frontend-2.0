@@ -40,8 +40,22 @@ export default function Home() {
             <ScheduleMeetingButton />
           </Grid>
         </Grid>
-        <Grid item xs={4} height={"80%"} position="relative">
-          <img src={images.login.joinAnimation} />
+        <Grid
+          item
+          xs={4}
+          height={"80%"}
+          position="relative"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src={images.login.joinAnimation}
+            style={{
+              maxWidth: "100%",
+            }}
+          />
           <Typography
             sx={{
               font: "normal normal 500 32px/38px sans-serif",
