@@ -3,16 +3,16 @@ import { SecureApiHandler } from "../../../Utils/ApiUtilities/SecureApiHandler";
 import { Tokens } from "../../../Utils/Configs/ApiConfigs";
 import { DeleteAll } from "../../Actions/DeleteAll";
 import { SaveRoomData } from "../../Actions/Room/RoomDataAction";
-import { SaveUserData } from "../../Actions/User/DataAction";
 import { CREATE_ROOM, GET_ROOM_DETAILS } from "../../Types/Users/RoomTypes";
 
 function* GetRoomDetailsSaga({ data }) {
   let apiConfig = {
-    method: "GET",
+    method: "POST",
     headers: {
       Authorization: `Bearer ${Tokens.refresh || data.data?.token}`,
     },
     url: `room/${data.data.meetingId}/generate-token`,
+    data: data.data,
   };
 
   let response = yield call(

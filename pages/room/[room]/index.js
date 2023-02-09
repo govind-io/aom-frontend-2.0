@@ -22,7 +22,7 @@ export default function Room() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const { room, profilename } = router.query;
+  const { room, profilename, passcode } = router.query;
   let { video, audio } = router.query;
 
   const { isReady } = router;
@@ -65,7 +65,7 @@ export default function Room() {
       return;
     }
 
-    if (room !== roomData.meetingId) {
+    if (room !== roomData.meetingId || !roomData.token) {
       setLoading(true);
 
       //resetting video and audio for user directly trying to join a room
@@ -76,6 +76,7 @@ export default function Room() {
         GetRoomDetails({
           data: {
             meetingId: room,
+            pin: passcode,
           },
           onSuccess: (data) => {
             setLoading(false);
@@ -83,6 +84,13 @@ export default function Room() {
           onFailed: (data) => {
             if (data.message.includes(404)) {
               ToastHandler("dan", "Invalid Meeting Id");
+            } else if (data.message.includes(400)) {
+              if (!passcode)
+                return ToastHandler(
+                  "dan",
+                  "This is a protected meeting, please enter passcode"
+                );
+              ToastHandler("dan", "Invalid Passcode, please try again");
             } else {
               ToastHandler("dan", "Something went wrong");
             }

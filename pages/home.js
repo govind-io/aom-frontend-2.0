@@ -11,6 +11,7 @@ import HomeHeader from "../components/Home/Header";
 import NewMeetingButton from "../components/Home/NewMeetingButton";
 import JoinMeetingButton from "../components/Home/JoinMeeting/JoinMeetingButton";
 import MetaTagsGenerator from "../Utils/ComponentUtilities/MetaTagsGenerator";
+import ScheduleMeetingButton from "../components/Home/ScheduleMeeting/ScheduleMeetingButton";
 
 export default function Home() {
   //constants here
@@ -32,14 +33,15 @@ export default function Home() {
         sx={{ height: "100%" }}
         alignItems="center"
       >
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <Grid container>
             <NewMeetingButton />
             <JoinMeetingButton />
+            <ScheduleMeetingButton />
           </Grid>
         </Grid>
         <Grid item xs={4} height={"80%"} position="relative">
-          <Image src={images.login.joinAnimation} layout="fill" />
+          <img src={images.login.joinAnimation} />
           <Typography
             sx={{
               font: "normal normal 500 32px/38px sans-serif",

@@ -4,7 +4,8 @@
         "new":"New Meeting",
         "welcome":"Welcome to Khul Ke Meet!",
         "startVideo":"Start With Video",
-        "personalMeetId":"Use Personal Meet Id"
+        "personalMeetId":"Use Personal Meet Id",
+        "scheduleMeeting":"Schedule"
     },
     "home":{
         "joinForm":{
@@ -14,7 +15,18 @@
             "dontConnectAudio":"Don't Connect to Audio",
             "dontConnectVideo":"Turn off my video",
             "cancel":"Cancel",
-            "joinBtn":"Join"
+            "joinBtn":"Join",
+            "pin":"Please enter passcode (if Any)"
+        },
+        "scheduleForm":{
+            "schedule":"Schedule Meeting",
+            "roomname":"Room name",
+            "roomNamePlaceholder":"Enter Room Name",
+            "dateAndTime":"Date & Time",
+            "cancel":"Cancel",
+            "create":"Create",
+            "security":"Security",
+            "passcode":"Passcode"
         }
     },
     "room":{

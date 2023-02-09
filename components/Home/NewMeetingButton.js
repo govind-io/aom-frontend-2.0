@@ -71,7 +71,7 @@ export default function NewMeetingButton() {
   };
 
   return (
-    <Grid item xs={6} textAlign="center">
+    <Grid item xs={4} textAlign="center">
       <IconButton
         sx={{
           backgroundColor: "#66B984",

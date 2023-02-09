@@ -27,6 +27,7 @@ export default function JoinMeetingModal({ open, setOpen }) {
   const [audio, setAudio] = useState(false);
   const [video, setVideo] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [pin, setPin] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -36,12 +37,20 @@ export default function JoinMeetingModal({ open, setOpen }) {
       return;
     }
 
+    if (pin && pin?.length !== 6) {
+      return ToastHandler(
+        "dan",
+        "Passcode can not be longer than 6 characters"
+      );
+    }
+
     setLoading(true);
 
     dispatch(
       GetRoomDetails({
         data: {
           meetingId,
+          pin,
         },
         onSuccess: (data) => {
           setLoading(false);
@@ -74,6 +83,7 @@ export default function JoinMeetingModal({ open, setOpen }) {
     setOpen(false);
     setMeetingId("");
     setProfileName(user.username || user.name);
+    setPin("");
   };
 
   return (
@@ -124,6 +134,7 @@ export default function JoinMeetingModal({ open, setOpen }) {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
+                  required={true}
                   name={"meetingId"}
                   placeholder={text.home.joinForm.meetingId}
                   value={meetingId}
@@ -177,6 +188,7 @@ export default function JoinMeetingModal({ open, setOpen }) {
                 <TextField
                   fullWidth
                   name={"name"}
+                  required={true}
                   placeholder={text.home.joinForm.name}
                   value={profilename}
                   inputProps={{
@@ -195,6 +207,31 @@ export default function JoinMeetingModal({ open, setOpen }) {
                   variant="outlined"
                   onChange={(e) => {
                     setProfileName(e.target.value);
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  name={"pin"}
+                  placeholder={text.home.joinForm.pin}
+                  value={pin}
+                  inputProps={{
+                    style: {
+                      font: "normal normal normal 16px/19px Work Sans",
+                      color: "#CECECE",
+                      padding: "5px 10px",
+                    },
+                  }}
+                  sx={{
+                    marginTop: "20px",
+                    border: "1px solid #797979",
+                    borderRadius: "8px",
+                  }}
+                  type={"text"}
+                  variant="outlined"
+                  onChange={(e) => {
+                    setPin(e.target.value);
                   }}
                 />
               </Grid>

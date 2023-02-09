@@ -39,7 +39,7 @@ export const RoomReducer = (state = initialState, action) => {
 
   switch (action.type) {
     case SAVE_ROOM_DATA:
-      return { ...state, data: { ...state.data, ...data } };
+      return { ...state, data: data };
 
     case SAVE_ROOM_CONTROLS:
       return { ...state, controls: { ...state.controls, ...data } };
