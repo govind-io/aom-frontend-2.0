@@ -35,7 +35,10 @@ export default function RoomHeader() {
 
   useEffect(() => {
     setRoomTitle(
-      `${room.data.moderator?.name || room.data.moderator?.username}'s Meeting`
+      room.data.name ||
+        `${
+          room.data.moderator?.name || room.data.moderator?.username
+        }'s Meeting`
     );
   }, [room]);
 

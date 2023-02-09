@@ -7,8 +7,36 @@ export default function CopyLink() {
   const room = useSelector((s) => s.room);
 
   const copyMeetLink = () => {
+    if (room.data.passcode) {
+      navigator.clipboard.writeText(
+        `${
+          room.data.name
+            ? `${room.data.name}: Meeting By ${
+                room.data.moderator.name || room.data.moderator.username
+              }`
+            : `${room.moderator.name || room.moderator.username}'s Meeting`
+        }
+
+https://${window.location.host}/room/${room.data.meetingId}?passcode=${
+          room.data.pin
+        }
+        `
+      );
+
+      return;
+    }
+
     navigator.clipboard.writeText(
-      `${window.location.host}/room/${room.data.meetingId}`
+      `${
+        room.data.name
+          ? `${room.data.name}: Meeting By ${
+              room.data.moderator.name || room.data.moderator.username
+            }`
+          : `${room.moderator.name || room.moderator.username}'s Meeting`
+      }
+      
+https://${window.location.host}/room/${room.data.meetingId}
+      `
     );
 
     ToastHandler("sus", "Meeting Link Copied Succefully");
