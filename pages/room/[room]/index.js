@@ -27,7 +27,7 @@ export default function Room() {
 
   const { isReady } = router;
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     dispatch(ChangeUnreadMessageCount(0));
@@ -72,9 +72,21 @@ export default function Room() {
       return;
     }
 
-    if (room !== roomData.meetingId || !roomData.token) {
-      setLoading(true);
+    if (!user.name && !profilename) {
+      router.push(
+        {
+          pathname: `/room/${room}/join`,
+          query: { profilename, passcode, audio, video },
+        },
+        { pathname: `/room/${room}/join` }
+      );
 
+      ToastHandler("dan", "Name is required for guest users");
+
+      return;
+    }
+
+    if (room !== roomData.meetingId || !roomData.token) {
       dispatch(
         GetRoomDetails({
           data: {
@@ -114,6 +126,8 @@ export default function Room() {
 
       return;
     }
+
+    setLoading(false);
   }, [room, isReady]);
 
   return (

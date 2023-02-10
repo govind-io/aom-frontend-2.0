@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import text from "../../../Content/text.json";
 import { GetRoomDetails } from "../../../Redux/Actions/Room/RoomDataAction";
+import { SaveUserData } from "../../../Redux/Actions/User/DataAction";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
 
 //Mui Styles here
@@ -65,6 +66,8 @@ export default function JoinMeetingModal({ open, setOpen }) {
             },
             { pathname: `/room/${data.meetingId}` }
           );
+
+          dispatch(SaveUserData({ name: profilename }));
         },
         onFailed: (data) => {
           console.log({ data });
@@ -82,7 +85,7 @@ export default function JoinMeetingModal({ open, setOpen }) {
   const handleCloseModal = () => {
     setOpen(false);
     setMeetingId("");
-    setProfileName(user.username || user.name);
+    setProfileName(user.name || user.username);
     setPin("");
   };
 

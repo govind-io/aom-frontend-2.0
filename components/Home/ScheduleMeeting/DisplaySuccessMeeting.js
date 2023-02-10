@@ -8,6 +8,7 @@ import ToastHandler from "../../../Utils/Toast/ToastHandler";
 
 export default function SuccessPage({ setPage, handleCloseModal }) {
   const roomData = useSelector((s) => s.room.data);
+  const user = useSelector((s) => s.user.data);
 
   const copyMeetLink = () => {
     navigator.clipboard.writeText(
@@ -88,8 +89,8 @@ ${
             color: "#F5F5F5",
           }}
         >
-          {roomData.moderator.name || roomData.moderator.username}
-          {text.home.scheduleForm.inviting}: {roomData.name}.
+          {user.name || user.username} {text.home.scheduleForm.inviting}:{" "}
+          {roomData.name}.
         </Typography>
         <Typography
           sx={{

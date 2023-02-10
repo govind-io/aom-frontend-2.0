@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import text from "../../../Content/text.json";
 import { GetRoomDetails } from "../../../Redux/Actions/Room/RoomDataAction";
+import { SaveUserData } from "../../../Redux/Actions/User/DataAction";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
 
 export default function JoinRoomPage() {
@@ -73,6 +74,8 @@ export default function JoinRoomPage() {
             },
             { pathname: `/room/${data.meetingId}` }
           );
+
+          dispatch(SaveUserData({ name: profilename }));
         },
         onFailed: (data) => {
           console.log({ data });
