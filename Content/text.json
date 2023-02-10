@@ -61,6 +61,7 @@
             "search":"Search here…",
             "thisCall":"On This Call"
         },
-        "mute":"Mute All"
+        "mute":"Mute All",
+        "end":"End Meeting"
     }
 }

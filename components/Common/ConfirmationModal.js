@@ -9,6 +9,7 @@ export default function ConfirmationModal({
   reject,
   confirmText,
   rejectText,
+  extraButton,
 }) {
   return (
     <Modal
@@ -40,7 +41,8 @@ export default function ConfirmationModal({
             display: "flex",
             width: "fit-content",
             justifyContent: "flex-start",
-            maxWidth: "30%",
+            width: "50%",
+            maxWidth: "600px",
           }}
         >
           <Grid item xs={12}>
@@ -108,6 +110,7 @@ export default function ConfirmationModal({
             >
               {confirmText}
             </IconButton>
+            {extraButton}
           </Grid>
         </Grid>
       </Zoom>

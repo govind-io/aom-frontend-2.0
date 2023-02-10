@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { RTCClient } from "../../../MEET_SDK/rtc";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  DeleteRoomData,
   SaveRoomControls,
   SaveRoomMetaData,
 } from "../../../Redux/Actions/Room/RoomDataAction";
@@ -22,6 +23,7 @@ import {
   ChangeUnreadMessageCount,
 } from "../../../Redux/Actions/Comps/DataComps";
 import {
+  END_MEETING_EVENT,
   MESSAGE_EVENT,
   MUTE_ALL_EVENT,
   NOTIFICATION_EVENT,
@@ -44,9 +46,7 @@ export default function GridMain({ profilename, audio, video }) {
   const audioRef = useRef();
   audioRef.current = audioTrack;
 
-  console.log("audio is ", audioRef.current);
-
-  const handleNotificationEvents = async ({ content }) => {
+  const handleNotificationEvents = async ({ content }, client) => {
     switch (content) {
       case MUTE_ALL_EVENT:
         if (audioRef.current) {
@@ -56,6 +56,16 @@ export default function GridMain({ profilename, audio, video }) {
         }
 
         break;
+      case END_MEETING_EVENT:
+        client.close();
+
+        setMeetClient("");
+
+        ToastHandler("info", "Meeting Ended by Moderator");
+
+        dispatch(DeleteRoomData());
+
+        return router.push(`/home`);
 
       default:
         break;
@@ -147,7 +157,9 @@ export default function GridMain({ profilename, audio, video }) {
     });
 
     client.on(MESSAGE_EVENT, () => dispatch(ChangeUnreadMessageCount(1)));
-    client.on(NOTIFICATION_EVENT, handleNotificationEvents);
+    client.on(NOTIFICATION_EVENT, ({ content }) => {
+      handleNotificationEvents({ content }, client);
+    });
 
     client.onUserJoined(userJoinedEvent);
     client.onUserLeft(userLeftEvent);

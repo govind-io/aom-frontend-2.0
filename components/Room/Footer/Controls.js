@@ -1,4 +1,4 @@
-import { Grid, IconButton } from "@mui/material";
+import { CircularProgress, Grid, IconButton } from "@mui/material";
 import PresentToAllIcon from "@mui/icons-material/PresentToAll";
 import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
 import VideocamIcon from "@mui/icons-material/Videocam";
@@ -7,7 +7,10 @@ import MicOffIcon from "@mui/icons-material/MicOff";
 import MicIcon from "@mui/icons-material/Mic";
 import text from "../../../Content/text.json";
 import { useDispatch, useSelector } from "react-redux";
-import { SaveRoomControls } from "../../../Redux/Actions/Room/RoomDataAction";
+import {
+  DeleteRoom,
+  SaveRoomControls,
+} from "../../../Redux/Actions/Room/RoomDataAction";
 import { meetClient, setMeetClient } from "../../../Utils/Configs/MeetClient";
 import { useRouter } from "next/router";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
@@ -18,7 +21,7 @@ import {
   handleUnPublishTrack,
 } from "../../../Utils/MeetingUtils/Tracks";
 import ConfirmationModal from "../../Common/ConfirmationModal";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import SquareIcon from "@mui/icons-material/Square";
 import {
@@ -26,6 +29,10 @@ import {
   handleStopRecording,
 } from "../../../Utils/MeetingUtils/Recorder";
 import DotMenu from "./DotMenu";
+import {
+  END_MEETING_EVENT,
+  NOTIFICATION_EVENT,
+} from "../../../Utils/Contants/Constants";
 
 export default function Controls() {
   const dispatch = useDispatch();
@@ -33,9 +40,12 @@ export default function Controls() {
 
   const { audio, screen, video } = useSelector((s) => s.room.controls);
   const { existingPresenter } = useSelector((s) => s.room.metaData);
+  const { moderator, meetingId } = useSelector((s) => s.room.data);
+  const { username } = useSelector((s) => s.user.data);
 
   const [recording, setRecording] = useState(false);
   const [openLeaveRoom, setOpenLeaveRoom] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleCloseLeaveRoom = () => {
     setOpenLeaveRoom(false);
@@ -127,6 +137,57 @@ export default function Controls() {
     }
   };
 
+  const EndMeetButton = useMemo(() => {
+    const endMeeting = async () => {
+      setLoading(true);
+      await meetClient.emit(NOTIFICATION_EVENT, { content: END_MEETING_EVENT });
+      dispatch(
+        DeleteRoom({
+          data: { meetingId },
+          onFailed: () => {
+            ToastHandler("dan", "Something went wrong");
+            setLoading(false);
+            meetClient.close();
+            router.push("/home");
+          },
+          onSuccess: () => {
+            ToastHandler("sus", "Meeting ended successfully");
+            setLoading(false);
+            meetClient.close();
+            router.push("/home");
+          },
+        })
+      );
+    };
+
+    return (
+      <IconButton
+        sx={{
+          marginLeft: "20px",
+          background: "#BC4130 0% 0% no-repeat padding-box",
+          borderRadius: "8px",
+          padding: "10px 15px",
+          font: "normal normal 600 14px/16px Work Sans",
+          color: "#F5F5F5",
+        }}
+        variant={"contained"}
+        disableRipple={true}
+        onClick={endMeeting}
+        disabled={loading}
+      >
+        {loading ? (
+          <CircularProgress
+            sx={{
+              color: "white",
+            }}
+          />
+        ) : (
+          text.room.end
+        )}
+      </IconButton>
+    );
+  }, [meetClient, leaveRoom]);
+
   return (
     <Grid item>
       <IconButton
@@ -212,6 +273,7 @@ export default function Controls() {
         reject={handleCloseLeaveRoom}
         confirmText={text.room.leaveConfirm}
         rejectText={text.room.stay}
+        extraButton={moderator?.username === username ? EndMeetButton : ""}
       />
     </Grid>
   );

@@ -2,6 +2,7 @@ import { HYDRATE } from "next-redux-wrapper";
 import { GALLERY } from "../../../Utils/Contants/Conditional";
 import { DELETE_ALL } from "../../Actions/DeleteAll";
 import {
+  DELETE_ROOM_DATA,
   SAVE_ROOM_CONTROLS,
   SAVE_ROOM_DATA,
   SAVE_ROOM_LAYOUT,
@@ -49,6 +50,9 @@ export const RoomReducer = (state = initialState, action) => {
 
     case SAVE_ROOM_META_DATA:
       return { ...state, metaData: { ...state.metaData, ...data } };
+
+    case DELETE_ROOM_DATA:
+      return initialState;
 
     case DELETE_ALL: {
       return initialState;

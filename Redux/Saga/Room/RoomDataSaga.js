@@ -2,8 +2,15 @@ import { all, call, put, takeLatest } from "redux-saga/effects";
 import { SecureApiHandler } from "../../../Utils/ApiUtilities/SecureApiHandler";
 import { Tokens } from "../../../Utils/Configs/ApiConfigs";
 import { DeleteAll } from "../../Actions/DeleteAll";
-import { SaveRoomData } from "../../Actions/Room/RoomDataAction";
-import { CREATE_ROOM, GET_ROOM_DETAILS } from "../../Types/Users/RoomTypes";
+import {
+  DeleteRoomData,
+  SaveRoomData,
+} from "../../Actions/Room/RoomDataAction";
+import {
+  CREATE_ROOM,
+  DELETE_ROOM,
+  GET_ROOM_DETAILS,
+} from "../../Types/Users/RoomTypes";
 
 function* GetRoomDetailsSaga({ data }) {
   let apiConfig = {
@@ -40,8 +47,41 @@ function* GetRoomDetailsSaga({ data }) {
   return data.onSuccess(response.data.data);
 }
 
+function* DeleteRoomSaga({ data }) {
+  let apiConfig = {
+    method: "DELETE",
+    url: `room/${data.data.meetingId}`,
+    headers: {
+      Authorization: `Bearer ${Tokens.refresh || data.data.token}`,
+    },
+  };
+
+  let response = yield call(
+    SecureApiHandler,
+    apiConfig,
+    false,
+    "Meeting Ended Successfully"
+  );
+
+  if (response.logout) {
+    yield put(DeleteAll());
+    if (!data.onFailed) return;
+    data.onFailed();
+  }
+
+  if (!response.res || !response.success) {
+    if (!data.onFailed) return;
+    return data.onFailed();
+  }
+
+  yield put(DeleteRoomData());
+
+  if (!data.onSuccess) return;
+
+  return data.onSuccess(response.data);
+}
+
 function* CreateRoomSaga({ data }) {
-  console.log("room saga called");
   let apiConfig = {
     method: "POST",
     url: `room/create-room`,
@@ -79,4 +119,5 @@ function* CreateRoomSaga({ data }) {
 export const roomDataSaga = all([
   takeLatest(GET_ROOM_DETAILS, GetRoomDetailsSaga),
   takeLatest(CREATE_ROOM, CreateRoomSaga),
+  takeLatest(DELETE_ROOM, DeleteRoomSaga),
 ]);
