@@ -12,9 +12,9 @@ export default function SuccessPage({ setPage, handleCloseModal }) {
 
   const copyMeetLink = () => {
     navigator.clipboard.writeText(
-      `${roomData.moderator.name || roomData.moderator.username} ${
-        text.home.scheduleForm.inviting
-      }: ${roomData.name}
+      `${user.name || user.username} ${text.home.scheduleForm.inviting}: ${
+        roomData.name
+      }
 
 ${text.home.scheduleForm.joinMeeting}
        
