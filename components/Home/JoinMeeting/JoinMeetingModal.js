@@ -73,6 +73,8 @@ export default function JoinMeetingModal({ open, setOpen }) {
           console.log({ data });
           if (data.message.includes(404)) {
             ToastHandler("dan", "Invalid Meeting Id");
+          } else if (data.message.includes(400)) {
+            ToastHandler("dan", "Invalid Passcode");
           } else {
             ToastHandler("dan", "Something went wrong");
           }

@@ -78,9 +78,10 @@ export default function JoinRoomPage() {
           dispatch(SaveUserData({ name: profilename }));
         },
         onFailed: (data) => {
-          console.log({ data });
           if (data.message.includes(404)) {
             ToastHandler("dan", "Invalid Meeting Id");
+          } else if (data.message.includes(400)) {
+            ToastHandler("dan", "Invalid Passcode");
           } else {
             ToastHandler("dan", "Something went wrong");
           }
@@ -305,6 +306,7 @@ export default function JoinRoomPage() {
                 },
               }}
               disableFocusRipple={true}
+              onClick={() => router.push("/home")}
             >
               {text.home.joinForm.cancel}
             </Button>
