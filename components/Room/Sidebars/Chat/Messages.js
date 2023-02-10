@@ -32,7 +32,9 @@ export default function Messages() {
     setIntialMessage();
 
     return () => {
-      meetClient.off(MESSAGE_EVENT, MessageListener);
+      if (meetClient) {
+        meetClient.off(MESSAGE_EVENT, MessageListener);
+      }
     };
   }, []);
 
