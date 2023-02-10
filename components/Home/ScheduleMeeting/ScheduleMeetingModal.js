@@ -12,6 +12,7 @@ export default function ScheduleMeetingModal({ open, setOpen }) {
   const handleCloseModal = () => {
     createMeetingRef.current?.resetFormValues();
     setOpen(false);
+    setPage(1);
   };
 
   return (

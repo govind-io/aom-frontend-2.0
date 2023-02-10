@@ -28,3 +28,30 @@ export const TimeNMinsInFuture = (min) => {
   const newTime = new Date(currentTime.getTime() + thirtyMinutesInMs);
   return newTime;
 };
+
+export const convertDateToReadable = (dateStr) => {
+  let date = new Date(dateStr);
+  let options = {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+
+  let datePart = date.toLocaleDateString("en-US", options);
+
+  const split = new Date().toString().split(" ");
+  const timeZone = split.slice(-3).join(" ");
+  let timeZoneString = "";
+
+  timeZone
+    .replace("(", "")
+    .replace(")", "")
+    .split(" ")
+    .forEach((item) => {
+      timeZoneString = timeZoneString + item[0];
+    });
+
+  return `${datePart} (${timeZoneString.toUpperCase()})`;
+};

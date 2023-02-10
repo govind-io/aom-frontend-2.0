@@ -15,5 +15,8 @@
         "check":"/icons/Check.svg",
         "fullscreenview":"/icons/fullScreen.svg",
         "copy":"/icons/Copy.svg"
+    },
+    "home":{
+        "success":"/images/success.gif"
     }
 }

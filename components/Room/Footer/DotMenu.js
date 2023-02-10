@@ -54,7 +54,7 @@ export default function DotMenu() {
         <MoreVertIcon
           sx={{
             color: "white",
-            backgroundColor: "#CC3425",
+            backgroundColor: "#27292B",
             borderRadius: "8px",
             width: "40px",
             height: "40px",

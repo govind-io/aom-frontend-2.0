@@ -26,7 +26,17 @@
             "cancel":"Cancel",
             "create":"Create",
             "security":"Security",
-            "passcode":"Passcode"
+            "passcode":"Passcode",
+            "success":"Success",
+            "created":"Your meeting has been created successfully. Copy this to invite your friends.",
+            "inviting":"is inviting you to a scheduled meeting",
+            "joinMeeting":" Join khulke Meeting ",
+            "time":"Time",
+            "link":"Link",
+            "meetingId":"Meeting Id",
+            "copy":"Copy",
+            "close":"Close",
+            "passcodeInfo":"The passcode will be embedded in the invite link. Users joining with the invite link will not have to enter the passcode manually."
         }
     },
     "room":{

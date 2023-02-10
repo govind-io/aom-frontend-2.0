@@ -5,12 +5,14 @@ import {
   CircularProgress,
   Divider,
   Grid,
+  IconButton,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import text from "../../../Content/text.json";
 import { useImperativeHandle, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import DatePickerUtil from "../../../Utils/DesignUtilities/DateTimePicker/DatePicker";
 import TimePicker from "../../../Utils/DesignUtilities/DateTimePicker/TimePicker";
 import {
@@ -164,7 +166,7 @@ export default forwardRef(function CreateMeeting(
               onChange={(e) => setRoomName(e.target.value)}
               name={"roomname"}
               placeholder={text.home.scheduleForm.roomNamePlaceholder}
-              required
+              required={true}
               inputProps={{
                 style: {
                   font: "normal normal normal 16px/19px Work Sans",
@@ -330,6 +332,50 @@ export default forwardRef(function CreateMeeting(
                   }}
                   variant="outlined"
                 />
+              </Grid>
+              <Grid item>
+                <Tooltip
+                  arrow
+                  componentsProps={{
+                    tooltip: {
+                      sx: { backgroundColor: "transparent" },
+                    },
+                  }}
+                  title={
+                    <>
+                      <Typography
+                        sx={{
+                          background: "#2B2D2E 0% 0% no-repeat padding-box",
+                          boxShadow: "10px 10px 20px #0000007E",
+                          border: "1px solid #79797982",
+                          font: "normal normal normal 12px/18px Work Sans",
+                          color: "#CECECE",
+                          padding: "10px",
+                          borderRadius: "10px",
+                        }}
+                      >
+                        {text.home.scheduleForm.passcodeInfo}
+                      </Typography>
+                    </>
+                  }
+                  placement={"top"}
+                >
+                  <IconButton
+                    sx={{
+                      border: "2px solid #CECECE",
+                      borderRadius: "50%",
+                      backgroundColor: "transparent",
+                      width: "20px",
+                      height: "20px",
+                      color: "#CECECE",
+                      textAlign: "center",
+                      ml: "20px",
+                      fontSize: "12px",
+                    }}
+                  >
+                    i
+                  </IconButton>
+                </Tooltip>
               </Grid>
             </Grid>
           </Grid>

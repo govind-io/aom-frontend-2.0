@@ -161,7 +161,7 @@ export default function Controls() {
       </IconButton>
       <IconButton
         sx={{
-          backgroundColor: screen ? "#27292B" : "#CC3425",
+          backgroundColor: "#27292B",
           borderRadius: "8px",
           marginRight: "20px",
         }}
@@ -176,7 +176,7 @@ export default function Controls() {
       </IconButton>
       <IconButton
         sx={{
-          backgroundColor: recording ? "#27292B" : "#CC3425",
+          backgroundColor: "#27292B",
           borderRadius: "8px",
           marginRight: "20px",
         }}

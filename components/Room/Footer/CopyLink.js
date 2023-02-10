@@ -9,35 +9,13 @@ export default function CopyLink() {
   const copyMeetLink = () => {
     if (room.data.passcode) {
       navigator.clipboard.writeText(
-        `${
-          room.data.name
-            ? `${room.data.name}: Meeting By ${
-                room.data.moderator.name || room.data.moderator.username
-              }`
-            : `${room.moderator.name || room.moderator.username}'s Meeting`
-        }
-
-https://${window.location.host}/room/${room.data.meetingId}?passcode=${
-          room.data.pin
-        }
-        `
+        `https://${window.location.host}/room/${room.data.meetingId}?passcode=${room.data.pin}`
       );
-
-      return;
+    } else {
+      navigator.clipboard.writeText(
+        `https://${window.location.host}/room/${room.data.meetingId}`
+      );
     }
-
-    navigator.clipboard.writeText(
-      `${
-        room.data.name
-          ? `${room.data.name}: Meeting By ${
-              room.data.moderator.name || room.data.moderator.username
-            }`
-          : `${room.moderator.name || room.moderator.username}'s Meeting`
-      }
-      
-https://${window.location.host}/room/${room.data.meetingId}
-      `
-    );
 
     ToastHandler("sus", "Meeting Link Copied Succefully");
   };
