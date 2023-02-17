@@ -12,25 +12,21 @@ export default function SuccessPage({ setPage, handleCloseModal }) {
 
   const copyMeetLink = () => {
     navigator.clipboard.writeText(
-      `${user.name || user.username} ${text.home.scheduleForm.inviting}: ${
-        roomData.name
-      }
+      `${user.name || "Khul ke guest"} ${text.home.scheduleForm.inviting}
 
-${text.home.scheduleForm.joinMeeting}
-       
-${text.home.scheduleForm.time} :${convertDateToReadable(
+${text.home.scheduleForm.title}: ${roomData.name}       
+${text.home.scheduleForm.time}: ${convertDateToReadable(
         roomData.start
       )} to ${convertDateToReadable(roomData.end)}
-${text.home.scheduleForm.link} :${
+      
+${text.home.scheduleForm.link}: ${
         roomData.passcode
           ? `https://${window.location.host}/room/${roomData.meetingId}?passcode=${roomData.pin}`
           : `https://${window.location.host}/room/${roomData.meetingId}`
       }
-${text.home.scheduleForm.meetingId} :${roomData.meetingId.toUpperCase()}
+${text.home.scheduleForm.meetingId}: ${roomData.meetingId.toUpperCase()}
 ${
-  roomData.passcode
-    ? `${text.home.scheduleForm.passcode} : ${roomData.pin}`
-    : ""
+  roomData.passcode ? `${text.home.scheduleForm.passcode}: ${roomData.pin}` : ""
 }`
     );
 
@@ -89,8 +85,7 @@ ${
             color: "#F5F5F5",
           }}
         >
-          {user.name || user.username} {text.home.scheduleForm.inviting}:{" "}
-          {roomData.name}.
+          {user.name || user.username} {text.home.scheduleForm.inviting}.
         </Typography>
         <Typography
           sx={{
@@ -99,13 +94,12 @@ ${
             marginTop: "20px",
           }}
         >
-          {text.home.scheduleForm.joinMeeting}
+          {text.home.scheduleForm.title}: {roomData.name}
         </Typography>
         <Typography
           sx={{
             font: "normal normal medium 18px/24px Work Sans",
             color: "#F5F5F5",
-            marginTop: "10px",
           }}
         >
           {text.home.scheduleForm.time} :{" "}
@@ -116,6 +110,7 @@ ${
           sx={{
             font: "normal normal medium 18px/24px Work Sans",
             color: "#F5F5F5",
+            marginTop: "10px",
           }}
         >
           {text.home.scheduleForm.link} :{" "}
