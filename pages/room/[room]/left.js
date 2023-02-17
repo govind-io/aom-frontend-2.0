@@ -128,7 +128,15 @@ export default function LeftLobby() {
               }}
               disableRipple={true}
               onClick={() => {
-                router.push(`/room/${room}`);
+                router.push(
+                  {
+                    pathname: `/room/${room}`,
+                    query: {
+                      internalRedirect: true,
+                    },
+                  },
+                  { pathname: `/room/${room}` }
+                );
               }}
             >
               {text.room.rejoin}

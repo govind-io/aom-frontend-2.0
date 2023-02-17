@@ -22,7 +22,7 @@ export default function Room() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const { room, profilename, passcode } = router.query;
+  const { room, profilename, passcode, internalRedirect } = router.query;
   let { video, audio } = router.query;
 
   const { isReady } = router;
@@ -30,24 +30,6 @@ export default function Room() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(ChangeUnreadMessageCount(0));
-    dispatch(ChangeParticipantCounts(1));
-
-    dispatch(
-      SaveRoomControls({
-        screen: false,
-        audio: false,
-        video: false,
-      })
-    );
-
-    dispatch(
-      SaveRoomMetaData({
-        existingPresenter: false,
-        volumes: {},
-      })
-    );
-
     if (!isReady) return;
 
     if (!room) {
@@ -71,6 +53,35 @@ export default function Room() {
 
       return;
     }
+
+    if (!internalRedirect) {
+      router.push(
+        {
+          pathname: `/room/${room}/join`,
+          query: { profilename, passcode, audio, video },
+        },
+        { pathname: `/room/${room}/join` }
+      );
+      return;
+    }
+
+    dispatch(ChangeUnreadMessageCount(0));
+    dispatch(ChangeParticipantCounts(1));
+
+    dispatch(
+      SaveRoomControls({
+        screen: false,
+        audio: false,
+        video: false,
+      })
+    );
+
+    dispatch(
+      SaveRoomMetaData({
+        existingPresenter: false,
+        volumes: {},
+      })
+    );
 
     if (!user.name && !profilename) {
       router.push(

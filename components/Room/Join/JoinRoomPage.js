@@ -70,6 +70,7 @@ export default function JoinRoomPage() {
                 video,
                 audio,
                 profilename,
+                internalRedirect: true,
               },
             },
             { pathname: `/room/${data.meetingId}` }

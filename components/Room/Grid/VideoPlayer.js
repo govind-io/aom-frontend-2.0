@@ -6,10 +6,15 @@ import ScrollZoom from "../../../Utils/ComponentUtilities/ScrollToZoom";
 export default function MeetVideoPlayer({ videoTrack }) {
   const videoRef = useCallback(
     (node) => {
-      if (!node || !videoTrack) return;
-      node.srcObject = videoTrack;
-      ScrollZoom(node, 2, 0.2);
-      node.play();
+      if (!node || !videoTrack || !videoTrack?.enabled) return;
+
+      try {
+        node.srcObject = videoTrack;
+        ScrollZoom(node, 2, 0.2);
+        node.play();
+      } catch (e) {
+        console.log("something went wrong, warning: ", { e });
+      }
     },
     [videoTrack, videoTrack?.enabled]
   );

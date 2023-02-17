@@ -62,6 +62,7 @@ export default function JoinMeetingModal({ open, setOpen }) {
                 video,
                 audio,
                 profilename,
+                internalRedirect: true,
               },
             },
             { pathname: `/room/${data.meetingId}` }
