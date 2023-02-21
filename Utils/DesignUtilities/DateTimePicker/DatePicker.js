@@ -4,7 +4,7 @@ import { Box, Stack } from "@mui/system";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-export default function DatePickerUtil({ value, setValue }) {
+export default function CustomDatePicker({ value, setValue }) {
   return (
     <Grid container>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -26,7 +26,7 @@ export default function DatePickerUtil({ value, setValue }) {
               sx: {
                 "& .MuiButtonBase-root": {
                   fontWeight: "bold",
-                  fontSize: "14px",
+                  fontSize: "12px",
                   width: "40px",
                 },
                 "& .MuiButtonBase-root.Mui-disabled": {
@@ -70,7 +70,6 @@ export default function DatePickerUtil({ value, setValue }) {
                   alignItems: "center",
                   border: "1px solid rgba(211, 214, 219, 1)",
                   borderRadius: "0.5rem",
-                  marginTop: "-0.4rem",
                   padding: "0.7rem 0.6rem",
                   height: "40px",
                 }}
@@ -78,9 +77,9 @@ export default function DatePickerUtil({ value, setValue }) {
                 <input
                   style={{
                     border: "transparent",
-                    width: "5rem",
+                    width: "100%",
                     color: "#f5f5f5",
-                    font: "normal normal normal 16px/19px Work Sans",
+                    font: "normal normal normal 12px/19px Work Sans",
                     backgroundColor: "#1B1A1D",
                   }}
                   ref={inputRef}

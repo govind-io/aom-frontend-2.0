@@ -6,7 +6,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
-export default function TimePicker({ value, setValue }) {
+export default function CustomTimePicker({ value, setValue }) {
   return (
     <Grid container>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -77,15 +77,15 @@ export default function TimePicker({ value, setValue }) {
                 borderRadius: "0.5rem",
                 padding: "0.7rem 0.6rem",
                 height: "40px",
-                marginTop: "14px",
+                marginTop: "20px",
               }}
             >
               <input
                 style={{
                   border: "transparent",
-                  width: "5rem",
+                  width: "100%",
                   color: "#f5f5f5",
-                  font: "normal normal normal 16px/19px Work Sans",
+                  font: "normal normal normal 12px/19px Work Sans",
                   backgroundColor: "#1B1A1D",
                 }}
                 ref={inputRef}
