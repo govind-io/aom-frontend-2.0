@@ -52,8 +52,11 @@ export default function CopyLink() {
             }}
           >
             {`${
-              typeof window !== "undefined" ? window.location.host : ""
-            }/room/${room.data.meetingId}`}
+              typeof window !== "undefined"
+                ? `https://${window.location.host}`
+                : ""
+            }/room/${room.data.meetingId}` +
+              `${room.data.passcode ? `?passcode=${room.data.pin}` : ""}`}
           </Typography>
         </Grid>
         <Grid

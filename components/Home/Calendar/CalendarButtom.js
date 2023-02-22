@@ -1,11 +1,7 @@
 import { Grid, IconButton, Typography } from "@mui/material";
 import text from "../../../Content/text.json";
 import images from "../../../Content/images.json";
-import { useDispatch, useSelector } from "react-redux";
-import { ToggleCalendar } from "../../../Redux/Actions/Comps/CollapsibleComps";
 export default function CalendarButton({ setCalendar, calendar }) {
-  const dispatch = useDispatch();
-
   return (
     <Grid
       item

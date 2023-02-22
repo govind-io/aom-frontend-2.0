@@ -15,6 +15,8 @@ import ScheduleMeetingButton from "../components/Home/ScheduleMeeting/ScheduleMe
 import CalendarButton from "../components/Home/Calendar/CalendarButtom";
 import { ToggleCalendar } from "../Redux/Actions/Comps/CollapsibleComps";
 import WelcomeAnimation from "../components/Home/WelcomeAniamtion";
+import CalendarParts from "../components/Home/Calendar/CalendarParts";
+import ScheduleMeetingModal from "../components/Home/ScheduleMeeting/ScheduleMeetingModal";
 
 export default function Home() {
   //constants here
@@ -23,6 +25,7 @@ export default function Home() {
   const user = useSelector((s) => s.user.data);
 
   const [calendar, setCalendar] = useState(false);
+  const [ScheduleModalOpen, setScheduleModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user.token) {
@@ -44,7 +47,7 @@ export default function Home() {
           <Grid container>
             <NewMeetingButton />
             <JoinMeetingButton />
-            <ScheduleMeetingButton />
+            <ScheduleMeetingButton setOpenModal={setScheduleModalOpen} />
             <CalendarButton setCalendar={setCalendar} calendar={calendar} />
           </Grid>
         </Grid>
@@ -58,9 +61,17 @@ export default function Home() {
             alignItems: "center",
           }}
         >
-          {!calendar && <WelcomeAnimation />}
+          {calendar ? (
+            <CalendarParts setScheduleModalOpen={setScheduleModalOpen} />
+          ) : (
+            <WelcomeAnimation />
+          )}
         </Grid>
       </Grid>
+      <ScheduleMeetingModal
+        open={ScheduleModalOpen}
+        setOpen={setScheduleModalOpen}
+      />
     </PageWraper>
   );
 }

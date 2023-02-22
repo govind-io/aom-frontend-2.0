@@ -29,7 +29,7 @@
             "passcode":"Passcode",
             "success":"Success",
             "created":"Your meeting has been created successfully. Copy this to invite your friends.",
-            "inviting":"is inviting you to a scheduled khul ke meeting",
+            "inviting":"is inviting you to a scheduled Khul Ke meeting",
             "title":"Title",
             "time":"Time",
             "link":"Link",
@@ -39,7 +39,8 @@
             "passcodeInfo":"The passcode will be embedded in the invite link. Users joining with the invite link will not have to enter the passcode manually."
         },
         "calendar":{
-            "calendar":"Calendar"
+            "calendar":"Calendar",
+            "ended":"Ended"
         }
     },
     "room":{

@@ -9,6 +9,7 @@ import {
 import {
   CREATE_ROOM,
   DELETE_ROOM,
+  GET_ALL_ROOM,
   GET_ROOM_DETAILS,
 } from "../../Types/Users/RoomTypes";
 
@@ -116,8 +117,42 @@ function* CreateRoomSaga({ data }) {
   return data.onSuccess(response.data.data);
 }
 
+function* GetAllRoom({ data }) {
+  let apiConfig = {
+    method: "GET",
+    url: `room?startDate=${data.data.startDate}`,
+    data: data.data,
+    headers: {
+      Authorization: `Bearer ${Tokens.refresh || data.data.token}`,
+    },
+  };
+
+  let response = yield call(
+    SecureApiHandler,
+    apiConfig,
+    false,
+    "Fetched Meetings"
+  );
+
+  if (response.logout) {
+    yield put(DeleteAll());
+    if (!data.onFailed) return;
+    data.onFailed();
+  }
+
+  if (!response.res || !response.success) {
+    if (!data.onFailed) return;
+    return data.onFailed();
+  }
+
+  if (!data.onSuccess) return;
+
+  return data.onSuccess(response.data.data);
+}
+
 export const roomDataSaga = all([
   takeLatest(GET_ROOM_DETAILS, GetRoomDetailsSaga),
   takeLatest(CREATE_ROOM, CreateRoomSaga),
   takeLatest(DELETE_ROOM, DeleteRoomSaga),
+  takeLatest(GET_ALL_ROOM, GetAllRoom),
 ]);

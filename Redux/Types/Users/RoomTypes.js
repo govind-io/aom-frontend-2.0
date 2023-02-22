@@ -6,3 +6,4 @@ export const SAVE_ROOM_CONTROLS = "SAVE_ROOM_CONTROLS";
 export const SAVE_ROOM_META_DATA = "SAVE_ROOM_META_DATA";
 export const DELETE_ROOM = "DELETE_ROOM";
 export const DELETE_ROOM_DATA = "DELETE_ROOM_DATA";
+export const GET_ALL_ROOM = "GET_ALL_ROOM";

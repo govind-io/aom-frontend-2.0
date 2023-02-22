@@ -3,9 +3,7 @@ import text from "../../../Content/text.json";
 import images from "../../../Content/images.json";
 import { useState } from "react";
 import ScheduleMeetingModal from "./ScheduleMeetingModal";
-export default function ScheduleMeetingButton() {
-  const [openModal, setOpenModal] = useState(false);
-
+export default function ScheduleMeetingButton({ setOpenModal }) {
   return (
     <Grid
       item
@@ -37,7 +35,6 @@ export default function ScheduleMeetingButton() {
       >
         {text.login.scheduleMeeting}
       </Typography>
-      <ScheduleMeetingModal open={openModal} setOpen={setOpenModal} />
     </Grid>
   );
 }
