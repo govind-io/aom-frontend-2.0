@@ -111,7 +111,9 @@ export default function List({ searchQuery }) {
               }}
             >
               <Avatar
-                src={`${process.env.KHULKE_USER_PROFILE_PIC_URL}/${item.username}/pp`}
+                src={`${process.env.KHULKE_USER_PROFILE_PIC_URL}/${
+                  item.uid.split("-")[0]
+                }/pp`}
               />
             </Grid>
             <Grid
