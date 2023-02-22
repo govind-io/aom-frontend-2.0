@@ -1,9 +1,11 @@
-import { Grid, Skeleton } from "@mui/material";
+import { Grid, Skeleton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { GetAllRoom } from "../../../../Redux/Actions/Room/RoomDataAction";
 import { MonthAndDateToISOStringForCurrentYear } from "../../../../Utils/DesignUtilities/DateManipulation";
 import Card from "./Card";
+import images from "../../../../Content/images.json";
+import text from "../../../../Content/text.json";
 
 export default function AllCards({ activeMonth, activeDate }) {
   const dispatch = useDispatch();
@@ -47,31 +49,60 @@ export default function AllCards({ activeMonth, activeDate }) {
         alignContent: "flex-start",
       }}
     >
-      {loading
-        ? Array.from({ length: 2 }, (_, i) => i).map(() => (
-            <Skeleton
-              variant="rectangular"
-              width={"100%"}
-              height="100px"
-              animation="wave"
-              sx={{
-                borderRadius: "10px",
-                marginTop: "20px",
-              }}
+      {loading ? (
+        Array.from({ length: 3 }, (_, i) => i).map(() => (
+          <Skeleton
+            variant="rectangular"
+            width={"100%"}
+            height="100px"
+            animation="wave"
+            sx={{
+              borderRadius: "10px",
+              marginTop: "20px",
+            }}
+          />
+        ))
+      ) : !loading && allCards.length > 0 ? (
+        allCards.map((item) => {
+          return (
+            <Card
+              key={item._id}
+              activeMonth={activeMonth}
+              activeDate={activeDate}
+              {...item}
+              setAllCards={setAllCards}
             />
-          ))
-        : !loading && allCards.length > 0
-        ? allCards.map((item) => {
-            return (
-              <Card
-                key={item._id}
-                activeMonth={activeMonth}
-                activeDate={activeDate}
-                {...item}
-              />
-            );
-          })
-        : "Nothing to show"}
+          );
+        })
+      ) : (
+        <Grid
+          container
+          sx={{
+            height: "100%",
+          }}
+        >
+          <img
+            src={images.home.noMeetings}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "100%",
+              margin: "auto",
+            }}
+          />
+
+          <Typography
+            sx={{
+              marginTop: "20px",
+              textAlign: "center",
+              font: "normal normal 600 24px/28px Work Sans",
+              color: "#FFFFFF",
+              width: "100%",
+            }}
+          >
+            {text.home.calendar.noMeeeting}
+          </Typography>
+        </Grid>
+      )}
     </Grid>
   );
 }

@@ -40,7 +40,10 @@
         },
         "calendar":{
             "calendar":"Calendar",
-            "ended":"Ended"
+            "ended":"Ended",
+            "edit":"Edit",
+            "end":"End Meeting",
+            "noMeeeting":"NO MEETING SCHEDULED FOR THE DAY."
         }
     },
     "room":{

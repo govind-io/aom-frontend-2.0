@@ -18,6 +18,7 @@
         "copy":"/icons/Copy.svg"
     },
     "home":{
-        "success":"/images/success.gif"
+        "success":"/images/success.gif",
+        "noMeetings":"/images/noMeetings.png"
     }
 }

@@ -17,12 +17,13 @@ export default function Card({
   deleted,
   moderator,
   end,
+  setAllCards,
 }) {
   const router = useRouter();
 
   const copyLink = () => {
     navigator.clipboard.writeText(
-      `${moderator.name || "Khul ke guest"} ${text.home.scheduleForm.inviting}
+      `${moderator.name || "Khul Ke guest"} ${text.home.scheduleForm.inviting}
 
 ${text.home.scheduleForm.title}: ${name}       
 ${text.home.scheduleForm.time}: ${convertDateToReadable(
@@ -75,7 +76,7 @@ ${passcode ? `${text.home.scheduleForm.passcode}: ${pin}` : ""}`
             {convertDateToLocalTime(start)}
           </Typography>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3} mb={"10px"}>
           {!deleted ? (
             <IconButton
               sx={{
@@ -119,9 +120,12 @@ ${passcode ? `${text.home.scheduleForm.passcode}: ${pin}` : ""}`
             </IconButton>
           )}
         </Grid>
-        <Grid item xs={1} textAlign="right">
-          <CardThreeDotMenu />
-        </Grid>
+        {!deleted && (
+          <Grid item xs={1} textAlign="right">
+            <CardThreeDotMenu meetingId={meetingId} setAllCards={setAllCards} />
+          </Grid>
+        )}
+
         <Grid
           item
           xs={12}

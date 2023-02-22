@@ -12,7 +12,7 @@ export default function SuccessPage({ setPage, handleCloseModal }) {
 
   const copyMeetLink = () => {
     navigator.clipboard.writeText(
-      `${user.name || "Khul ke guest"} ${text.home.scheduleForm.inviting}
+      `${user.name || "Khul Ke guest"} ${text.home.scheduleForm.inviting}
 
 ${text.home.scheduleForm.title}: ${roomData.name}       
 ${text.home.scheduleForm.time}: ${convertDateToReadable(
