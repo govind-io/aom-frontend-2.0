@@ -119,7 +119,7 @@ export default forwardRef(function CreateMeeting(
         width: "80%",
         display: "flex",
         justifyContent: "center",
-        maxWidth: "1200px",
+        maxWidth: "900px",
       }}
     >
       <Grid item xs={12}>
@@ -140,7 +140,7 @@ export default forwardRef(function CreateMeeting(
         }}
       >
         <Grid container spacing={2}>
-          <Grid item xs={7}>
+          <Grid item xs={12}>
             <CreateMeetingLeftBar
               setPasscode={setPasscode}
               setPin={setPin}
@@ -158,15 +158,15 @@ export default forwardRef(function CreateMeeting(
               passcode={passcode}
             />
           </Grid>
-          <Grid item xs={5}>
+          {/* <Grid item xs={5}>
             <CreateMeetingRightBar />
-          </Grid>
+          </Grid> */}
           <Grid
             item
             xs={12}
             sx={{
               marginTop: "50px",
-              textAlign: "center",
+              // textAlign: "center",
             }}
           >
             <Button

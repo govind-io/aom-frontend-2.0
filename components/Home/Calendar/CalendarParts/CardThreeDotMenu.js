@@ -62,14 +62,14 @@ export default function CardThreeDotMenu({ meetingId, setAllCards }) {
               minWidth: "150px",
             }}
           >
-            <MenuItem
+            {/* <MenuItem
               sx={{
                 font: "normal normal normal 12px/14px Work Sans",
               }}
             >
               {text.home.calendar.edit}
             </MenuItem>
-            <Divider />
+            <Divider /> */}
             <MenuItem
               sx={{
                 font: "normal normal normal 12px/14px Work Sans",
