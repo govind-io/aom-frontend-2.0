@@ -3,6 +3,7 @@
         "join":"/icons/JoinMeeting.svg",
         "new":"/icons/VideoButton.svg",
         "joinAnimation":"/images/homepage.gif",
+        "calendar":"/icons/calendar.svg",
         "schedule":"/icons/schedule.svg"
     },
     "global":{

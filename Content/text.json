@@ -37,6 +37,9 @@
             "copy":"Copy",
             "close":"Close",
             "passcodeInfo":"The passcode will be embedded in the invite link. Users joining with the invite link will not have to enter the passcode manually."
+        },
+        "calendar":{
+            "calendar":"Calendar"
         }
     },
     "room":{
