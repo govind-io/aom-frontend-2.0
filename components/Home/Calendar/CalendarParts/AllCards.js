@@ -50,8 +50,9 @@ export default function AllCards({ activeMonth, activeDate }) {
       }}
     >
       {loading ? (
-        Array.from({ length: 3 }, (_, i) => i).map(() => (
+        Array.from({ length: 3 }, (_, i) => i).map((item) => (
           <Skeleton
+            key={item}
             variant="rectangular"
             width={"100%"}
             height="100px"
