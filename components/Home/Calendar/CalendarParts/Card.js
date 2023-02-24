@@ -172,7 +172,7 @@ ${passcode ? `${text.home.scheduleForm.passcode}: ${pin}` : ""}`
               <Typography
                 sx={{
                   font: "normal normal normal 10px/11px Work Sans",
-                  color: "#0000EE",
+                  color: "#72A2FF",
                   textOverflow: "ellipsis",
                   maxWidth: "100%",
                   overflow: "hidden",
@@ -188,7 +188,7 @@ ${passcode ? `${text.home.scheduleForm.passcode}: ${pin}` : ""}`
               <ContentCopyIcon
                 sx={{
                   marginLeft: "auto",
-                  color: "white",
+                  color: "#72A2FF",
                   marginLeft: "10px",
                 }}
                 size="sm"

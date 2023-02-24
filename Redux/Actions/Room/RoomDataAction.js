@@ -8,6 +8,7 @@ import {
   SAVE_ROOM_DATA,
   SAVE_ROOM_LAYOUT,
   SAVE_ROOM_META_DATA,
+  GET_ROOM_COUNT_FOR_MONTH,
 } from "../../Types/Users/RoomTypes";
 
 export const GetRoomDetails = (data) => ({ type: GET_ROOM_DETAILS, data });
@@ -19,3 +20,7 @@ export const SaveRoomMetaData = (data) => ({ data, type: SAVE_ROOM_META_DATA });
 export const DeleteRoom = (data) => ({ data, type: DELETE_ROOM });
 export const DeleteRoomData = () => ({ type: DELETE_ROOM_DATA });
 export const GetAllRoom = (data) => ({ type: GET_ALL_ROOM, data });
+export const GetRoomCountForMonth = (data) => ({
+  data,
+  type: GET_ROOM_COUNT_FOR_MONTH,
+});

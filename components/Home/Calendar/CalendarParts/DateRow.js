@@ -1,11 +1,17 @@
-import { Grid, IconButton, Typography } from "@mui/material";
-import { useEffect, useMemo } from "react";
+import { Badge, Grid, IconButton, Typography } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
+import { GetRoomCountForMonth } from "../../../../Redux/Actions/Room/RoomDataAction";
 import { getDaysAndDateForNthMonthOfCurrentYear } from "../../../../Utils/DesignUtilities/DateManipulation";
 
 export default function DateRow({ activeMonth, setActiveDate, activeDate }) {
   const DatesArray = useMemo(() => {
     return getDaysAndDateForNthMonthOfCurrentYear(activeMonth);
   }, [activeMonth]);
+
+  const dispatch = useDispatch();
+
+  const [count, setCount] = useState({});
 
   useEffect(() => {
     const element = document.getElementById(`date-${activeDate}`);
@@ -15,6 +21,22 @@ export default function DateRow({ activeMonth, setActiveDate, activeDate }) {
       inline: "center",
       behavior: "smooth",
     });
+
+    setCount({});
+
+    const data = {
+      data: {
+        month: activeMonth,
+      },
+      onSuccess: (data) => {
+        setCount(data);
+      },
+      onFailed: () => {
+        console.log("fetching meeting count for the month failed");
+      },
+    };
+
+    dispatch(GetRoomCountForMonth(data));
   }, [activeMonth]);
 
   return (
@@ -62,7 +84,26 @@ export default function DateRow({ activeMonth, setActiveDate, activeDate }) {
                       color: "#FFFFFF",
                     }}
                   >
-                    {item.dateString}
+                    <Badge
+                      badgeContent={count[item.dateString]}
+                      max={10}
+                      color="error"
+                      overlap="rectangular"
+                      componentsProps={{
+                        badge: {
+                          style: {
+                            aspectRatio: 1,
+                            width: "auto",
+                            minWidth: "0px",
+                            fontSize: "10px",
+                            padding: "5px",
+                            top: "-5px",
+                          },
+                        },
+                      }}
+                    >
+                      {item.dateString}{" "}
+                    </Badge>
                   </Typography>
                 </Grid>
                 <Grid
