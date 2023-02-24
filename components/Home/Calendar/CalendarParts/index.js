@@ -87,6 +87,7 @@ export default function CalendarParts({
           activeMonth={activeMonth}
           activeDate={activeDate}
           setActiveDate={setActiveDate}
+          ScheduleModalOpen={ScheduleModalOpen}
         />
         <IconButton
           sx={{

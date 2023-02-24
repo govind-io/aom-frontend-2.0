@@ -4,7 +4,12 @@ import { useDispatch } from "react-redux";
 import { GetRoomCountForMonth } from "../../../../Redux/Actions/Room/RoomDataAction";
 import { getDaysAndDateForNthMonthOfCurrentYear } from "../../../../Utils/DesignUtilities/DateManipulation";
 
-export default function DateRow({ activeMonth, setActiveDate, activeDate }) {
+export default function DateRow({
+  activeMonth,
+  setActiveDate,
+  activeDate,
+  ScheduleModalOpen,
+}) {
   const DatesArray = useMemo(() => {
     return getDaysAndDateForNthMonthOfCurrentYear(activeMonth);
   }, [activeMonth]);
@@ -37,7 +42,7 @@ export default function DateRow({ activeMonth, setActiveDate, activeDate }) {
     };
 
     dispatch(GetRoomCountForMonth(data));
-  }, [activeMonth]);
+  }, [activeMonth, ScheduleModalOpen]);
 
   return (
     <Grid

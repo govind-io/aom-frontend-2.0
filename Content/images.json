@@ -2,7 +2,7 @@
     "login":{
         "join":"/icons/JoinMeeting.svg",
         "new":"/icons/VideoButton.svg",
-        "joinAnimation":"/images/homepage.gif",
+        "joinAnimation":"/images/Homepage.gif",
         "calendar":"/icons/calendar.svg",
         "schedule":"/icons/schedule.svg"
     },
