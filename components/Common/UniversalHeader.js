@@ -23,6 +23,7 @@ export default function UniversalHeader({ children }) {
           sx={{
             height: "100%",
             width: "fit-content",
+            width: "auto",
           }}
         />
       </Grid>
