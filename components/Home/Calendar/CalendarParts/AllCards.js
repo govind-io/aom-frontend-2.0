@@ -7,7 +7,11 @@ import Card from "./Card";
 import images from "../../../../Content/images.json";
 import text from "../../../../Content/text.json";
 
-export default function AllCards({ activeMonth, activeDate }) {
+export default function AllCards({
+  activeMonth,
+  activeDate,
+  ScheduleModalOpen,
+}) {
   const dispatch = useDispatch();
 
   const [allCards, setAllCards] = useState([]);
@@ -37,7 +41,7 @@ export default function AllCards({ activeMonth, activeDate }) {
     };
 
     dispatch(GetAllRoom(data));
-  }, [activeDate, activeMonth]);
+  }, [activeDate, activeMonth, ScheduleModalOpen]);
 
   return (
     <Grid

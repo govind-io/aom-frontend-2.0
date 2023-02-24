@@ -85,7 +85,10 @@ export default function Home() {
           }}
         >
           {calendar ? (
-            <CalendarParts setScheduleModalOpen={setScheduleModalOpen} />
+            <CalendarParts
+              setScheduleModalOpen={setScheduleModalOpen}
+              ScheduleModalOpen={ScheduleModalOpen}
+            />
           ) : (
             <WelcomeAnimation />
           )}

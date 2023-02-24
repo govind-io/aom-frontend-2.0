@@ -7,7 +7,10 @@ import MonthRow from "./MonthRow";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
-export default function CalendarParts({ setScheduleModalOpen }) {
+export default function CalendarParts({
+  setScheduleModalOpen,
+  ScheduleModalOpen,
+}) {
   //all calendar related states are here
 
   const [activeMonth, setActiveMonth] = useState(
@@ -135,6 +138,7 @@ export default function CalendarParts({ setScheduleModalOpen }) {
           setScheduleModalOpen={setScheduleModalOpen}
           activeMonth={activeMonth}
           activeDate={activeDate}
+          ScheduleModalOpen={ScheduleModalOpen}
         />
       </Grid>
     </Grid>

@@ -7,6 +7,7 @@ export default function CardRow({
   setScheduleModalOpen,
   activeDate,
   activeMonth,
+  ScheduleModalOpen,
 }) {
   return (
     <Grid
@@ -52,7 +53,11 @@ export default function CardRow({
           height: "calc(100% - 60px)",
         }}
       >
-        <AllCards activeDate={activeDate} activeMonth={activeMonth} />
+        <AllCards
+          activeDate={activeDate}
+          activeMonth={activeMonth}
+          ScheduleModalOpen={ScheduleModalOpen}
+        />
       </Grid>
     </Grid>
   );
