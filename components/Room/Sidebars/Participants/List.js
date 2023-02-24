@@ -152,16 +152,18 @@ export default function List({ searchQuery }) {
                 </Typography>
               </Grid>
             </Grid>
-            <Grid
-              sx={{
-                width: "30px",
-                display: "flex",
-                alignItems: "center",
-                height: "30px",
-              }}
-            >
-              <VolumeIndicator volume={volumes[item.name || item.uid]} />
-            </Grid>
+            {volumes[item.name] && (
+              <Grid
+                sx={{
+                  width: "30px",
+                  display: "flex",
+                  alignItems: "center",
+                  height: "30px",
+                }}
+              >
+                <VolumeIndicator volume={volumes[item.name || item.uid]} />
+              </Grid>
+            )}
           </Grid>
         );
       })}

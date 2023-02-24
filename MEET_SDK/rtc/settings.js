@@ -43,6 +43,12 @@ export const defaultTracksParams = {
 export const defaultScreenTrackParams = {
   video: {
     cursor: "always",
+    displaySurface: "monitor",
+    logicalSurface: true,
+    cursor: true,
+    width: { max: 1920 },
+    height: { max: 1080 },
+    frameRate: { max: 30 },
   },
   audio: {
     echoCancellation: true,

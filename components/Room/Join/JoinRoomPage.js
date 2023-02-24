@@ -7,7 +7,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import text from "../../../Content/text.json";
 import { GetRoomDetails } from "../../../Redux/Actions/Room/RoomDataAction";
@@ -28,6 +28,8 @@ export default function JoinRoomPage() {
     video: initialVideo,
   } = router.query;
 
+  const { isReady } = router;
+
   const [meetingId, setMeetingId] = useState(initialRoom || "");
   const [profilename, setProfileName] = useState(
     initialProfileName || user.name || ""
@@ -38,6 +40,16 @@ export default function JoinRoomPage() {
   const [loading, setLoading] = useState(false);
   const [pin, setPin] = useState(initialPasscode || "");
 
+  useEffect(() => {
+    if (!isReady) return;
+
+    setMeetingId(initialRoom || "");
+    setProfileName(initialProfileName || user.name || "");
+    setAudio(initialAudio === true || false);
+    setVideo(initialVideo) === true || false;
+    setPin(initialPasscode || "");
+  }, [isReady]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -47,10 +59,7 @@ export default function JoinRoomPage() {
     }
 
     if (pin && pin?.length !== 6) {
-      return ToastHandler(
-        "dan",
-        "Passcode can not be longer than 6 characters"
-      );
+      return ToastHandler("dan", "Passcode should be 6 characters");
     }
 
     setLoading(true);
@@ -73,7 +82,9 @@ export default function JoinRoomPage() {
                 internalRedirect: true,
               },
             },
-            { pathname: `/room/${data.meetingId}` }
+            {
+              pathname: `/room/${data.meetingId}`,
+            }
           );
 
           dispatch(SaveUserData({ name: profilename }));

@@ -62,7 +62,7 @@ export const handleCreateAndPublishScreenTrack = async () => {
     return tracks;
   } catch (e) {
     if (e.message === "NotAllowedError: Permission denied") {
-      return;
+      return false;
     }
 
     ToastHandler("dan", "Something went wrong");

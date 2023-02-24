@@ -99,7 +99,7 @@ export default function IndividualSpeaker({
           padding: "10px 15px",
         }}
       >
-        {name}
+        {name} {username === userData.username && "(You)"}
       </Typography>
 
       {selfScreen && (

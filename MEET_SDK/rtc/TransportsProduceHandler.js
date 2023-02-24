@@ -94,6 +94,8 @@ export const handleProduceTracks = function (ref, data, type) {
                     (codec) => codec.mimeType.toLowerCase() === "video/h264"
                   ),
             });
+
+            console.log(videoProducer, "producer");
             ref.producers.push(videoProducer);
           } catch (e) {
             console.log(e);

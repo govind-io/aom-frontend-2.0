@@ -96,8 +96,9 @@ export default function Controls() {
           "Please wait for others to stop sharing screen"
         );
       }
-      const screenTrack = await handleCreateAndPublishScreenTrack();
 
+      const screenTrack = await handleCreateAndPublishScreenTrack();
+      if (!screenTrack) return;
       screenTrack[0].onended(async () => {
         screenTrack.forEach((item) => item.stop());
         await meetClient.unprodueTracks(screenTrack);

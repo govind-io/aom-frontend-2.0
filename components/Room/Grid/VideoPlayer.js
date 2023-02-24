@@ -3,7 +3,7 @@ import { useCallback } from "react";
 
 import ScrollZoom from "../../../Utils/ComponentUtilities/ScrollToZoom";
 
-export default function MeetVideoPlayer({ videoTrack }) {
+export default function MeetVideoPlayer({ videoTrack, sx = {}, ...rest }) {
   const videoRef = useCallback(
     (node) => {
       if (!node || !videoTrack || !videoTrack?.enabled) return;
@@ -32,7 +32,9 @@ export default function MeetVideoPlayer({ videoTrack }) {
           width: "100%",
           height: "100%",
           objectFit: "contain",
+          ...sx,
         }}
+        {...rest}
         ref={videoRef}
         autoPlay={true}
         muted={true}
