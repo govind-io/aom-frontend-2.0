@@ -48,35 +48,56 @@ ${passcode ? `${text.home.scheduleForm.passcode}: ${pin}` : ""}`
       xs={12}
       sx={{
         borderRadius: "10px",
-        background: "#66B984 0% 0% no-repeat padding-box",
+        background: "#1A191C",
         boxShadow: "0px 10px 10px #00000029",
         height: "fit-content",
-        padding: "15px 10px 10px 10px",
+        padding: "10px",
         marginTop: "20px",
       }}
     >
       <Grid container alignItems={"center"}>
-        <Grid item xs={5}>
-          <Typography
-            sx={{
-              font: "normal normal 600 18px/21px Work Sans",
-              color: "#FFFFFF",
-            }}
-          >
-            {name}
-          </Typography>
+        <Grid
+          item
+          sx={{
+            width: "calc(100% - 90px)",
+          }}
+        >
+          <Grid container alignItems={"center"}>
+            <Grid
+              item
+              sx={{
+                width: "calc(100% - 70px)",
+              }}
+            >
+              <Typography
+                sx={{
+                  font: "normal normal 600 18px/21px Work Sans",
+                  color: "#FFFFFF",
+                }}
+              >
+                {name}
+              </Typography>
+            </Grid>
+            <Grid
+              item
+              sx={{
+                marginRight: "auto",
+                marginLeft: "10px",
+              }}
+            >
+              <Typography
+                sx={{
+                  font: "normal normal 600 12px/21px Work Sans",
+                  color: "#FFFFFF",
+                }}
+              >
+                {convertDateToLocalTime(start)}
+              </Typography>
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid item xs={3}>
-          <Typography
-            sx={{
-              font: "normal normal 600 12px/21px Work Sans",
-              color: "#FFFFFF",
-            }}
-          >
-            {convertDateToLocalTime(start)}
-          </Typography>
-        </Grid>
-        <Grid item xs={3} mb={"10px"}>
+
+        <Grid item sx={{ marginLeft: "auto" }}>
           {!deleted ? (
             <IconButton
               sx={{
@@ -121,50 +142,59 @@ ${passcode ? `${text.home.scheduleForm.passcode}: ${pin}` : ""}`
           )}
         </Grid>
         {!deleted && (
-          <Grid item xs={1} textAlign="right">
+          <Grid item textAlign="right">
             <CardThreeDotMenu meetingId={meetingId} setAllCards={setAllCards} />
           </Grid>
         )}
 
-        <Grid
-          item
-          xs={12}
-          sx={{
-            borderTop: "0.5px solid white",
-            borderBottom: "0.5px solid white",
-            padding: "5px 0px",
-            display: "flex",
-            justifyContent: "space-between",
-            flexWrap: "nowrap",
-            alignItems: "center",
-            cursor: "pointer",
-          }}
-          onClick={copyLink}
-        >
-          <Typography
+        <Grid item xs={12} mt="10px">
+          <IconButton
+            onClick={copyLink}
             sx={{
-              font: "normal normal normal 10px/11px Work Sans",
-              color: "#FFFFFF",
-              textOverflow: "ellipsis",
-              maxWidth: "100%",
-              overflow: "hidden",
-              whiteSpace: "nowrap",
+              width: "100%",
+              borderRadius: "0px",
+              padding: "0px",
             }}
           >
-            {`${
-              typeof window !== "undefined"
-                ? `https://${window.location.host}`
-                : ""
-            }/room/${meetingId}` + `${passcode ? `?passcode=${pin}` : ""}`}
-          </Typography>
-          <ContentCopyIcon
-            sx={{
-              marginLeft: "auto",
-              color: "white",
-              marginLeft: "10px",
-            }}
-            size="sm"
-          />
+            <Grid
+              container
+              sx={{
+                borderTop: "0.5px solid white",
+                borderBottom: "0.5px solid white",
+                padding: "5px 0px",
+                display: "flex",
+                justifyContent: "space-between",
+                flexWrap: "nowrap",
+                alignItems: "center",
+                cursor: "pointer",
+              }}
+            >
+              <Typography
+                sx={{
+                  font: "normal normal normal 10px/11px Work Sans",
+                  color: "#0000EE",
+                  textOverflow: "ellipsis",
+                  maxWidth: "100%",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {`${
+                  typeof window !== "undefined"
+                    ? `https://${window.location.host}`
+                    : ""
+                }/room/${meetingId}` + `${passcode ? `?passcode=${pin}` : ""}`}
+              </Typography>
+              <ContentCopyIcon
+                sx={{
+                  marginLeft: "auto",
+                  color: "white",
+                  marginLeft: "10px",
+                }}
+                size="sm"
+              />
+            </Grid>
+          </IconButton>
         </Grid>
         <Grid
           item
