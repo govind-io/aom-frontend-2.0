@@ -41,6 +41,8 @@ export default function CalendarParts({ setScheduleModalOpen }) {
       sx={{
         height: "100%",
         alignContent: "flex-start",
+        maxWidth: "80%",
+        margin: "auto",
       }}
     >
       <Grid

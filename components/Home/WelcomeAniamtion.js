@@ -9,6 +9,7 @@ export default function WelcomeAnimation() {
         src={images.login.joinAnimation}
         style={{
           maxWidth: "100%",
+          margin: "auto",
         }}
       />
       <Typography

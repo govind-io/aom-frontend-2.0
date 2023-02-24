@@ -71,13 +71,16 @@ export default function NewMeetingButton() {
   };
 
   return (
-    <Grid item xs={6} textAlign="center">
+    <Grid item sm={3} md={6} lg={6} textAlign="center">
       <IconButton
         sx={{
           backgroundColor: "#66B984",
           borderRadius: "20%",
           aspectRatio: "1",
           padding: "40px",
+          "@media (max-width: 900px)": {
+            padding: "10px",
+          },
         }}
         disableRipple={true}
         onClick={handleNewMeeting}
@@ -86,7 +89,12 @@ export default function NewMeetingButton() {
         {loading ? (
           <CircularProgress sx={{ color: "white" }} />
         ) : (
-          <img src={images.login.new} />
+          <img
+            src={images.login.new}
+            style={{
+              maxWidth: "80%",
+            }}
+          />
         )}
       </IconButton>
       <IconButton
@@ -98,8 +106,11 @@ export default function NewMeetingButton() {
           textAlign={"center"}
           sx={{
             color: "#CECECE",
-            font: "24px",
+            fontSize: "24px",
             paddingTop: "10px",
+            "@media (max-width: 900px)": {
+              fontSize: "12px",
+            },
           }}
         >
           {text.login.new} <img src={images.global.downArrow} />

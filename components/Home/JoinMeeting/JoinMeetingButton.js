@@ -8,27 +8,38 @@ export default function JoinMeetingButton() {
   const [openModal, setOpenModal] = useState(false);
 
   return (
-    <Grid item xs={6} textAlign="center">
+    <Grid item sm={3} md={6} lg={6} textAlign="center">
       <IconButton
         sx={{
           backgroundColor: "#F5F5F5",
           borderRadius: "20%",
           aspectRatio: "1",
           padding: "40px",
+          "@media (max-width: 900px)": {
+            padding: "10px",
+          },
         }}
         disableRipple={true}
         onClick={() => {
           setOpenModal((prev) => !prev);
         }}
       >
-        <img src={images.login.join} />
+        <img
+          src={images.login.join}
+          style={{
+            maxWidth: "80%",
+          }}
+        />
       </IconButton>
       <Typography
         textAlign={"center"}
         sx={{
           color: "#CECECE",
-          font: "24px",
+          fontSize: "24px",
           paddingTop: "10px",
+          "@media (max-width: 900px)": {
+            fontSize: "12px",
+          },
         }}
       >
         {text.login.join}

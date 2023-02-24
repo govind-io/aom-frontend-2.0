@@ -5,11 +5,17 @@ export default function CalendarButton({ setCalendar, calendar }) {
   return (
     <Grid
       item
-      xs={6}
+      sm={3}
+      md={6}
+      lg={6}
       textAlign="center"
       sx={{
         marginTop: "50px",
         opacity: calendar ? 0.2 : 1,
+        "@media (max-width: 900px)": {
+          marginTop: "0px",
+        },
+        maxWidth: "100%",
       }}
     >
       <IconButton
@@ -21,6 +27,9 @@ export default function CalendarButton({ setCalendar, calendar }) {
           "&:disabled": {
             bgcolor: "#F5F5F5",
           },
+          "@media (max-width: 900px)": {
+            padding: "10px",
+          },
         }}
         disableRipple={true}
         disabled={calendar}
@@ -28,14 +37,22 @@ export default function CalendarButton({ setCalendar, calendar }) {
           setCalendar(true);
         }}
       >
-        <img src={images.login.calendar} />
+        <img
+          src={images.login.calendar}
+          style={{
+            maxWidth: "80%",
+          }}
+        />
       </IconButton>
       <Typography
         textAlign={"center"}
         sx={{
           color: "#CECECE",
-          font: "24px",
+          fontSize: "24px",
           paddingTop: "10px",
+          "@media (max-width: 900px)": {
+            fontSize: "12px",
+          },
         }}
       >
         {text.home.calendar.calendar}

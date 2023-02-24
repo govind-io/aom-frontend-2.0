@@ -125,14 +125,7 @@ export default function Messages() {
                 marginTop: "10px",
               }}
             >
-              <Typography
-                sx={{
-                  wordWrap: "break-word",
-                  wordBreak: "break-all",
-                }}
-              >
-                {item.content}
-              </Typography>
+              <Typography>{item.content}</Typography>
             </Grid>
           </Grid>
         );

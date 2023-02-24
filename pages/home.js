@@ -40,11 +40,28 @@ export default function Home() {
       <Grid
         container
         justifyContent={"space-around"}
-        sx={{ height: "100%" }}
+        sx={{ height: "100%", width: "100%" }}
         alignItems="center"
       >
-        <Grid item xs={4}>
-          <Grid container>
+        <Grid
+          item
+          sm={12}
+          md={6}
+          lg={4}
+          sx={{
+            "@media (max-width: 900px)": {
+              marginTop: "30px",
+            },
+          }}
+        >
+          <Grid
+            container
+            sx={{
+              "@media (max-width: 900px)": {
+                justifyContent: "space-around",
+              },
+            }}
+          >
             <NewMeetingButton />
             <JoinMeetingButton />
             <ScheduleMeetingButton setOpenModal={setScheduleModalOpen} />
@@ -53,12 +70,18 @@ export default function Home() {
         </Grid>
         <Grid
           item
-          xs={4}
+          sm={12}
+          md={6}
+          lg={4}
           height={"80%"}
           position="relative"
           sx={{
             display: "flex",
             alignItems: "center",
+            "@media (max-width: 900px)": {
+              marginTop: "30px",
+              maxWidth: "100%",
+            },
           }}
         >
           {calendar ? (
