@@ -6,7 +6,7 @@ import {
   getAllMessagesInRoom,
   getJoinedUsersInRoom,
 } from "./Signaling";
-import { ScreenTracks, Tracks } from "./tracks";
+import { ScreenTracks, Tracks } from "./Tracks";
 import {
   handleUserPublishedEvent,
   handleUserUnPublishedEvent,
