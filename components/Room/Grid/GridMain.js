@@ -14,7 +14,7 @@ import {
   handleCreateAndPublishVideoTrack,
   handleUnPublishTrack,
 } from "../../../Utils/MeetingUtils/Tracks";
-import { GALLERY, SPEAKER } from "../../../Utils/Contants/Conditional";
+import { ViewStatus } from "../../../Utils/Contants/Conditional";
 import GalleryView from "./GalleryView";
 import SpeakerView from "./SpeakerView";
 import { useRouter } from "next/router";
@@ -22,12 +22,7 @@ import {
   ChangeParticipantCounts,
   ChangeUnreadMessageCount,
 } from "../../../Redux/Actions/Comps/DataComps";
-import {
-  END_MEETING_EVENT,
-  MESSAGE_EVENT,
-  MUTE_ALL_EVENT,
-  NOTIFICATION_EVENT,
-} from "../../../Utils/Contants/Constants";
+import { EventStatus } from "../../../Utils/Contants/Constants";
 
 export default function GridMain({ profilename, audio, video }) {
   const userData = useSelector((s) => s.user.data);
@@ -48,7 +43,7 @@ export default function GridMain({ profilename, audio, video }) {
 
   const handleNotificationEvents = async ({ content }, client) => {
     switch (content) {
-      case MUTE_ALL_EVENT:
+      case EventStatus.MUTE_ALL_EVENT:
         if (audioRef.current) {
           await handleUnPublishTrack(audioRef.current);
           dispatch(SaveRoomControls({ audio: false }));
@@ -56,7 +51,7 @@ export default function GridMain({ profilename, audio, video }) {
         }
 
         break;
-      case END_MEETING_EVENT:
+      case EventStatus.END_MEETING_EVENT:
         client.close();
 
         setMeetClient("");
@@ -156,8 +151,8 @@ export default function GridMain({ profilename, audio, video }) {
       }
     });
 
-    client.on(MESSAGE_EVENT, () => dispatch(ChangeUnreadMessageCount(1)));
-    client.on(NOTIFICATION_EVENT, ({ content }) => {
+    client.on(EventStatus.MESSAGE_EVENT, () => dispatch(ChangeUnreadMessageCount(1)));
+    client.on(EventStatus.NOTIFICATION_EVENT, ({ content }) => {
       handleNotificationEvents({ content }, client);
     });
 
@@ -229,16 +224,16 @@ export default function GridMain({ profilename, audio, video }) {
         ToastHandler("warn", "Meeting Left Succefully");
       }
     };
-  }, []);
+  });
 
   //updating presenter and volumes
   useEffect(() => {
     dispatch(SaveRoomMetaData({ existingPresenter: presenters.length > 0 }));
-  }, [presenters]);
+  }, [dispatch, presenters]);
 
   useEffect(() => {
     dispatch(ChangeParticipantCounts(users.length + 1));
-  }, [users]);
+  }, [dispatch, users]);
 
   return (
     <Grid
@@ -249,14 +244,14 @@ export default function GridMain({ profilename, audio, video }) {
       }}
       id="main-grid"
     >
-      {roomLayout.view === GALLERY && presenters.length === 0 ? (
+      {roomLayout.view === ViewStatus.GALLERY && presenters.length === 0 ? (
         <GalleryView
           users={users}
           selfUID={`${userData.username}-${
             profilename || userData.name || userData.username
           }`}
         />
-      ) : roomLayout.view === SPEAKER || presenters.length > 0 ? (
+      ) : roomLayout.view === ViewStatus.SPEAKER || presenters.length > 0 ? (
         <SpeakerView
           users={users}
           selfUID={`${userData.username}-${

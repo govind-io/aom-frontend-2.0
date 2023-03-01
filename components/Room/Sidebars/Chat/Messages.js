@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ChangeUnreadMessageCount } from "../../../../Redux/Actions/Comps/DataComps";
 import { meetClient } from "../../../../Utils/Configs/MeetClient";
-import { MESSAGE_EVENT } from "../../../../Utils/Contants/Constants";
+import { EventStatus } from "../../../../Utils/Contants/Constants";
 import convertDateToLocalTime from "../../../../Utils/DesignUtilities/DateManipulation";
 
 export default function Messages() {
@@ -27,13 +27,13 @@ export default function Messages() {
       setMessage((prev) => [...prev, data]);
     };
 
-    meetClient.on(MESSAGE_EVENT, MessageListener);
+    meetClient.on(EventStatus.MESSAGE_EVENT, MessageListener);
 
     setIntialMessage();
 
     return () => {
       if (meetClient) {
-        meetClient.off(MESSAGE_EVENT, MessageListener);
+        meetClient.off(EventStatus.MESSAGE_EVENT, MessageListener);
       }
     };
   }, []);
