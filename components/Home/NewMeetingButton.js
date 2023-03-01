@@ -77,7 +77,7 @@ export default function NewMeetingButton() {
           backgroundColor: "#66B984",
           borderRadius: "20%",
           aspectRatio: "1",
-          padding: "40px",
+          padding: "30px",
           "@media (max-width: 900px)": {
             padding: "10px",
           },
