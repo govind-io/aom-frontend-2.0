@@ -1,10 +1,6 @@
 import { CircularProgress, Grid, IconButton } from "@mui/material";
 import PresentToAllIcon from "@mui/icons-material/PresentToAll";
 import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
-import VideocamIcon from "@mui/icons-material/Videocam";
-import VideocamOffIcon from "@mui/icons-material/VideocamOff";
-import MicOffIcon from "@mui/icons-material/MicOff";
-import MicIcon from "@mui/icons-material/Mic";
 import text from "../../../Content/text.json";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -15,10 +11,7 @@ import { meetClient, setMeetClient } from "../../../Utils/Configs/MeetClient";
 import { useRouter } from "next/router";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import {
-  handleCreateAndPublishAudioTrack,
   handleCreateAndPublishScreenTrack,
-  handleCreateAndPublishVideoTrack,
-  handleUnPublishTrack,
 } from "../../../Utils/MeetingUtils/Tracks";
 import ConfirmationModal from "../../Common/ConfirmationModal";
 import { useMemo, useState } from "react";
@@ -33,12 +26,14 @@ import {
   END_MEETING_EVENT,
   NOTIFICATION_EVENT,
 } from "../../../Utils/Contants/Constants";
+import MicButton from "./ControlButtons/MicButton";
+import VideoButton from "./ControlButtons/VideoButton";
 
 export default function Controls() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const { audio, screen, video } = useSelector((s) => s.room.controls);
+  const { screen } = useSelector((s) => s.room.controls);
   const { existingPresenter } = useSelector((s) => s.room.metaData);
   const { moderator, meetingId } = useSelector((s) => s.room.data);
   const { username } = useSelector((s) => s.user.data);
@@ -47,34 +42,10 @@ export default function Controls() {
   const [openLeaveRoom, setOpenLeaveRoom] = useState(false);
   const [loading, setLoading] = useState(false);
 
+
+
   const handleCloseLeaveRoom = () => {
     setOpenLeaveRoom(false);
-  };
-
-  const toggleVideo = async () => {
-    if (!meetClient) return;
-
-    if (video) {
-      await handleUnPublishTrack(video);
-      dispatch(SaveRoomControls({ video: false }));
-    } else {
-      return dispatch(
-        SaveRoomControls({ video: await handleCreateAndPublishVideoTrack() })
-      );
-    }
-  };
-
-  const toggleAudio = async () => {
-    if (!meetClient) return;
-
-    if (audio) {
-      await handleUnPublishTrack(audio);
-      dispatch(SaveRoomControls({ audio: false }));
-    } else {
-      return dispatch(
-        SaveRoomControls({ audio: await handleCreateAndPublishAudioTrack() })
-      );
-    }
   };
 
   const toggleScreen = async () => {
@@ -191,36 +162,8 @@ export default function Controls() {
 
   return (
     <Grid item>
-      <IconButton
-        sx={{
-          backgroundColor: audio && audio?.enabled ? "#27292B" : "#CC3425",
-          borderRadius: "8px",
-          marginRight: "20px",
-        }}
-        disableRipple={true}
-        onClick={toggleAudio}
-      >
-        {audio && audio?.enabled ? (
-          <MicIcon sx={{ color: "white" }} />
-        ) : (
-          <MicOffIcon sx={{ color: "white" }} />
-        )}
-      </IconButton>
-      <IconButton
-        sx={{
-          backgroundColor: video && video.enabled ? "#27292B" : "#CC3425",
-          borderRadius: "8px",
-          marginRight: "20px",
-        }}
-        disableRipple={true}
-        onClick={toggleVideo}
-      >
-        {video && video.enabled ? (
-          <VideocamIcon sx={{ color: "white" }} />
-        ) : (
-          <VideocamOffIcon sx={{ color: "white" }} />
-        )}
-      </IconButton>
+      <MicButton />
+      <VideoButton />
       <IconButton
         sx={{
           backgroundColor: "#27292B",

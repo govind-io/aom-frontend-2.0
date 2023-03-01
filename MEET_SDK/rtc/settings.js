@@ -26,7 +26,9 @@ export const videoParams = {
 export const audioParams = {};
 
 export const defaultTracksParams = {
-  audio: true,
+  audio: {
+    deviceId: "default"
+  },
   video: {
     width: {
       min: 640,
@@ -37,6 +39,7 @@ export const defaultTracksParams = {
       max: 1080,
     },
     facingMode: "user",
+    deviceId: "default"
   },
 };
 
