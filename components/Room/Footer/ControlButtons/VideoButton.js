@@ -15,7 +15,7 @@ export default function VideoButton() {
 
     const dispatch = useDispatch();
 
-    const toggleVideo = async () => {
+    const toggleVideo = async (deviceId) => {
         if (!meetClient) return;
 
         if (video) {
@@ -23,10 +23,14 @@ export default function VideoButton() {
             dispatch(SaveRoomControls({ video: false }));
         } else {
             return dispatch(
-                SaveRoomControls({ video: await handleCreateAndPublishVideoTrack() })
+                SaveRoomControls({ video: await handleCreateAndPublishVideoTrack(deviceId) })
             );
         }
     };
+
+    const changeCamera = async () => {
+
+    }
 
     return (
         <IconButton

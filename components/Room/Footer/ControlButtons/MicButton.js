@@ -27,7 +27,7 @@ export default function MicButton() {
     }, [meetClient])
 
 
-    const toggleAudio = async () => {
+    const toggleAudio = async (deviceId) => {
         if (!meetClient) return;
 
         if (audio) {
@@ -35,10 +35,12 @@ export default function MicButton() {
             dispatch(SaveRoomControls({ audio: false }));
         } else {
             return dispatch(
-                SaveRoomControls({ audio: await handleCreateAndPublishAudioTrack() })
+                SaveRoomControls({ audio: await handleCreateAndPublishAudioTrack(deviceId) })
             );
         }
     };
+
+    const ChangeMic = async () => { }
 
     return (
         <IconButton
