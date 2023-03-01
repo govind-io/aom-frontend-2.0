@@ -39,10 +39,10 @@ export default function IndividualSpeaker({
         <Avatar
           src={`${process.env.KHULKE_USER_PROFILE_PIC_URL}/${username}/pp`}
           sx={{
-            width: "100px",
+            maxWidth: "100%",
+            maxHeight: "100%",
             height: "100px",
-            maxWidth: "40%",
-            maxHeight: "50%",
+            width: "100px",
           }}
         />
       )}
@@ -91,12 +91,12 @@ export default function IndividualSpeaker({
             : "#000000e6 0% 0% no-repeat padding-box",
           borderRadius: "16px",
           font: "normal normal medium 10px/16px Work Sans",
-          fontSize: smallTile ? "12px" : "14px",
+          fontSize: smallTile ? "10px" : "14px",
           color: "#F5F5F5",
           position: "absolute",
           left: "10px",
           bottom: "10px",
-          padding: "10px 15px",
+          padding: "5px 10px",
         }}
       >
         {name} {username === userData.username && "(You)"}

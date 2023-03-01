@@ -14,7 +14,7 @@ export default function JoinMeetingButton() {
           backgroundColor: "#F5F5F5",
           borderRadius: "20%",
           aspectRatio: "1",
-          padding: "40px",
+          padding: "30px",
           "@media (max-width: 900px)": {
             padding: "10px",
           },

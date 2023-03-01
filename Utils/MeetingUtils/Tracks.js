@@ -1,7 +1,7 @@
 import { meetClient } from "../Configs/MeetClient";
 import ToastHandler from "../Toast/ToastHandler";
 
-export const handleCreateAndPublishVideoTrack = async () => {
+export const handleCreateAndPublishVideoTrack = async (deviceId) => {
   if (!meetClient) return ToastHandler("dan", "Something went wrong");
 
   try {
@@ -16,6 +16,7 @@ export const handleCreateAndPublishVideoTrack = async () => {
           max: 1080,
         },
         facingMode: "user",
+        deviceId: deviceId || "default"
       },
     });
 
@@ -32,11 +33,11 @@ export const handleCreateAndPublishVideoTrack = async () => {
   }
 };
 
-export const handleCreateAndPublishAudioTrack = async () => {
+export const handleCreateAndPublishAudioTrack = async (deviceId) => {
   if (!meetClient) return ToastHandler("dan", "Something went wrong");
 
   try {
-    const tracks = await meetClient.createTracks({ audio: true });
+    const tracks = await meetClient.createTracks({ audio: { deviceId: deviceId || "default" } });
 
     await meetClient.produceTracks(tracks);
 

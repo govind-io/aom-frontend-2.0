@@ -6,7 +6,7 @@ import {
   getAllMessagesInRoom,
   getJoinedUsersInRoom,
 } from "./Signaling";
-import { ScreenTracks, Tracks } from "./tracks";
+import { ScreenTracks, Tracks } from "./Tracks";
 import {
   handleUserPublishedEvent,
   handleUserUnPublishedEvent,
@@ -107,6 +107,39 @@ export class RTCClient {
   createScreenTrack() {
     const screenTrack = new ScreenTracks(this, ...arguments);
     return screenTrack.init();
+  }
+
+  // Get all available microphones
+  async getAllMics() {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const mics = devices.filter(device => device.kind === 'audioinput');
+      console.log('Microphones:', mics);
+    } catch (error) {
+      console.error('Error getting microphones:', error);
+    }
+  }
+
+  // Get all available cameras
+  async getAllCameras() {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const cameras = devices.filter(device => device.kind === 'videoinput');
+      console.log('Cameras:', cameras);
+    } catch (error) {
+      console.error('Error getting cameras:', error);
+    }
+  }
+
+  // Get all available speakers
+  async getAllSpeakers() {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const speakers = devices.filter(device => device.kind === 'audiooutput');
+      console.log('Speakers:', speakers);
+    } catch (error) {
+      console.error('Error getting speakers:', error);
+    }
   }
 
   produceTracks() {

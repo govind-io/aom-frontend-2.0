@@ -26,7 +26,9 @@ export const videoParams = {
 export const audioParams = {};
 
 export const defaultTracksParams = {
-  audio: true,
+  audio: {
+    deviceId: "default"
+  },
   video: {
     width: {
       min: 640,
@@ -37,6 +39,7 @@ export const defaultTracksParams = {
       max: 1080,
     },
     facingMode: "user",
+    deviceId: "default"
   },
 };
 
@@ -46,9 +49,10 @@ export const defaultScreenTrackParams = {
     displaySurface: "monitor",
     logicalSurface: true,
     cursor: true,
-    width: { max: 1920 },
-    height: { max: 1080 },
-    frameRate: { max: 30 },
+    width: { ideal: 1920 },
+    height: { ideal: 1080 },
+    frameRate: { ideal: 30 },
+    contentHint: "text",
   },
   audio: {
     echoCancellation: true,

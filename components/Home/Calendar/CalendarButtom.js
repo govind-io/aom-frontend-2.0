@@ -23,7 +23,7 @@ export default function CalendarButton({ setCalendar, calendar }) {
           backgroundColor: "#F5F5F5",
           borderRadius: "20%",
           aspectRatio: "1",
-          padding: "40px",
+          padding: "30px",
           "&:disabled": {
             bgcolor: "#F5F5F5",
           },

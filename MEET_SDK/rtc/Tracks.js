@@ -10,8 +10,10 @@ export class Tracks {
   init() {
     const createTracks = async () => {
       try {
+        const params = this.params || defaultTracksParams
+
         const tracks = await navigator.mediaDevices.getUserMedia(
-          this.params || defaultTracksParams
+          params
         );
 
         const clientTracksArray = [];
