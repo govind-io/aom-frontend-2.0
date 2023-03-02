@@ -4,3 +4,5 @@ export const EVENTSTATUS = {
     MUTE_ALL_EVENT: "MUTE_ALL_EVENT",
     END_MEETING_EVENT: "END_MEETING_EVENT"
 }
+
+Object.freeze(EVENTSTATUS);
