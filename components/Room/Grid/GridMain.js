@@ -14,7 +14,7 @@ import {
   handleCreateAndPublishVideoTrack,
   handleUnPublishTrack,
 } from "../../../Utils/MeetingUtils/Tracks";
-import { ViewStatus } from "../../../Utils/Contants/Conditional";
+import { VIEWSTATUS } from "../../../Utils/Contants/Conditional";
 import GalleryView from "./GalleryView";
 import SpeakerView from "./SpeakerView";
 import { useRouter } from "next/router";
@@ -22,7 +22,7 @@ import {
   ChangeParticipantCounts,
   ChangeUnreadMessageCount,
 } from "../../../Redux/Actions/Comps/DataComps";
-import { EventStatus } from "../../../Utils/Contants/Constants";
+import { EVENTSTATUS } from "../../../Utils/Contants/Constants";
 
 export default function GridMain({ profilename, audio, video }) {
   const userData = useSelector((s) => s.user.data);
@@ -43,7 +43,7 @@ export default function GridMain({ profilename, audio, video }) {
 
   const handleNotificationEvents = async ({ content }, client) => {
     switch (content) {
-      case EventStatus.MUTE_ALL_EVENT:
+      case EVENTSTATUS.MUTE_ALL_EVENT:
         if (audioRef.current) {
           await handleUnPublishTrack(audioRef.current);
           dispatch(SaveRoomControls({ audio: false }));
@@ -51,7 +51,7 @@ export default function GridMain({ profilename, audio, video }) {
         }
 
         break;
-      case EventStatus.END_MEETING_EVENT:
+      case EVENTSTATUS.END_MEETING_EVENT:
         client.close();
 
         setMeetClient("");
@@ -151,8 +151,8 @@ export default function GridMain({ profilename, audio, video }) {
       }
     });
 
-    client.on(EventStatus.MESSAGE_EVENT, () => dispatch(ChangeUnreadMessageCount(1)));
-    client.on(EventStatus.NOTIFICATION_EVENT, ({ content }) => {
+    client.on(EVENTSTATUS.MESSAGE_EVENT, () => dispatch(ChangeUnreadMessageCount(1)));
+    client.on(EVENTSTATUS.NOTIFICATION_EVENT, ({ content }) => {
       handleNotificationEvents({ content }, client);
     });
 
@@ -244,14 +244,14 @@ export default function GridMain({ profilename, audio, video }) {
       }}
       id="main-grid"
     >
-      {roomLayout.view === ViewStatus.GALLERY && presenters.length === 0 ? (
+      {roomLayout.view === VIEWSTATUS.GALLERY && presenters.length === 0 ? (
         <GalleryView
           users={users}
           selfUID={`${userData.username}-${
             profilename || userData.name || userData.username
           }`}
         />
-      ) : roomLayout.view === ViewStatus.SPEAKER || presenters.length > 0 ? (
+      ) : roomLayout.view === VIEWSTATUS.SPEAKER || presenters.length > 0 ? (
         <SpeakerView
           users={users}
           selfUID={`${userData.username}-${

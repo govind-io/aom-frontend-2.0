@@ -1,5 +1,5 @@
 import { HYDRATE } from "next-redux-wrapper";
-import { ViewStatus } from "../../../Utils/Contants/Conditional";
+import { VIEWSTATUS } from "../../../Utils/Contants/Conditional";
 import { DELETE_ALL } from "../../Actions/DeleteAll";
 import {
   DELETE_ROOM_DATA,
@@ -18,7 +18,7 @@ const initialState = {
     moderator: "",
   },
   layout: {
-    view: ViewStatus.GALLERY,
+    view: VIEWSTATUS.GALLERY,
     chat: false,
     particpants: false,
   },

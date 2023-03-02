@@ -1,4 +1,4 @@
-export const ViewStatus = {
+export const VIEWSTATUS = {
 GALLERY: "GALLERY",
 SPEAKER: "SPEAKER",
 FULLSCREEN: "FULLSCREEN",

@@ -11,7 +11,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import text from "../../../Content/text.json";
 import { meetClient } from "../../../Utils/Configs/MeetClient";
 import {
-  EventStatus
+  EVENTSTATUS
 } from "../../../Utils/Contants/Constants";
 
 export default function DotMenu() {
@@ -35,7 +35,7 @@ export default function DotMenu() {
   };
 
   const muteAll = (e) => {
-    meetClient.emit(EventStatus.NOTIFICATION_EVENT, { content: EventStatus.MUTE_ALL_EVENT });
+    meetClient.emit(EVENTSTATUS.NOTIFICATION_EVENT, { content: EVENTSTATUS.MUTE_ALL_EVENT });
     handleClose(e);
   };
 

@@ -1,4 +1,4 @@
-export const EventStatus = {
+export const EVENTSTATUS = {
     MESSAGE_EVENT: "message",
     NOTIFICATION_EVENT: "notification",
     MUTE_ALL_EVENT: "MUTE_ALL_EVENT",
