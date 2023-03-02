@@ -1,22 +1,19 @@
 import { useRouter } from "next/router";
-import { useDispatch, useSelector } from "react-redux";
-import images from "../Content/images.json";
+import { useSelector } from "react-redux";
 import metaTags from "../Content/metaTags.json";
-import text from "../Content/text.json";
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import PageWraper from "../components/Common/PageWraper";
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import HomeHeader from "../components/Home/Header";
 import NewMeetingButton from "../components/Home/NewMeetingButton";
 import JoinMeetingButton from "../components/Home/JoinMeeting/JoinMeetingButton";
 import MetaTagsGenerator from "../Utils/ComponentUtilities/MetaTagsGenerator";
 import ScheduleMeetingButton from "../components/Home/ScheduleMeeting/ScheduleMeetingButton";
 import CalendarButton from "../components/Home/Calendar/CalendarButtom";
-import { ToggleCalendar } from "../Redux/Actions/Comps/CollapsibleComps";
 import WelcomeAnimation from "../components/Home/WelcomeAniamtion";
 import CalendarParts from "../components/Home/Calendar/CalendarParts";
 import ScheduleMeetingModal from "../components/Home/ScheduleMeeting/ScheduleMeetingModal";
+import { HomeStyle } from "../styles/pages/home/home";
 
 export default function Home() {
   //constants here
@@ -32,7 +29,8 @@ export default function Home() {
       router.push("/");
       return;
     }
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.token]);
 
   return (
     <PageWraper HeaderContent={<HomeHeader />}>
@@ -40,7 +38,7 @@ export default function Home() {
       <Grid
         container
         justifyContent={"space-around"}
-        sx={{ height: "100%", width: "100%" }}
+        sx={HomeStyle.container}
         alignItems="center"
       >
         <Grid
@@ -48,19 +46,11 @@ export default function Home() {
           sm={12}
           md={6}
           lg={4}
-          sx={{
-            "@media (max-width: 900px)": {
-              marginTop: "30px",
-            },
-          }}
+          sx={HomeStyle.gridItem}
         >
           <Grid
             container
-            sx={{
-              "@media (max-width: 900px)": {
-                justifyContent: "space-around",
-              },
-            }}
+            sx={HomeStyle.meetingGridItem}
           >
             <NewMeetingButton />
             <JoinMeetingButton />
@@ -73,16 +63,7 @@ export default function Home() {
           sm={12}
           md={6}
           lg={4}
-          height={"80%"}
-          position="relative"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            "@media (max-width: 900px)": {
-              marginTop: "30px",
-              maxWidth: "100%",
-            },
-          }}
+          sx={[HomeStyle.calenderGridItem, HomeStyle.gridItem]}
         >
           {calendar ? (
             <CalendarParts

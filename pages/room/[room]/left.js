@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import PageWraper from "../../../components/Common/PageWraper";
 import HomeHeader from "../../../components/Home/Header";
-import { WAITING_TIME } from "../../../Utils/Contants/Conditional";
+import { VIEWSTATUS } from "../../../Utils/Contants/Conditional";
 import text from "../../../Content/text.json";
 import metaTags from "../../../Content/metaTags.json";
 import MetaTagsGenerator from "../../../Utils/ComponentUtilities/MetaTagsGenerator";
@@ -14,7 +14,7 @@ export default function LeftLobby() {
   const roomData = useSelector((s) => s.room.data);
   const router = useRouter();
 
-  const [timeRemaining, setTimeRemaining] = useState(WAITING_TIME);
+  const [timeRemaining, setTimeRemaining] = useState(VIEWSTATUS.WAITING_TIME);
 
   const { room } = router.query;
 
@@ -57,7 +57,7 @@ export default function LeftLobby() {
             <Box sx={{ position: "relative", display: "inline-flex" }}>
               <CircularProgress
                 variant="determinate"
-                value={100 - (timeRemaining / WAITING_TIME) * 100}
+                value={100 - (timeRemaining / VIEWSTATUS.WAITING_TIME) * 100}
                 size={50}
               />
               <Box

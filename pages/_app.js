@@ -1,6 +1,6 @@
 import { ToastContainer } from "react-toastify";
 import { wrapper } from "../Redux/Store";
-import "../styles/globals.css";
+import "../styles/globals.scss";
 import "react-toastify/dist/ReactToastify.css";
 import { Provider } from "react-redux";
 import { useEffect } from "react";

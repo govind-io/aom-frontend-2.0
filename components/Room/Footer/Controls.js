@@ -23,8 +23,7 @@ import {
 } from "../../../Utils/MeetingUtils/Recorder";
 import DotMenu from "./DotMenu";
 import {
-  END_MEETING_EVENT,
-  NOTIFICATION_EVENT,
+  EVENTSTATUS
 } from "../../../Utils/Contants/Constants";
 import MicButton from "./ControlButtons/MicButton";
 import VideoButton from "./ControlButtons/VideoButton";
@@ -112,7 +111,7 @@ export default function Controls() {
   const EndMeetButton = useMemo(() => {
     const endMeeting = async () => {
       setLoading(true);
-      await meetClient.emit(NOTIFICATION_EVENT, { content: END_MEETING_EVENT });
+      await meetClient.emit(EVENTSTATUS.NOTIFICATION_EVENT, { content: EVENTSTATUS.END_MEETING_EVENT });
       dispatch(
         DeleteRoom({
           data: { meetingId },

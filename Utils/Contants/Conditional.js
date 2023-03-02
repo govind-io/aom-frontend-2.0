@@ -1,4 +1,8 @@
-export const GALLERY = "GALLERY";
-export const SPEAKER = "SPEAKER";
-export const FULLSCREEN = "FULLSCREEN";
-export const WAITING_TIME = 60;
+export const VIEWSTATUS = {
+GALLERY: "GALLERY",
+SPEAKER: "SPEAKER",
+FULLSCREEN: "FULLSCREEN",
+WAITING_TIME: 60
+}
+
+Object.freeze(VIEWSTATUS);

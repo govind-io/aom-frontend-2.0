@@ -16,7 +16,7 @@ import images from "../../Content/images.json";
 import text from "../../Content/text.json";
 import { SaveRoomLayout } from "../../Redux/Actions/Room/RoomDataAction";
 import { FullScreenElement } from "../../Utils/ComponentUtilities/FullScreen";
-import { GALLERY, SPEAKER } from "../../Utils/Contants/Conditional";
+import { VIEWSTATUS } from "../../Utils/Contants/Conditional";
 
 export default function RoomHeader() {
   const room = useSelector((s) => s.room);
@@ -86,10 +86,10 @@ export default function RoomHeader() {
               width="25px"
               height="25px"
               style={
-                room.layout.view === GALLERY ? { transform: "scale(2)" } : {}
+                room.layout.view === VIEWSTATUS.GALLERY ? { transform: "scale(2)" } : {}
               }
               src={
-                room.layout.view === GALLERY
+                room.layout.view === VIEWSTATUS.GALLERY
                   ? images.room.galleryview
                   : images.room.speakerview
               }
@@ -181,7 +181,7 @@ export default function RoomHeader() {
                       paddingRight: "10px",
                     }}
                     onClick={() => {
-                      handleViewChange(GALLERY);
+                      handleViewChange(VIEWSTATUS.GALLERY);
                     }}
                   >
                     <Grid container justifyContent={"space-between"}>
@@ -192,7 +192,7 @@ export default function RoomHeader() {
                           flexWrap: "nowrap",
                         }}
                       >
-                        {room.layout.view === GALLERY && (
+                        {room.layout.view === VIEWSTATUS.GALLERY && (
                           <Image
                             src={images.room.check}
                             width={"15px"}
