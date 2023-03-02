@@ -224,16 +224,19 @@ export default function GridMain({ profilename, audio, video }) {
         ToastHandler("warn", "Meeting Left Succefully");
       }
     };
-  });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
 
   //updating presenter and volumes
   useEffect(() => {
     dispatch(SaveRoomMetaData({ existingPresenter: presenters.length > 0 }));
-  }, [dispatch, presenters]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [presenters]);
 
   useEffect(() => {
     dispatch(ChangeParticipantCounts(users.length + 1));
-  }, [dispatch, users]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [users]);
 
   return (
     <Grid
