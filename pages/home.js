@@ -29,7 +29,8 @@ export default function Home() {
       router.push("/");
       return;
     }
-  }, [router, user.token]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.token]);
 
   return (
     <PageWraper HeaderContent={<HomeHeader />}>
