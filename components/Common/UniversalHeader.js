@@ -1,6 +1,9 @@
 import { Avatar, Grid } from "@mui/material";
+import { useRouter } from "next/router";
 import images from "../../Content/images.json";
 export default function UniversalHeader({ children }) {
+  const router = useRouter();
+
   return (
     <Grid
       container
@@ -21,9 +24,11 @@ export default function UniversalHeader({ children }) {
         <Avatar
           src={images.global.khulke}
           sx={{
-            height: "100%",
-            width: "fit-content",
-            width: "55px",
+            cursor: "pointer",
+          }}
+          variant="square"
+          onClick={() => {
+            router.push("/home");
           }}
         />
       </Grid>

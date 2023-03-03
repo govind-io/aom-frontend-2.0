@@ -10,11 +10,11 @@ export class Tracks {
   init() {
     const createTracks = async () => {
       try {
-        const params = this.params || defaultTracksParams
+        const params = this.params || defaultTracksParams;
 
-        const tracks = await navigator.mediaDevices.getUserMedia(
-          params
-        );
+        console.log(params);
+
+        const tracks = await navigator.mediaDevices.getUserMedia(params);
 
         const clientTracksArray = [];
 
@@ -35,21 +35,20 @@ export class Tracks {
 
             if (!newState && producer) {
               producer.pause();
-              if (DEBUG_LOGS)
-                console.log("producer paused associated with this track");
+
+              console.log("producer paused associated with this track");
               this.parentClassRef.rtmClient.emit("producer-paused", {
                 producerId: producer.id,
               });
             } else if (newState && producer) {
               producer.resume();
-              if (DEBUG_LOGS)
-                console.log("producer resumed associated with this track");
+
+              console.log("producer resumed associated with this track");
               this.parentClassRef.rtmClient.emit("producer-resume", {
                 producerId: producer.id,
               });
             } else {
-              if (DEBUG_LOGS)
-                console.log("No producer associated with this track");
+              console.log("No producer associated with this track");
             }
           };
 
@@ -111,7 +110,7 @@ export class ScreenTracks {
               );
           };
 
-          newMediaStream.enabled = true
+          newMediaStream.enabled = true;
 
           clientTracksArray.push(newMediaStream);
 

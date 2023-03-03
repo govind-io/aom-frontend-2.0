@@ -69,6 +69,11 @@
             "thisCall":"On This Call"
         },
         "mute":"Mute All",
-        "end":"End Meeting"
+        "end":"End Meeting",
+        "mic":"Microphone",
+        "camera":"Camera",
+        "speaker":"Speaker",
+        "micTest":"Mic Test",
+        "speakerTest":"Audio Test"
     }
 }

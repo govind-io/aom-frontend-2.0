@@ -114,9 +114,10 @@ export class RTCClient {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const mics = devices.filter(device => device.kind === 'audioinput');
-      console.log('Microphones:', mics);
+      return mics
     } catch (error) {
       console.error('Error getting microphones:', error);
+      throw new Error(error)
     }
   }
 
@@ -125,9 +126,10 @@ export class RTCClient {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const cameras = devices.filter(device => device.kind === 'videoinput');
-      console.log('Cameras:', cameras);
+      return cameras
     } catch (error) {
       console.error('Error getting cameras:', error);
+      throw new Error(error)
     }
   }
 
@@ -136,9 +138,10 @@ export class RTCClient {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const speakers = devices.filter(device => device.kind === 'audiooutput');
-      console.log('Speakers:', speakers);
+      return speakers
     } catch (error) {
       console.error('Error getting speakers:', error);
+      throw new Error(error)
     }
   }
 

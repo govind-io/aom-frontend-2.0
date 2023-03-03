@@ -33,7 +33,11 @@ function loadFromLocalStorage() {
 
 const makeStore = () => {
   const sagaMiddleware = createSagaMiddleware();
-  const middlewares = [logger, sagaMiddleware];
+  const middlewares = [sagaMiddleware];
+
+  if (!process.env.PROD) {
+    middlewares.push(logger);
+  }
 
   const store = createStore(
     rootReducer,
