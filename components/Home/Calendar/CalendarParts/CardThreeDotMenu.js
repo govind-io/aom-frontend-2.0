@@ -88,7 +88,6 @@ export default function CardThreeDotMenu({ meetingId, setAllCards }) {
                       setAllCards((prev) => {
                         return [
                           ...prev.map((item) => {
-                            console.log({ meetingId, item });
                             if (item.meetingId !== meetingId) return item;
 
                             return { ...item, deleted: true };

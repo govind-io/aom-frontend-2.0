@@ -13,7 +13,7 @@ export const handleUnproduceTracks = async (ref, data) => {
       item.getTracks().forEach((track) => {
         ref.producers = ref.producers.filter((elem) => {
           if (elem.track.id === track.id) {
-            if (DEBUG_LOGS) console.log("stopped publishing track ", track);
+            console.log("stopped publishing track ", track);
             elem.close();
             socket.emit("closed-producer", { producerId: elem.id });
           }
@@ -57,22 +57,22 @@ export const handleProduceTracks = function (ref, data, type) {
             return reject(e);
           }
 
-          if (DEBUG_LOGS) console.log("started audio produce");
+          console.log("started audio produce");
 
           audioProducer.on("trackended", () => {
-            if (DEBUG_LOGS) console.log("audio track ended");
+            console.log("audio track ended");
             // close audio track
-            if (DEBUG_LOGS) console.log("audio Track closed");
+            console.log("audio Track closed");
             audioTrack.close();
           });
 
           audioProducer.on("transportclose", () => {
-            if (DEBUG_LOGS) console.log("audio transport ended");
+            console.log("audio transport ended");
 
             ref.producers = ref.producers.filter(
               (item) => item.id !== audioProducer.id
             );
-            if (DEBUG_LOGS) console.log("audio Track closed");
+            console.log("audio Track closed");
             // close audio track
             audioTrack.close();
           });
@@ -102,24 +102,24 @@ export const handleProduceTracks = function (ref, data, type) {
             return reject(e);
           }
 
-          if (DEBUG_LOGS) console.log("started video produce");
+          console.log("started video produce");
 
           videoProducer.on("trackended", () => {
-            if (DEBUG_LOGS) console.log("video track ended");
+            console.log("video track ended");
 
-            if (DEBUG_LOGS) console.log("video Track closed");
+            console.log("video Track closed");
             // close video track
             videoTrack.close();
           });
 
           videoProducer.on("transportclose", () => {
-            if (DEBUG_LOGS) console.log("video transport ended");
+            console.log("video transport ended");
 
             ref.producers = ref.producers.filter(
               (item) => item.id !== videoProducer.id
             );
 
-            if (DEBUG_LOGS) console.log("video Track closed");
+            console.log("video Track closed");
             // close video track
             videoTrack.close();
           });
@@ -152,17 +152,16 @@ export const handleProduceTracks = function (ref, data, type) {
 
         producerTransport.on("dtlsstatechange", (dtlsState) => {
           if (dtlsState === "closed") {
-            if (DEBUG_LOGS)
-              console.log(
-                "Producer Transport DTLSState Changed to ",
-                dtlsState,
-                " Transport closed there fore"
-              );
+            console.log(
+              "Producer Transport DTLSState Changed to ",
+              dtlsState,
+              " Transport closed there fore"
+            );
             producerTransport.close();
           }
         });
 
-        if (DEBUG_LOGS) console.log("Created send producer");
+        console.log("Created send producer");
 
         ref.selfProducerTransport = producerTransport;
 
@@ -174,12 +173,11 @@ export const handleProduceTracks = function (ref, data, type) {
                 if (!error) return callback();
               });
 
-              if (DEBUG_LOGS)
-                console.log("Transmitted connection details to server");
+              console.log("Transmitted connection details to server");
             } catch (e) {
               reject(e.message);
-              if (DEBUG_LOGS)
-                console.log("Producer can not connect to server " + e.message);
+
+              console.log("Producer can not connect to server " + e.message);
               errorback(e);
             }
           }
@@ -189,7 +187,7 @@ export const handleProduceTracks = function (ref, data, type) {
           "produce",
           async (parameters, callback, errorback) => {
             try {
-              if (DEBUG_LOGS) console.log("Producer Connected with server");
+              console.log("Producer Connected with server");
               console.log("track type inside on event ", trackType);
               socket.emit(
                 "produce-producer",
@@ -204,14 +202,14 @@ export const handleProduceTracks = function (ref, data, type) {
                   if (error) return console.log(error);
 
                   callback({ id });
-                  if (DEBUG_LOGS)
-                    console.log("Producer can start producing now");
+
+                  console.log("Producer can start producing now");
                 }
               );
             } catch (e) {
               reject(e);
-              if (DEBUG_LOGS)
-                console.log("Producer can not produce " + e.message);
+
+              console.log("Producer can not produce " + e.message);
               errorback(e);
             }
           }

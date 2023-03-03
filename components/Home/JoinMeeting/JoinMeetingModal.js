@@ -71,7 +71,6 @@ export default function JoinMeetingModal({ open, setOpen }) {
           dispatch(SaveUserData({ name: profilename }));
         },
         onFailed: (data) => {
-          console.log({ data });
           if (data.message.includes(404)) {
             ToastHandler("dan", "Invalid Meeting Id");
           } else if (data.message.includes(400)) {

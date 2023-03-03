@@ -1,74 +1,49 @@
-import { Grid } from "@mui/material";
+import React from "react";
+import KeyboardVoiceOutlinedIcon from "@mui/icons-material/KeyboardVoiceOutlined";
 
-export default function VolumeIndicator({ volume }) {
-  const lineHeight = volume ? `${(volume / 10) * 100}%` : "2px";
-
-  console.log({ volume, lineHeight });
-
+export default function VolumeIndicator({
+  volume,
+  customIconStyle,
+  customContainerStyle = {},
+}) {
   return (
-    <Grid
-      container
-      sx={{
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        flexWrap: "wrap",
+        position: "relative",
+        background: "#FFFFFF 0% 0% no-repeat padding-box",
         borderRadius: "50%",
-        height: "100%",
-        width: "100%",
-        backgroundColor: "white",
-        padding: "5px",
+        opacity: "0.88",
+        backdropFilter: "blur(4px)",
+
+        ...customContainerStyle,
       }}
-      alignItems="center"
-      justifyContent={"space-around"}
     >
-      <Grid
-        sx={{
-          width: "5px",
-          height: "60%",
+      <KeyboardVoiceOutlinedIcon
+        sx={[{ color: "#04AA6D", fontSize: "30px" }, customIconStyle]}
+      />
+
+      <div
+        style={{
+          width: "17%",
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-end",
+          height: "36%",
+          position: "absolute",
+          top: "20%",
         }}
       >
-        <Grid
-          sx={{
-            backgroundColor: "#66B984",
+        <div
+          style={{
+            height: volume ? `${volume * 10}%` : "0%",
+            backgroundColor: "#04AA6D",
             width: "100%",
             borderRadius: "5px",
-            height: lineHeight,
           }}
-        />
-      </Grid>
-      <Grid
-        sx={{
-          width: "5px",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <Grid
-          sx={{
-            backgroundColor: "#66B984",
-            width: "100%",
-            borderRadius: "5px",
-            height: lineHeight,
-          }}
-        />
-      </Grid>
-      <Grid
-        sx={{
-          width: "5px",
-          height: "60%",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <Grid
-          sx={{
-            backgroundColor: "#66B984",
-            width: "100%",
-            borderRadius: "5px",
-            height: lineHeight,
-          }}
-        />
-      </Grid>
-    </Grid>
+        ></div>
+      </div>
+    </div>
   );
 }

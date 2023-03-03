@@ -51,10 +51,10 @@ export default function List({ searchQuery }) {
 
     setShowUsers((prev) =>
       users.filter((item) => {
-        const username = item.uid || item.name;
+        const username = (item.uid || item.name).toLowerCase();
 
         {
-          return username.includes(searchQuery);
+          return username.includes(searchQuery.toLowerCase());
         }
       })
     );

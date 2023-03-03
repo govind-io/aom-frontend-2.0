@@ -36,9 +36,8 @@ export default function RoomHeader() {
   useEffect(() => {
     setRoomTitle(
       room.data.name ||
-        `${
-          room.data.moderator?.name || room.data.moderator?.username
-        }'s Meeting`
+      `${room.data.moderator?.name || room.data.moderator?.username
+      }'s Meeting`
     );
   }, [room]);
 
@@ -135,7 +134,7 @@ export default function RoomHeader() {
                       alignItems: "center",
                     }}
                     onClick={() => {
-                      handleViewChange(SPEAKER);
+                      handleViewChange(VIEWSTATUS.SPEAKER);
                     }}
                   >
                     <Grid container justifyContent={"space-between"}>
@@ -146,7 +145,7 @@ export default function RoomHeader() {
                           flexWrap: "nowrap",
                         }}
                       >
-                        {room.layout.view === SPEAKER && (
+                        {room.layout.view === VIEWSTATUS.SPEAKER && (
                           <Image
                             src={images.room.check}
                             width={"15px"}
