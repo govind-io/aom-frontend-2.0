@@ -1,8 +1,8 @@
 export const HomeStyle = {
 container: { height: "100%", width: "100%" },
 gridItem: {
-    "@media (max-width: 900px)": {
-      marginTop: "30px",
+    "@media (max-width: 56.25rem)": {
+      marginTop: "1.875rem",
     },
   },
 calenderGridItem: {
@@ -10,12 +10,12 @@ calenderGridItem: {
     position:"relative",
     display: "flex",
     alignItems: "center",
-    "@media (max-width: 900px)": {
+    "@media (max-width: 56.25rem)": {
       maxWidth: "100%",
     },
   },
   meetingGridItem: {
-    "@media (max-width: 900px)": {
+    "@media (max-width: 56.25rem)": {
       justifyContent: "space-around",
     },
   }

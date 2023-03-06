@@ -7,6 +7,7 @@ export default function ScheduleMeetingButton({ setOpenModal }) {
   return (
     <Grid
       item
+      xs={6}
       sm={3}
       md={6}
       lg={6}

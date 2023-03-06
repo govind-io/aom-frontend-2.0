@@ -8,7 +8,7 @@ export default function JoinMeetingButton() {
   const [openModal, setOpenModal] = useState(false);
 
   return (
-    <Grid item sm={3} md={6} lg={6} textAlign="center">
+    <Grid item xs={6} sm={3} md={6} lg={6} textAlign="center">
       <IconButton
         sx={{
           backgroundColor: "#F5F5F5",

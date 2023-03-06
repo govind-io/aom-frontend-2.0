@@ -6,6 +6,7 @@ import DateRow from "./DateRow";
 import MonthRow from "./MonthRow";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import { CalendarStyle } from "../../../../styles/component/Home/Calendar/CalendarParts";
 
 export default function CalendarParts({
   setScheduleModalOpen,
@@ -41,26 +42,12 @@ export default function CalendarParts({
   return (
     <Grid
       container
-      sx={{
-        height: "100%",
-        alignContent: "flex-start",
-        maxWidth: "80%",
-        margin: "auto",
-      }}
+      sx={CalendarStyle.container}
     >
       <Grid
         item
         xs={12}
-        sx={{
-          height: "50px",
-          background: "#2E2E2E 0% 0% no-repeat padding-box",
-          boxShadow: "inset 0px 3px 6px #00000029",
-          borderRadius: "20px 20px 0px 0px",
-          marginBottom: "10px",
-          padding: "0px 25px",
-          display: "flex",
-          alignItems: "center",
-        }}
+        sx={[CalendarStyle.rowStyle,CalendarStyle.monthRowStyle]}
       >
         <MonthRow
           activeMonth={activeMonth}
@@ -71,17 +58,7 @@ export default function CalendarParts({
       <Grid
         item
         xs={12}
-        sx={{
-          height: "100px",
-          marginBottom: "10px",
-          background: "#2E2E2E 0% 0% no-repeat padding-box",
-          boxShadow: "inset 0px 3px 6px #00000029",
-          padding: "0px 25px",
-          display: "flex",
-          alignItems: "center",
-          position: "relative",
-          justifyContent: "center",
-        }}
+        sx={[CalendarStyle.rowStyle,CalendarStyle.dateRowStyle]}
       >
         <DateRow
           activeMonth={activeMonth}
@@ -90,50 +67,31 @@ export default function CalendarParts({
           ScheduleModalOpen={ScheduleModalOpen}
         />
         <IconButton
-          sx={{
-            position: "absolute",
-            top: "50%",
-            transform: "translateY(-50%)",
-            left: "0px",
-          }}
+          sx={[CalendarStyle.iconStyle, CalendarStyle.leftIcon]}
           onClick={() => {
             handleDateScroll("left");
           }}
         >
           <NavigateBeforeIcon
-            sx={{
-              color: "white",
-            }}
+            sx={CalendarStyle.navNextIconStyle}
+
           />
         </IconButton>
         <IconButton
-          sx={{
-            position: "absolute",
-            top: "50%",
-            transform: "translateY(-50%)",
-            right: "0px",
-          }}
+          sx={[CalendarStyle.iconStyle, CalendarStyle.rightIcon]}
           onClick={() => {
             handleDateScroll("right");
           }}
         >
           <NavigateNextIcon
-            sx={{
-              color: "white",
-            }}
+            sx={CalendarStyle.navNextIconStyle}
           />
         </IconButton>
       </Grid>
       <Grid
         item
         xs={12}
-        sx={{
-          height: "calc(100% - 200px)",
-          background: "#2E2E2E 0% 0% no-repeat padding-box",
-          boxShadow: "inset 0px 3px 6px #00000029",
-          borderRadius: "0px 0px 20px 20px",
-          padding: "25px",
-        }}
+        sx={[CalendarStyle.rowStyle,CalendarStyle.cardRowStyle]}
       >
         <CardRow
           setScheduleModalOpen={setScheduleModalOpen}
