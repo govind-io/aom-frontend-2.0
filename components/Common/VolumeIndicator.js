@@ -7,7 +7,7 @@ export default function VolumeIndicator({
   customIconStyle,
   customContainerStyle = {},
 }) {
-  const volumeIndicate = VolumeIndicatorStyle(customContainerStyle, customIconStyle);
+  const volumeIndicate = VolumeIndicatorStyle(customContainerStyle, customIconStyle,volume);
   return (
     <div
       style={volumeIndicate.main}
