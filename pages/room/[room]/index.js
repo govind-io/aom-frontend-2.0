@@ -103,6 +103,7 @@ export default function Room() {
           data: {
             meetingId: room,
             pin: passcode,
+            name: profilename,
           },
           onSuccess: (data) => {
             setLoading(false);

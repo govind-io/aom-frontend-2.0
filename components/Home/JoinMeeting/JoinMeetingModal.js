@@ -52,6 +52,7 @@ export default function JoinMeetingModal({ open, setOpen }) {
         data: {
           meetingId,
           pin,
+          name: profilename,
         },
         onSuccess: (data) => {
           setLoading(false);

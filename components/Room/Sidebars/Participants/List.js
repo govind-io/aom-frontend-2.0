@@ -2,7 +2,6 @@ import { Avatar, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import text from "../../../../Content/text.json";
-import { meetClient } from "../../../../Utils/Configs/MeetClient";
 import VolumeIndicator from "../../../Common/VolumeIndicator";
 
 export default function List({ searchQuery }) {
@@ -13,35 +12,6 @@ export default function List({ searchQuery }) {
   const roomData = useSelector((s) => s.room.data);
 
   const { volumes } = useSelector((s) => s.room.metaData);
-
-  useEffect(() => {
-    if (!meetClient) return;
-
-    const intialParticipant = async () => {
-      const allUsers = await meetClient.getJoinedUsers(roomData.token);
-
-      setUsers(allUsers);
-    };
-
-    const handleUserJoined = (user) => {
-      setUsers((prev) => [...prev, user]);
-    };
-
-    const handleUserLeft = (user) => {
-      setUsers((prev) => prev.filter((item) => item.uid !== user.uid));
-    };
-
-    meetClient.on("user-joined", handleUserJoined);
-
-    meetClient.on("user-left", handleUserLeft);
-
-    intialParticipant();
-
-    return () => {
-      meetClient.off("user-joined", handleUserJoined);
-      meetClient.off("user-left", handleUserLeft);
-    };
-  }, []);
 
   useEffect(() => {
     if (!searchQuery) {

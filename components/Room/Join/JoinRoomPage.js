@@ -69,6 +69,7 @@ export default function JoinRoomPage() {
         data: {
           meetingId,
           pin,
+          name: profilename,
         },
         onSuccess: (data) => {
           setLoading(false);

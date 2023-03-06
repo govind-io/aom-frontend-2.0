@@ -4,7 +4,6 @@ import InputBase from "@mui/material/InputBase";
 import IconButton from "@mui/material/IconButton";
 import text from "../../../../Content/text.json";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
-import { meetClient } from "../../../../Utils/Configs/MeetClient";
 
 export default function SendMessage() {
   const handleSendMessage = (e) => {
@@ -13,18 +12,6 @@ export default function SendMessage() {
     const val = e.target.message.value;
 
     if (!val) return;
-
-    meetClient.emit(
-      "send-message",
-      {
-        content: val,
-      },
-      (err) => {
-        if (err) return ToastHandler("dan", "Error Sending Your Message");
-
-        e.target.message.value = "";
-      }
-    );
   };
 
   return (

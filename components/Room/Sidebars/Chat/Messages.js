@@ -2,7 +2,7 @@ import { Grid, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ChangeUnreadMessageCount } from "../../../../Redux/Actions/Comps/DataComps";
-import { meetClient } from "../../../../Utils/Configs/MeetClient";
+
 import { EVENTSTATUS } from "../../../../Utils/Contants/Constants";
 import convertDateToLocalTime from "../../../../Utils/DesignUtilities/DateManipulation";
 
@@ -16,27 +16,7 @@ export default function Messages() {
 
   const containerRef = useRef();
 
-  useEffect(() => {
-    if (!meetClient) return;
-
-    const setIntialMessage = async () => {
-      setMessage(await meetClient.getAllMessages(roomData.token));
-    };
-
-    const MessageListener = (data) => {
-      setMessage((prev) => [...prev, data]);
-    };
-
-    meetClient.on(EVENTSTATUS.MESSAGE_EVENT, MessageListener);
-
-    setIntialMessage();
-
-    return () => {
-      if (meetClient) {
-        meetClient.off(EVENTSTATUS.MESSAGE_EVENT, MessageListener);
-      }
-    };
-  }, []);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if (!containerRef.current) return;

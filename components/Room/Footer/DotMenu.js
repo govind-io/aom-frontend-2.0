@@ -9,10 +9,7 @@ import { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import text from "../../../Content/text.json";
-import { meetClient } from "../../../Utils/Configs/MeetClient";
-import {
-  EVENTSTATUS
-} from "../../../Utils/Contants/Constants";
+import { EVENTSTATUS } from "../../../Utils/Contants/Constants";
 
 export default function DotMenu() {
   const user = useSelector((s) => s.user.data);
@@ -35,7 +32,6 @@ export default function DotMenu() {
   };
 
   const muteAll = (e) => {
-    meetClient.emit(EVENTSTATUS.NOTIFICATION_EVENT, { content: EVENTSTATUS.MUTE_ALL_EVENT });
     handleClose(e);
   };
 
