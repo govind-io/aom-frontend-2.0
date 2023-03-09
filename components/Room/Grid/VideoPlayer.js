@@ -1,3 +1,4 @@
+import { VideoRenderer } from "@livekit/react-core";
 import { Grid } from "@mui/material";
 import { useCallback } from "react";
 
@@ -6,17 +7,15 @@ import ScrollZoom from "../../../Utils/ComponentUtilities/ScrollToZoom";
 export default function MeetVideoPlayer({ videoTrack, sx = {}, ...rest }) {
   const videoRef = useCallback(
     (node) => {
-      if (!node || !videoTrack || !videoTrack?.enabled) return;
+      if (!node || !videoTrack) return;
 
       try {
-        node.srcObject = videoTrack;
         ScrollZoom(node, 2, 0.2);
-        node.play();
       } catch (e) {
         console.log("something went wrong, warning: ", { e });
       }
     },
-    [videoTrack, videoTrack?.enabled]
+    [videoTrack]
   );
 
   return (
@@ -27,18 +26,16 @@ export default function MeetVideoPlayer({ videoTrack, sx = {}, ...rest }) {
         overflow: "hidden",
       }}
     >
-      <video
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "contain",
-          ...sx,
-        }}
-        {...rest}
-        ref={videoRef}
-        autoPlay={true}
-        muted={true}
-      />
+      <Grid item xs={12} sx={{ height: "100%" }} ref={videoRef}>
+        {videoTrack && (
+          <VideoRenderer
+            width={"100%"}
+            height={"100%"}
+            objectFit={"contain"}
+            track={videoTrack}
+          />
+        )}
+      </Grid>
     </Grid>
   );
 }

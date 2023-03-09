@@ -8,6 +8,7 @@ import { RoomStyle } from "../../../../styles/pages/room/controls";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ChangeVideoDeviceModal from "./ChangeVideoDeviceModal";
 import { CAMERA_RESOLUTIONS } from "../../../../Utils/Configs/CameraResolution";
+import { ROOM } from "../../../../Utils/MeetingUtils/MeetingConstant";
 
 export default function VideoButton() {
   const { video } = useSelector((s) => s.room.controls);
@@ -26,7 +27,10 @@ export default function VideoButton() {
 
   useEffect(() => {}, []);
 
-  const toggleVideo = async ({ deviceId, newResolution }) => {};
+  const toggleVideo = async ({ deviceId, newResolution }) => {
+    dispatch(SaveRoomControls({ video: !video }));
+    ROOM.localParticipant.setCameraEnabled(!video);
+  };
 
   const changeCamera = async (newCamId) => {
     setActiveCamera(newCamId);
@@ -53,14 +57,14 @@ export default function VideoButton() {
       <IconButton
         sx={[
           {
-            backgroundColor: video && video.enabled ? "#27292B" : "#CC3425",
+            backgroundColor: video ? "#27292B" : "#CC3425",
           },
           RoomStyle.micCamButton,
         ]}
         disableRipple={true}
         onClick={toggleVideo}
       >
-        {video && video.enabled ? (
+        {video ? (
           <VideocamIcon sx={RoomStyle.micCamIcon} />
         ) : (
           <VideocamOffIcon sx={RoomStyle.micCamIcon} />

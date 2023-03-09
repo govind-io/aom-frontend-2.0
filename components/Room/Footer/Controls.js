@@ -3,10 +3,7 @@ import PresentToAllIcon from "@mui/icons-material/PresentToAll";
 import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
 import text from "../../../Content/text.json";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  DeleteRoom,
-  SaveRoomControls,
-} from "../../../Redux/Actions/Room/RoomDataAction";
+import { DeleteRoom } from "../../../Redux/Actions/Room/RoomDataAction";
 import { useRouter } from "next/router";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import ConfirmationModal from "../../Common/ConfirmationModal";
@@ -18,9 +15,9 @@ import {
   handleStopRecording,
 } from "../../../Utils/MeetingUtils/Recorder";
 import DotMenu from "./DotMenu";
-import { EVENTSTATUS } from "../../../Utils/Contants/Constants";
 import MicButton from "./ControlButtons/MicButton";
 import VideoButton from "./ControlButtons/VideoButton";
+import { ROOM } from "../../../Utils/MeetingUtils/MeetingConstant";
 
 export default function Controls() {
   const dispatch = useDispatch();
@@ -41,7 +38,11 @@ export default function Controls() {
 
   const toggleScreen = async () => {};
 
-  const leaveRoom = () => {};
+  const leaveRoom = () => {
+    ROOM?.disconnect();
+    router.push("/home");
+    ToastHandler("info", "Meeting left successfully");
+  };
 
   const toggleRecording = async () => {
     if (!recording) {

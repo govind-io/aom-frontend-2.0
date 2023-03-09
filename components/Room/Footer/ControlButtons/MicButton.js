@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { RoomStyle } from "../../../../styles/pages/room/controls";
 import ChangeAudioDeviceModal from "./ChangeAudioDeviceModal";
+import { ROOM } from "../../../../Utils/MeetingUtils/MeetingConstant";
 
 export default function MicButton() {
   const { audio } = useSelector((s) => s.room.controls);
@@ -22,7 +23,10 @@ export default function MicButton() {
 
   const anchorRef = useRef();
 
-  const toggleAudio = async ({ deviceId }) => {};
+  const toggleAudio = async ({ deviceId }) => {
+    dispatch(SaveRoomControls({ audio: !audio }));
+    ROOM.localParticipant.setMicrophoneEnabled(!audio);
+  };
 
   const ChangeMic = async (newMicId) => {};
 
@@ -30,13 +34,13 @@ export default function MicButton() {
     <span style={RoomStyle.micCamButtonContainer} ref={anchorRef}>
       <IconButton
         sx={[
-          { backgroundColor: audio && audio?.enabled ? "#27292B" : "#CC3425" },
+          { backgroundColor: audio ? "#27292B" : "#CC3425" },
           RoomStyle.micCamButton,
         ]}
         disableRipple={true}
         onClick={toggleAudio}
       >
-        {audio && audio?.enabled ? (
+        {audio ? (
           <MicIcon sx={RoomStyle.micCamIcon} />
         ) : (
           <MicOffIcon sx={RoomStyle.micCamIcon} />

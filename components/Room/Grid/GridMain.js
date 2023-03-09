@@ -1,17 +1,20 @@
-import { Grid, Typography } from "@mui/material";
+import { CircularProgress, Grid, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { VIEWSTATUS } from "../../../Utils/Contants/Conditional";
 import GalleryView from "./GalleryView";
 import SpeakerView from "./SpeakerView";
 import { useRouter } from "next/router";
-import { useRoom } from "@livekit/react-core";
+import { Room, RoomEvent } from "livekit-client";
+import ToastHandler from "../../../Utils/Toast/ToastHandler";
+import { SaveRoomControls } from "../../../Redux/Actions/Room/RoomDataAction";
+import { updateRoom } from "../../../Utils/MeetingUtils/MeetingConstant";
+import { ChangeParticipantCounts } from "../../../Redux/Actions/Comps/DataComps";
 
 export default function GridMain({ profilename, audio, video }) {
   const userData = useSelector((s) => s.user.data);
   const roomData = useSelector((s) => s.room.data);
   const roomLayout = useSelector((s) => s.room.layout);
-  const { audio: audioTrack } = useSelector((s) => s.room.controls);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -20,51 +23,56 @@ export default function GridMain({ profilename, audio, video }) {
   const [users, setUsers] = useState([]);
   const [presenters, setPresenters] = useState([]);
 
-  //refs for event handling
-  const audioRef = useRef();
-  audioRef.current = audioTrack;
+  const roomRef = useRef();
 
-  const RoomOptions = {
-    adaptiveStream: true,
-    dynacast: true,
+  //functions here
+
+  const updateParticipantsCount = (e) => {
+    console.log("updated user ", e);
+    console.log({ room: roomRef.current });
+    dispatch(ChangeParticipantCounts(roomRef.current.participants.size + 1));
+    setUsers(() => {
+      return new Map(roomRef.current.participants);
+    });
   };
-  const {
-    connect,
-    isConnecting,
-    room,
-    error,
-    participants,
-    audioTracks,
-    videoTracks,
-  } = useRoom(RoomOptions);
+
+  console.log({ users });
+
+  const roomEventHandler = ({ room }) => {
+    room.on(RoomEvent.ParticipantConnected, updateParticipantsCount);
+    room.on(RoomEvent.ParticipantDisconnected, updateParticipantsCount);
+  };
 
   useEffect(() => {
-    async function init() {
-      await connect(process.env.MEET_URL, roomData.token);
-    }
-
-    init().catch((e) => console.error("Could Not connect to server", e));
-  }, []);
-
-  useEffect(() => {
-    if (!room) return;
-
     async function connectRoom() {
-      await room.connect(process.env.MEET_URL, roomData.token);
+      const room = new Room({ adaptiveStream: true, dynacast: true });
 
-      console.log({ audio, video });
+      try {
+        await room.connect(process.env.MEET_URL, roomData.token);
+        roomEventHandler({ room });
+        updateRoom(room);
+        roomRef.current = room;
+        updateParticipantsCount();
+      } catch (e) {
+        ToastHandler("dan", "Something went wrong");
+        console.log({ e });
+        router.push("/");
+        return;
+      }
 
       if (audio === "true") {
-        room.localParticipant.setMicrophoneEnabled(true);
+        await room.localParticipant.setMicrophoneEnabled(true);
+        dispatch(SaveRoomControls({ audio: true }));
       }
 
       if (video === "true") {
-        room.localParticipant.setCameraEnabled(true);
+        await room.localParticipant.setCameraEnabled(true);
+        dispatch(SaveRoomControls({ video: true }));
       }
     }
 
     connectRoom();
-  }, [room]);
+  }, []);
 
   return (
     <Grid

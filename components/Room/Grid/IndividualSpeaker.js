@@ -5,17 +5,23 @@ import MeetVideoPlayer from "./VideoPlayer";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VolumeIndicator from "../../Common/VolumeIndicator";
 import { useRef } from "react";
+import { useParticipant } from "@livekit/react-core";
 
 export default function IndividualSpeaker({
   username,
-  volume,
-  video,
-  audio,
   name,
-  selfScreen,
   smallTile,
+  participant,
 }) {
-  const userData = useSelector((s) => s.user.data);
+  const {
+    isLocal,
+    isSpeaking,
+    connectionQuality,
+    cameraPublication: video,
+    microphonePublication: audio,
+    screenSharePublication: screen,
+    metadata,
+  } = useParticipant(participant);
 
   const containerRef = useRef();
 
@@ -25,7 +31,7 @@ export default function IndividualSpeaker({
       sx={{
         height: "100%",
         position: "relative",
-        border: volume ? "2px solid #66B984" : "none",
+        border: isSpeaking ? "2px solid #66B984" : "none",
         borderRadius: "12px",
         backgroundColor: "#3c4043",
       }}
@@ -33,9 +39,11 @@ export default function IndividualSpeaker({
       alignItems={"center"}
       ref={containerRef}
     >
-      {video && video?.enabled && <MeetVideoPlayer videoTrack={video} />}
+      {video?.track && !video?.track.isMuted && (
+        <MeetVideoPlayer videoTrack={video?.track} />
+      )}
 
-      {(!video || !video.enabled) && (
+      {(!video?.track || video?.track.isMuted) && (
         <Avatar
           src={`${process.env.KHULKE_USER_PROFILE_PIC_URL}/${username}/pp`}
           sx={{
@@ -47,7 +55,7 @@ export default function IndividualSpeaker({
         />
       )}
 
-      {(!audio || !audio.enabled) && (
+      {(!audio?.track || audio?.track.isMuted) && (
         <Box
           sx={{
             position: "absolute",
@@ -68,7 +76,7 @@ export default function IndividualSpeaker({
         </Box>
       )}
 
-      {audio && audio.enabled && (
+      {audio?.track && !audio?.track.isMuted && (
         <Box
           sx={{
             position: "absolute",
@@ -78,15 +86,15 @@ export default function IndividualSpeaker({
             height: "30px",
           }}
         >
-          <VolumeIndicator volume={volume} />
+          <VolumeIndicator volume={participant.audioLevel} />
         </Box>
       )}
 
-      {username !== userData.username && <MeetAudioPlayer audioTrack={audio} />}
+      {!isLocal && <MeetAudioPlayer audioTrack={audio?.track} />}
 
       <Typography
         sx={{
-          background: volume
+          background: isSpeaking
             ? "#66B984 0% 0% no-repeat padding-box"
             : "#000000e6 0% 0% no-repeat padding-box",
           borderRadius: "16px",
@@ -99,10 +107,10 @@ export default function IndividualSpeaker({
           padding: "5px 10px",
         }}
       >
-        {name} {username === userData.username && "(You)"}
+        {name} {isLocal && "(You)"}
       </Typography>
 
-      {selfScreen && (
+      {screen && isLocal && (
         <Box
           sx={{
             width: "100%",
