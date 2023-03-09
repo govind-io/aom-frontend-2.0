@@ -1,4 +1,4 @@
-import { CircularProgress, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { VIEWSTATUS } from "../../../Utils/Contants/Conditional";
@@ -28,15 +28,11 @@ export default function GridMain({ profilename, audio, video }) {
   //functions here
 
   const updateParticipantsCount = (e) => {
-    console.log("updated user ", e);
-    console.log({ room: roomRef.current });
     dispatch(ChangeParticipantCounts(roomRef.current.participants.size + 1));
     setUsers(() => {
       return new Map(roomRef.current.participants);
     });
   };
-
-  console.log({ users });
 
   const roomEventHandler = ({ room }) => {
     room.on(RoomEvent.ParticipantConnected, updateParticipantsCount);
@@ -83,24 +79,27 @@ export default function GridMain({ profilename, audio, video }) {
       }}
       id="main-grid"
     >
-      {roomLayout.view === VIEWSTATUS.GALLERY && presenters.length === 0 ? (
-        <GalleryView
-          users={users}
-          selfUID={`${userData.username}-${
-            profilename || userData.name || userData.username
-          }`}
-        />
-      ) : roomLayout.view === VIEWSTATUS.SPEAKER || presenters.length > 0 ? (
-        <SpeakerView
-          users={users}
-          selfUID={`${userData.username}-${
-            profilename || userData.name || userData.username
-          }`}
-          presenters={presenters}
-        />
-      ) : (
-        <Typography>Soemthing went wrong</Typography>
-      )}
+      {roomRef.current &&
+        (roomLayout.view === VIEWSTATUS.GALLERY && presenters.length === 0 ? (
+          <GalleryView
+            users={users}
+            selfUID={`${userData.username}-${
+              profilename || userData.name || userData.username
+            }`}
+            setPresenters={setPresenters}
+          />
+        ) : roomLayout.view === VIEWSTATUS.SPEAKER || presenters.length > 0 ? (
+          <SpeakerView
+            users={users}
+            selfUID={`${userData.username}-${
+              profilename || userData.name || userData.username
+            }`}
+            presenters={presenters}
+            setPresenters={setPresenters}
+          />
+        ) : (
+          <Typography>Soemthing went wrong</Typography>
+        ))}
     </Grid>
   );
 }

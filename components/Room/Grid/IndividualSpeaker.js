@@ -4,7 +4,7 @@ import MeetAudioPlayer from "./AudioPlayer";
 import MeetVideoPlayer from "./VideoPlayer";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VolumeIndicator from "../../Common/VolumeIndicator";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useParticipant } from "@livekit/react-core";
 
 export default function IndividualSpeaker({
@@ -12,6 +12,8 @@ export default function IndividualSpeaker({
   name,
   smallTile,
   participant,
+  setPresenters,
+  isPresenter,
 }) {
   const {
     isLocal,
@@ -20,10 +22,29 @@ export default function IndividualSpeaker({
     cameraPublication: video,
     microphonePublication: audio,
     screenSharePublication: screen,
-    metadata,
   } = useParticipant(participant);
 
   const containerRef = useRef();
+
+  useEffect(() => {
+    setPresenters((prev) => {
+      const existingPresenter = prev.find(
+        (item) => item.identity === participant.identity
+      );
+
+      if (existingPresenter && !screen) {
+        console.log("update presenters are ", [
+          ...prev.filter((item) => item.identity !== participant.identity),
+        ]);
+        return [
+          ...prev.filter((item) => item.identity !== participant.identity),
+        ];
+      } else if (!existingPresenter && screen) {
+        console.log("update presenters are ", [...prev, participant]);
+        return [...prev, participant];
+      } else return prev;
+    });
+  }, [screen]);
 
   return (
     <Grid

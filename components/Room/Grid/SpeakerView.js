@@ -1,19 +1,24 @@
 import { Grid } from "@mui/material";
-import { useEffect, useState } from "react";
+import { RoomEvent } from "livekit-client";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { ROOM } from "../../../Utils/MeetingUtils/MeetingConstant";
 import IndividualSpeaker from "./IndividualSpeaker";
 
-export default function SpeakerView({ users, presenters, selfUID }) {
-  const { audio, video, screen } = useSelector((s) => s.room.controls);
+export default function SpeakerView({
+  users,
+  presenters,
+  selfUID,
+  setPresenters,
+}) {
   const { chat, participants } = useSelector((s) => s.comps.comp);
-  const { volumes } = useSelector((s) => s.room.metaData);
 
-  const [activeSpeaker, setActiveSpeaker] = useState({
-    uid: selfUID,
-    video,
-    audio,
-    role: "host",
-  });
+  const [activeSpeaker, setActiveSpeaker] = useState(ROOM.localParticipant);
+
+  const presentersRef = useRef();
+  presentersRef.current = presenters;
+
+  console.log({ presenters });
 
   const widthCalculator = () => {
     if (chat || participants) return "20%";
@@ -22,54 +27,39 @@ export default function SpeakerView({ users, presenters, selfUID }) {
   };
 
   useEffect(() => {
-    if (screen) {
-      setActiveSpeaker({
-        uid: `${selfUID} (Screen)`,
-        role: "host",
-        selfScreen: true,
-        video: screen[1] || screen[0],
-      });
-      return;
-    }
-
     if (presenters.length !== 0) {
-      setActiveSpeaker({
-        ...presenters[0],
-        uid: `${presenters[0].uid} (Screen)`,
+      setActiveSpeaker(presenters[0]);
+      return;
+    }
+
+    const handleActiveSpeakerChanged = (newActiveSpeakers) => {
+      if (presentersRef.current.length > 0) return;
+
+      const allUsers = newActiveSpeakers;
+
+      let loudestSpeaker = allUsers[0];
+
+      if (!loudestSpeaker) {
+        return;
+      }
+
+      allUsers.forEach((item) => {
+        if (item.audioLevel > loudestSpeaker.audioLevel) {
+          loudestSpeaker = item;
+        }
       });
-      return;
-    }
 
-    const allUsers = Object.keys(volumes);
+      const speaker = loudestSpeaker;
 
-    let loudestSpeaker = allUsers[0];
-
-    if (!loudestSpeaker) {
-      if (activeSpeaker.uid.includes("(Screen)")) {
-        setActiveSpeaker({
-          uid: selfUID,
-          role: "host",
-          video: video,
-        });
-      }
-      return;
-    }
-
-    allUsers.forEach((item) => {
-      if (volumes[item] > volumes[loudestSpeaker]) {
-        loudestSpeaker = item;
-      }
-    });
-
-    const speaker = users.find((item) => item.uid === loudestSpeaker) || {
-      uid: selfUID,
-      video,
-      audio,
-      role: "host",
+      setActiveSpeaker(speaker);
     };
 
-    setActiveSpeaker(speaker);
-  }, [presenters, users, volumes, screen]);
+    ROOM.on(RoomEvent.ActiveSpeakersChanged, handleActiveSpeakerChanged);
+
+    return () => {
+      ROOM.off(RoomEvent.ActiveSpeakersChanged, handleActiveSpeakerChanged);
+    };
+  }, [presenters, users]);
 
   return (
     <Grid
@@ -82,7 +72,7 @@ export default function SpeakerView({ users, presenters, selfUID }) {
         item
         xs={12}
         sx={{
-          height: users.length + presenters.length > 0 || screen ? "25%" : "0%",
+          height: users.size + presenters.length > 0 ? "25%" : "0%",
           paddingBottom: "10px",
         }}
       >
@@ -102,16 +92,16 @@ export default function SpeakerView({ users, presenters, selfUID }) {
             flexWrap: "wrap",
             alignItems: "center",
             alignContent:
-              (chat || participants) && users.length > 4
+              (chat || participants) && users.size > 4
                 ? "none"
-                : !chat && !participants && users.length > 5
+                : !chat && !participants && users.size > 5
                 ? "none"
                 : "center",
             display: "flex",
             flexDirection: "column",
           }}
         >
-          {activeSpeaker?.uid !== selfUID && (
+          {activeSpeaker?.identity !== selfUID && (
             <Grid
               item
               sx={{
@@ -122,18 +112,20 @@ export default function SpeakerView({ users, presenters, selfUID }) {
               }}
             >
               <IndividualSpeaker
-                audio={audio}
-                video={video}
                 name={selfUID.split("-")[1]}
                 username={selfUID.split("-")[0]}
-                volume={volumes[selfUID]}
+                participant={activeSpeaker}
                 smallTile={true}
+                setPresenters={setPresenters}
               />
             </Grid>
           )}
 
-          {users.map((item) => {
-            if (item.uid === activeSpeaker?.uid && !presenters.length > 0) {
+          {Array.from(users).map(([key, item]) => {
+            if (
+              item.identity === activeSpeaker?.identity &&
+              presenters.length === 0
+            ) {
               return;
             }
             return (
@@ -145,15 +137,14 @@ export default function SpeakerView({ users, presenters, selfUID }) {
                   marginRight: "10px",
                   marginLeft: "10px",
                 }}
-                key={item.uid}
+                key={key}
               >
                 <IndividualSpeaker
-                  audio={item.audio}
-                  video={item.video}
-                  name={item.uid.split("-")[1]}
-                  username={item.uid.split("-")[0]}
-                  volume={volumes[item.uid]}
+                  name={item.identity.split("-")[1]}
+                  username={item.identity.split("-")[0]}
                   smallTile={true}
+                  setPresenters={setPresenters}
+                  participant={item}
                 />
               </Grid>
             );
@@ -164,18 +155,16 @@ export default function SpeakerView({ users, presenters, selfUID }) {
         item
         xs={12}
         sx={{
-          height:
-            users.length + presenters.length > 0 || screen ? "75%" : "100%",
+          height: users.size + presenters.length > 0 ? "75%" : "100%",
         }}
       >
         {activeSpeaker && (
           <IndividualSpeaker
-            audio={activeSpeaker?.audio}
-            video={activeSpeaker?.video}
-            name={activeSpeaker?.uid.split("-")[1]}
-            username={activeSpeaker?.uid.split("-")[0]}
-            volume={volumes[activeSpeaker?.uid]}
-            selfScreen={activeSpeaker.selfScreen}
+            name={activeSpeaker?.identity.split("-")[1]}
+            username={activeSpeaker?.identity.split("-")[0]}
+            participant={activeSpeaker}
+            setPresenters={setPresenters}
+            isPresenter={presenters.length > 0}
           />
         )}
       </Grid>

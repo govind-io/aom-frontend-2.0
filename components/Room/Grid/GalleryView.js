@@ -5,7 +5,7 @@ import { getTopUsers } from "../../../Utils/DesignUtilities/CalculationManipulat
 import { ROOM } from "../../../Utils/MeetingUtils/MeetingConstant";
 import IndividualSpeaker from "./IndividualSpeaker";
 
-export default function GalleryView({ selfUID, users }) {
+export default function GalleryView({ selfUID, users, setPresenters }) {
   const { chat, participants } = useSelector((s) => s.comps.comp);
 
   const [gridUsers, setGridUsers] = useState([]);
@@ -74,6 +74,7 @@ export default function GalleryView({ selfUID, users }) {
               name={selfUID.split("-")[1]}
               username={selfUID.split("-")[0]}
               participant={ROOM.localParticipant}
+              setPresenters={setPresenters}
             />
           </Grid>
         )}
@@ -91,6 +92,7 @@ export default function GalleryView({ selfUID, users }) {
                 name={item.identity.split("-")[1]}
                 username={item.identity.split("-")[0]}
                 participant={item}
+                setPresenters={setPresenters}
               />
             </Grid>
           );
@@ -107,6 +109,7 @@ export default function GalleryView({ selfUID, users }) {
               name={selfUID.split("-")[1]}
               username={selfUID.split("-")[0]}
               participant={ROOM.localParticipant}
+              setPresenters={setPresenters}
             />
           </Grid>
         )}
@@ -158,6 +161,7 @@ export default function GalleryView({ selfUID, users }) {
                     username={item.identity.split("-")[0]}
                     participant={item}
                     smallTile={true}
+                    setPresenters={setPresenters}
                   />
                 </Grid>
               );

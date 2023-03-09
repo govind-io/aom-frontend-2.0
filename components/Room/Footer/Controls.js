@@ -3,7 +3,10 @@ import PresentToAllIcon from "@mui/icons-material/PresentToAll";
 import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
 import text from "../../../Content/text.json";
 import { useDispatch, useSelector } from "react-redux";
-import { DeleteRoom } from "../../../Redux/Actions/Room/RoomDataAction";
+import {
+  DeleteRoom,
+  SaveRoomControls,
+} from "../../../Redux/Actions/Room/RoomDataAction";
 import { useRouter } from "next/router";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
 import ConfirmationModal from "../../Common/ConfirmationModal";
@@ -36,7 +39,12 @@ export default function Controls() {
     setOpenLeaveRoom(false);
   };
 
-  const toggleScreen = async () => {};
+  const toggleScreen = async () => {
+    dispatch(SaveRoomControls({ screen: !screen }));
+    ROOM.localParticipant.setScreenShareEnabled(
+      !screen ? { audio: true, video: true } : false
+    );
+  };
 
   const leaveRoom = () => {
     ROOM?.disconnect();
