@@ -5,6 +5,7 @@ export default function CalendarButton({ setCalendar, calendar }) {
   return (
     <Grid
       item
+      xs={6}
       sm={3}
       md={6}
       lg={6}

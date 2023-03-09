@@ -7,6 +7,8 @@ import CardThreeDotMenu from "./CardThreeDotMenu";
 import { useRouter } from "next/router";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ToastHandler from "../../../../Utils/Toast/ToastHandler";
+import { CardStyle } from "../../../../styles/component/Home/Calendar/CalendarParts/Card";
+import { StandardStyle } from "../../../../styles/common/StandardStyle";
 
 export default function Card({
   name,
@@ -46,14 +48,7 @@ ${passcode ? `${text.home.scheduleForm.passcode}: ${pin}` : ""}`
     <Grid
       item
       xs={12}
-      sx={{
-        borderRadius: "10px",
-        background: "#1A191C",
-        boxShadow: "0px 10px 10px #00000029",
-        height: "fit-content",
-        padding: "10px",
-        marginTop: "20px",
-      }}
+      sx={CardStyle.gridItem}
     >
       <Grid container alignItems={"center"}>
         <Grid
@@ -100,14 +95,7 @@ ${passcode ? `${text.home.scheduleForm.passcode}: ${pin}` : ""}`
         <Grid item sx={{ marginLeft: "auto" }}>
           {!deleted ? (
             <IconButton
-              sx={{
-                font: "normal normal bold 12px/14px Work Sans",
-                color: "#66B984",
-                backgroundColor: "white",
-                borderRadius: "11px",
-                boxShadow: "0px 3px 6px #00000029",
-                padding: "5px 10px",
-              }}
+              sx={[StandardStyle.calenderButton,CardStyle.calenderJoinButton]}
               disableRipple={true}
               onClick={() => {
                 router.push(
@@ -126,15 +114,7 @@ ${passcode ? `${text.home.scheduleForm.passcode}: ${pin}` : ""}`
             </IconButton>
           ) : (
             <IconButton
-              sx={{
-                font: "normal normal bold 12px/14px Work Sans",
-                color: "#CC3425",
-                backgroundColor: "#F5F5F5",
-                borderRadius: "11px",
-                boxShadow: "0px 3px 6px #00000029",
-                padding: "5px 10px",
-                cursor: "default",
-              }}
+              sx={[StandardStyle.calenderButton,CardStyle.calenderEndButton]}
               disableRipple={true}
             >
               {text.home.calendar.ended}
@@ -150,34 +130,14 @@ ${passcode ? `${text.home.scheduleForm.passcode}: ${pin}` : ""}`
         <Grid item xs={12} mt="10px">
           <IconButton
             onClick={copyLink}
-            sx={{
-              width: "100%",
-              borderRadius: "0px",
-              padding: "0px",
-            }}
+            sx={CardStyle.copyLinkStyle}
           >
             <Grid
               container
-              sx={{
-                borderTop: "0.5px solid white",
-                borderBottom: "0.5px solid white",
-                padding: "5px 0px",
-                display: "flex",
-                justifyContent: "space-between",
-                flexWrap: "nowrap",
-                alignItems: "center",
-                cursor: "pointer",
-              }}
+              sx={CardStyle.typographyContainer}
             >
               <Typography
-                sx={{
-                  font: "normal normal normal 10px/11px Work Sans",
-                  color: "#72A2FF",
-                  textOverflow: "ellipsis",
-                  maxWidth: "100%",
-                  overflow: "hidden",
-                  whiteSpace: "nowrap",
-                }}
+                sx={CardStyle.typographyMeeting}
               >
                 {`${
                   typeof window !== "undefined"
@@ -186,11 +146,7 @@ ${passcode ? `${text.home.scheduleForm.passcode}: ${pin}` : ""}`
                 }/room/${meetingId}` + `${passcode ? `?passcode=${pin}` : ""}`}
               </Typography>
               <ContentCopyIcon
-                sx={{
-                  marginLeft: "auto",
-                  color: "#72A2FF",
-                  marginLeft: "10px",
-                }}
+                sx={CardStyle.contentCopyIcon}
                 size="sm"
               />
             </Grid>
@@ -199,19 +155,11 @@ ${passcode ? `${text.home.scheduleForm.passcode}: ${pin}` : ""}`
         <Grid
           item
           xs={12}
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            flexWrap: "nowrap",
-            marginTop: "20px",
-          }}
+          sx={CardStyle.scheduleFormItem}
         >
           <Grid>
             <Typography
-              sx={{
-                font: "normal normal 600 12px/14px Work Sans",
-                color: "#FFFFFF",
-              }}
+              sx={CardStyle.scheduleFormMeeting}
             >
               {text.home.scheduleForm.meetingId}: {meetingId.toUpperCase()}
             </Typography>
@@ -219,10 +167,7 @@ ${passcode ? `${text.home.scheduleForm.passcode}: ${pin}` : ""}`
           {passcode && (
             <Grid>
               <Typography
-                sx={{
-                  font: "normal normal 600 12px/14px Work Sans",
-                  color: "#FFFFFF",
-                }}
+                sx={CardStyle.scheduleFormMeeting}
               >
                 {text.home.scheduleForm.passcode}: {pin}
               </Typography>

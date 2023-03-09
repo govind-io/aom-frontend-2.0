@@ -1,4 +1,5 @@
 import { Grid, IconButton, Modal, Typography, Zoom } from "@mui/material";
+import { ConfirmationModalStyle } from "../../styles/Common/ConfirmationModal";
 
 export default function ConfirmationModal({
   open,
@@ -29,21 +30,7 @@ export default function ConfirmationModal({
       <Zoom in={open}>
         <Grid
           container
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%,-50%) !important",
-            background: "#1B1A1D",
-            border: "1px solid #FFFFFF4D",
-            borderRadius: "16px",
-            padding: "32px",
-            display: "flex",
-            width: "fit-content",
-            justifyContent: "flex-start",
-            width: "50%",
-            maxWidth: "600px",
-          }}
+          sx={ConfirmationModalStyle.container}
         >
           <Grid item xs={12}>
             <Typography
@@ -82,13 +69,7 @@ export default function ConfirmationModal({
             }}
           >
             <IconButton
-              sx={{
-                background: "#7AB788 0% 0% no-repeat padding-box",
-                borderRadius: "8px",
-                padding: "10px 15px",
-                font: "normal normal 600 14px/16px Work Sans",
-                color: "#F5F5F5",
-              }}
+              sx={[ConfirmationModalStyle.iconButton, ConfirmationModalStyle.iconRejectButton]}
               variant={"contained"}
               disableRipple={true}
               onClick={reject}
@@ -96,14 +77,7 @@ export default function ConfirmationModal({
               {rejectText}
             </IconButton>
             <IconButton
-              sx={{
-                marginLeft: "20px",
-                background: "#BC4130 0% 0% no-repeat padding-box",
-                borderRadius: "8px",
-                padding: "10px 15px",
-                font: "normal normal 600 14px/16px Work Sans",
-                color: "#F5F5F5",
-              }}
+              sx={[ConfirmationModalStyle.iconButton, ConfirmationModalStyle.iconConfirmButton]}
               variant={"contained"}
               disableRipple={true}
               onClick={confirm}
