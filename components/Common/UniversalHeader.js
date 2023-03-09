@@ -1,6 +1,7 @@
 import { Avatar, Grid } from "@mui/material";
 import { useRouter } from "next/router";
 import images from "../../Content/images.json";
+import { UniversalHeaderStyle } from "../../styles/Common/UniversalHeader";
 export default function UniversalHeader({ children }) {
   const router = useRouter();
 
@@ -8,31 +9,22 @@ export default function UniversalHeader({ children }) {
     <Grid
       container
       alignItems={"center"}
-      sx={{
-        borderBottom: "1px solid #474749",
-        height: "10vh",
-        padding: "10px 5% 10px 5%",
-        flexWrap: "nowrap",
-      }}
+      sx={UniversalHeaderStyle.container}
     >
       <Grid
         item
-        sx={{
-          height: "80%",
-        }}
+        sx={UniversalHeaderStyle.item}
       >
         <Avatar
           src={images.global.khulke}
-          sx={{
-            cursor: "pointer",
-          }}
           variant="square"
           onClick={() => {
             router.push("/home");
           }}
+          sx={UniversalHeaderStyle.avatarIcon}
         />
       </Grid>
-      <Grid container sx={{ height: "100%", width: "100%" }}>
+      <Grid container sx={UniversalHeaderStyle.gridContainer}>
         {children}
       </Grid>
     </Grid>

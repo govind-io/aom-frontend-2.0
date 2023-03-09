@@ -1,47 +1,26 @@
 import React from "react";
 import KeyboardVoiceOutlinedIcon from "@mui/icons-material/KeyboardVoiceOutlined";
+import { VolumeIndicatorStyle } from "../../styles/Common/VolumeIndicator";
 
 export default function VolumeIndicator({
   volume,
   customIconStyle,
   customContainerStyle = {},
 }) {
+  const volumeIndicate = VolumeIndicatorStyle(customContainerStyle, customIconStyle,volume);
   return (
     <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        flexWrap: "wrap",
-        position: "relative",
-        background: "#FFFFFF 0% 0% no-repeat padding-box",
-        borderRadius: "50%",
-        opacity: "0.88",
-        backdropFilter: "blur(4px)",
-
-        ...customContainerStyle,
-      }}
+      style={volumeIndicate.main}
     >
       <KeyboardVoiceOutlinedIcon
-        sx={[{ color: "#04AA6D", fontSize: "30px" }, customIconStyle]}
+        sx={volumeIndicate.keyVolume}
       />
 
       <div
-        style={{
-          width: "17%",
-          display: "flex",
-          alignItems: "flex-end",
-          height: "36%",
-          position: "absolute",
-          top: "20%",
-        }}
+        style={volumeIndicate.volumeContainer}
       >
         <div
-          style={{
-            height: volume ? `${volume * 10}%` : "0%",
-            backgroundColor: "#04AA6D",
-            width: "100%",
-            borderRadius: "5px",
-          }}
+          style={volumeIndicate.mainVolume}
         ></div>
       </div>
     </div>
