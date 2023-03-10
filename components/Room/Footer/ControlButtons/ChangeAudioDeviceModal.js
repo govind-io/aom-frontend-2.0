@@ -10,6 +10,7 @@ import {
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import text from "../../../../Content/text.json";
+import { ROOM } from "../../../../Utils/MeetingUtils/MeetingConstant";
 import VolumeIndicator from "../../../Common/VolumeIndicator";
 import DeviceSelect from "./DeviceSelect";
 
@@ -17,16 +18,14 @@ export default function ChangeAudioDeviceModal({
   open,
   setOpen,
   anchorRef,
-  activeDevice,
-  allDevices,
-  setActiveDevice,
+  activeMic,
+  allMics,
+  setActiveMic,
+  allSpeakers,
+  setActiveSpeaker,
+  activeSpeaker,
 }) {
-  const { volumes } = useSelector((s) => s.room.metaData);
-  const userData = useSelector((s) => s.user.data);
-
   const router = useRouter();
-
-  const { profilename } = router.query;
 
   return (
     <Popover
@@ -85,9 +84,9 @@ export default function ChangeAudioDeviceModal({
                 </Grid>
                 <Grid item xs={8}>
                   <DeviceSelect
-                    activeDevice={activeDevice}
-                    allDevices={allDevices}
-                    setActiveDevice={setActiveDevice}
+                    activeDevice={activeMic}
+                    allDevices={allMics}
+                    setActiveDevice={setActiveMic}
                   />
                 </Grid>
                 <Grid
@@ -112,13 +111,7 @@ export default function ChangeAudioDeviceModal({
                     }}
                   >
                     <VolumeIndicator
-                      volume={
-                        volumes[
-                          `${userData.username}-${
-                            profilename || userData.name || userData.username
-                          }`
-                        ]
-                      }
+                      volume={ROOM.localParticipant.audioLevel}
                       customContainerStyle={{
                         background: "none",
                       }}
@@ -127,6 +120,47 @@ export default function ChangeAudioDeviceModal({
                       }}
                     />
                     {text.room.micTest}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography
+                    sx={{
+                      font: "normal normal 600 16px/19px Work Sans",
+                      color: "#FFFFFF",
+                    }}
+                  >
+                    {text.room.speaker}
+                  </Typography>
+                </Grid>
+                <Grid item xs={8}>
+                  <DeviceSelect
+                    activeDevice={activeSpeaker}
+                    allDevices={allSpeakers}
+                    setActiveDevice={setActiveSpeaker}
+                  />
+                </Grid>
+                <Grid
+                  item
+                  xs={4}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography
+                    variant="div"
+                    sx={{
+                      border: "0.5px solid #797979",
+                      borderRadius: "11px",
+                      color: "#797979",
+                      padding: "5px 15px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {text.room.speakerTest}
                   </Typography>
                 </Grid>
               </Grid>
