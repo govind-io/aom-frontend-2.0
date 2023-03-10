@@ -1,3 +1,5 @@
+import { VideoQuality } from "livekit-client";
+
 export const CAMERA_RESOLUTIONS = [
   {
     label: "Auto",
@@ -10,6 +12,7 @@ export const CAMERA_RESOLUTIONS = [
         min: 400,
         max: 1080,
       },
+      liveKit: VideoQuality.MEDIUM,
     },
   },
   {
@@ -17,6 +20,7 @@ export const CAMERA_RESOLUTIONS = [
     dimension: {
       width: { ideal: 1280 },
       height: { ideal: 720 },
+      liveKit: VideoQuality.HIGH,
     },
   },
   {
@@ -24,6 +28,7 @@ export const CAMERA_RESOLUTIONS = [
     dimension: {
       width: { ideal: 480 },
       height: { ideal: 360 },
+      liveKit: VideoQuality.MEDIUM,
     },
   },
   {
@@ -31,6 +36,7 @@ export const CAMERA_RESOLUTIONS = [
     dimension: {
       width: { ideal: 426 },
       height: { ideal: 240 },
+      liveKit: VideoQuality.LOW,
     },
   },
 ];

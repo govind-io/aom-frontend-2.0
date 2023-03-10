@@ -24,7 +24,7 @@ export default function MicButton() {
 
   const anchorRef = useRef();
 
-  const toggleAudio = async ({ deviceId }) => {
+  const toggleAudio = async () => {
     dispatch(SaveRoomControls({ audio: !audio }));
     ROOM.localParticipant.setMicrophoneEnabled(!audio);
   };

@@ -9,13 +9,14 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ChangeVideoDeviceModal from "./ChangeVideoDeviceModal";
 import { CAMERA_RESOLUTIONS } from "../../../../Utils/Configs/CameraResolution";
 import { ROOM } from "../../../../Utils/MeetingUtils/MeetingConstant";
+import { Room, Track } from "livekit-client";
 
 export default function VideoButton() {
   const { video } = useSelector((s) => s.room.controls);
 
   const dispatch = useDispatch();
 
-  const [activeCamera, setActiveCamera] = useState("default");
+  const [activeCamera, setActiveCamera] = useState();
   const [allCameras, setAllCameras] = useState([]);
   const [openMenu, setOpenMenu] = useState(false);
   const [resolution, setResolution] = useState(
@@ -25,31 +26,46 @@ export default function VideoButton() {
 
   const anchorRef = useRef();
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const getUpdatedCameras = async () => {
+      const cameras = await Room.getLocalDevices("videoinput", true);
 
-  const toggleVideo = async ({ deviceId, newResolution }) => {
+      setAllCameras(cameras);
+
+      if (!activeCamera) {
+        setActiveCamera(cameras[0].deviceId);
+      }
+    };
+
+    getUpdatedCameras();
+  }, [openMenu]);
+
+  const toggleVideo = async () => {
     dispatch(SaveRoomControls({ video: !video }));
     ROOM.localParticipant.setCameraEnabled(!video);
   };
 
   const changeCamera = async (newCamId) => {
-    setActiveCamera(newCamId);
-
-    if (!video) {
-      await toggleVideo({ deviceId: newCamId });
-    } else {
-      await turnVideoWithNewDevice({ newCamId });
+    try {
+      await ROOM.switchActiveDevice("videointput", newCamId);
+      setActiveCamera(newCamId);
+    } catch (e) {
+      console.log({ e }, "Could not change speakers");
     }
   };
 
   const changeResolution = async (newResolution) => {
     setResolution(newResolution);
 
-    if (!video) {
-      await toggleVideo({ newResoltuion: newResolution });
-    } else {
-      await turnVideoWithNewDevice({ newResolution });
-    }
+    Array.from(ROOM.localParticipant.videoTracks.entries()).forEach(
+      ([key, value]) => {
+        const localVideoTrack = value.track;
+
+        if (localVideoTrack.source !== Track.Source.ScreenShare) {
+          localVideoTrack.setPublishingQuality(newResolution.liveKit);
+        }
+      }
+    );
   };
 
   return (
