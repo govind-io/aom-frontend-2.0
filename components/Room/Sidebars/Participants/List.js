@@ -1,7 +1,9 @@
 import { Avatar, Grid, Typography } from "@mui/material";
+import { RoomEvent } from "livekit-client";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import text from "../../../../Content/text.json";
+import { ROOM } from "../../../../Utils/MeetingUtils/MeetingConstant";
 import VolumeIndicator from "../../../Common/VolumeIndicator";
 
 export default function List({ searchQuery }) {
@@ -9,9 +11,33 @@ export default function List({ searchQuery }) {
 
   const [showUsers, setShowUsers] = useState(users);
 
-  const roomData = useSelector((s) => s.room.data);
-
   const { volumes } = useSelector((s) => s.room.metaData);
+
+  useEffect(() => {
+    //setting initial users and updating it based on new users joined and left
+    setUsers([
+      ROOM.localParticipant,
+      ...Array.from(ROOM.participants).map(([key, item]) => item),
+    ]);
+
+    const userJoined = (joinedUser) => {
+      setUsers((prev) => [...prev, joinedUser]);
+    };
+
+    const userLeft = (leftUser) => {
+      setUsers((prev) =>
+        prev.filter((item) => item.identity !== leftUser.identity)
+      );
+    };
+
+    ROOM.on(RoomEvent.ParticipantConnected, userJoined);
+    ROOM.on(RoomEvent.ParticipantDisconnected, userLeft);
+
+    return () => {
+      ROOM.off(RoomEvent.ParticipantConnected, userJoined);
+      ROOM.off(RoomEvent.ParticipantDisconnected, userLeft);
+    };
+  }, []);
 
   useEffect(() => {
     if (!searchQuery) {
@@ -21,7 +47,7 @@ export default function List({ searchQuery }) {
 
     setShowUsers((prev) =>
       users.filter((item) => {
-        const username = (item.uid || item.name).toLowerCase();
+        const username = item.identity.toLowerCase();
 
         {
           return username.includes(searchQuery.toLowerCase());
@@ -70,7 +96,7 @@ export default function List({ searchQuery }) {
               height: "50px",
               flexWrap: "wrap",
             }}
-            key={item.name || item.uid}
+            key={item.identity}
           >
             <Grid
               sx={{
@@ -82,7 +108,7 @@ export default function List({ searchQuery }) {
             >
               <Avatar
                 src={`${process.env.KHULKE_USER_PROFILE_PIC_URL}/${
-                  (item.name || item.uid).split("-")[0]
+                  item.identity.split("-")[0]
                 }/pp`}
               />
             </Grid>
@@ -103,7 +129,7 @@ export default function List({ searchQuery }) {
                     color: "#F5F5F5",
                   }}
                 >
-                  {(item.name || item.uid).split("-")[1]}
+                  {item.identity.split("-")[1]}
                 </Typography>
               </Grid>
               <Grid
@@ -118,7 +144,7 @@ export default function List({ searchQuery }) {
                     color: "#CECECE",
                   }}
                 >
-                  @{(item.name || item.uid).split("-")[0]}
+                  @{item.identity.split("-")[0]}
                 </Typography>
               </Grid>
             </Grid>
@@ -131,7 +157,7 @@ export default function List({ searchQuery }) {
                   height: "30px",
                 }}
               >
-                <VolumeIndicator volume={volumes[item.name || item.uid]} />
+                <VolumeIndicator volume={item.audioLevel} />
               </Grid>
             )}
           </Grid>

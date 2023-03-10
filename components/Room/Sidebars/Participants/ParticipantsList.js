@@ -10,8 +10,6 @@ import { useDispatch } from "react-redux";
 export default function Participants() {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const dispatch = useDispatch();
-
   return (
     <Grid
       container

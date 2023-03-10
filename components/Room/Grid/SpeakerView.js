@@ -18,8 +18,6 @@ export default function SpeakerView({
   const presentersRef = useRef();
   presentersRef.current = presenters;
 
-  console.log({ presenters });
-
   const widthCalculator = () => {
     if (chat || participants) return "20%";
 
@@ -101,7 +99,7 @@ export default function SpeakerView({
             flexDirection: "column",
           }}
         >
-          {activeSpeaker?.identity !== selfUID && (
+          {(activeSpeaker?.identity !== selfUID || presenters.length > 0) && (
             <Grid
               item
               sx={{
@@ -114,7 +112,7 @@ export default function SpeakerView({
               <IndividualSpeaker
                 name={selfUID.split("-")[1]}
                 username={selfUID.split("-")[0]}
-                participant={activeSpeaker}
+                participant={ROOM.localParticipant}
                 smallTile={true}
                 setPresenters={setPresenters}
               />

@@ -4,20 +4,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { VIEWSTATUS } from "../../../Utils/Contants/Conditional";
 import GalleryView from "./GalleryView";
 import SpeakerView from "./SpeakerView";
-import { useRouter } from "next/router";
-import { Room, RoomEvent } from "livekit-client";
-import ToastHandler from "../../../Utils/Toast/ToastHandler";
-import { SaveRoomControls } from "../../../Redux/Actions/Room/RoomDataAction";
-import { updateRoom } from "../../../Utils/MeetingUtils/MeetingConstant";
+import { RoomEvent } from "livekit-client";
+import { ROOM } from "../../../Utils/MeetingUtils/MeetingConstant";
 import { ChangeParticipantCounts } from "../../../Redux/Actions/Comps/DataComps";
 
-export default function GridMain({ profilename, audio, video }) {
+export default function GridMain({ profilename }) {
   const userData = useSelector((s) => s.user.data);
-  const roomData = useSelector((s) => s.room.data);
   const roomLayout = useSelector((s) => s.room.layout);
 
   const dispatch = useDispatch();
-  const router = useRouter();
 
   //global states for all grid
   const [users, setUsers] = useState([]);
@@ -40,35 +35,12 @@ export default function GridMain({ profilename, audio, video }) {
   };
 
   useEffect(() => {
-    async function connectRoom() {
-      const room = new Room({ adaptiveStream: true, dynacast: true });
+    if (!ROOM) return;
 
-      try {
-        await room.connect(process.env.MEET_URL, roomData.token);
-        roomEventHandler({ room });
-        updateRoom(room);
-        roomRef.current = room;
-        updateParticipantsCount();
-      } catch (e) {
-        ToastHandler("dan", "Something went wrong");
-        console.log({ e });
-        router.push("/");
-        return;
-      }
-
-      if (audio === "true") {
-        await room.localParticipant.setMicrophoneEnabled(true);
-        dispatch(SaveRoomControls({ audio: true }));
-      }
-
-      if (video === "true") {
-        await room.localParticipant.setCameraEnabled(true);
-        dispatch(SaveRoomControls({ video: true }));
-      }
-    }
-
-    connectRoom();
-  }, []);
+    roomRef.current = ROOM;
+    updateParticipantsCount();
+    roomEventHandler({ room: ROOM });
+  }, [ROOM]);
 
   return (
     <Grid

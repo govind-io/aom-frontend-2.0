@@ -21,12 +21,12 @@ import DotMenu from "./DotMenu";
 import MicButton from "./ControlButtons/MicButton";
 import VideoButton from "./ControlButtons/VideoButton";
 import { ROOM } from "../../../Utils/MeetingUtils/MeetingConstant";
+import { useParticipant } from "@livekit/react-core";
 
 export default function Controls() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const { screen } = useSelector((s) => s.room.controls);
   const { existingPresenter } = useSelector((s) => s.room.metaData);
   const { moderator, meetingId } = useSelector((s) => s.room.data);
   const { username } = useSelector((s) => s.user.data);
@@ -35,15 +35,20 @@ export default function Controls() {
   const [openLeaveRoom, setOpenLeaveRoom] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const { screenSharePublication: screen } = useParticipant(
+    ROOM.localParticipant
+  );
+
   const handleCloseLeaveRoom = () => {
     setOpenLeaveRoom(false);
   };
 
   const toggleScreen = async () => {
     dispatch(SaveRoomControls({ screen: !screen }));
-    ROOM.localParticipant.setScreenShareEnabled(
-      !screen ? { audio: true, video: true } : false
-    );
+    ROOM.localParticipant.setScreenShareEnabled(!screen, {
+      audio: true,
+      systemAudio: "include",
+    });
   };
 
   const leaveRoom = () => {

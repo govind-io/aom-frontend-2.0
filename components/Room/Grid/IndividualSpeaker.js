@@ -33,14 +33,10 @@ export default function IndividualSpeaker({
       );
 
       if (existingPresenter && !screen) {
-        console.log("update presenters are ", [
-          ...prev.filter((item) => item.identity !== participant.identity),
-        ]);
         return [
           ...prev.filter((item) => item.identity !== participant.identity),
         ];
       } else if (!existingPresenter && screen) {
-        console.log("update presenters are ", [...prev, participant]);
         return [...prev, participant];
       } else return prev;
     });
@@ -60,11 +56,15 @@ export default function IndividualSpeaker({
       alignItems={"center"}
       ref={containerRef}
     >
-      {video?.track && !video?.track.isMuted && (
+      {video?.track && !video?.track.isMuted && !isPresenter && (
         <MeetVideoPlayer videoTrack={video?.track} />
       )}
 
-      {(!video?.track || video?.track.isMuted) && (
+      {screen?.track && !screen?.track.isMuted && isPresenter && (
+        <MeetVideoPlayer videoTrack={screen?.track} />
+      )}
+
+      {(!video?.track || video?.track.isMuted) && !isPresenter && (
         <Avatar
           src={`${process.env.KHULKE_USER_PROFILE_PIC_URL}/${username}/pp`}
           sx={{
@@ -76,7 +76,7 @@ export default function IndividualSpeaker({
         />
       )}
 
-      {(!audio?.track || audio?.track.isMuted) && (
+      {(!audio?.track || audio?.track.isMuted) && !isPresenter && (
         <Box
           sx={{
             position: "absolute",
@@ -97,7 +97,7 @@ export default function IndividualSpeaker({
         </Box>
       )}
 
-      {audio?.track && !audio?.track.isMuted && (
+      {audio?.track && !audio?.track.isMuted && !isPresenter && (
         <Box
           sx={{
             position: "absolute",
@@ -111,7 +111,9 @@ export default function IndividualSpeaker({
         </Box>
       )}
 
-      {!isLocal && <MeetAudioPlayer audioTrack={audio?.track} />}
+      {!isLocal && !isPresenter && (
+        <MeetAudioPlayer audioTrack={audio?.track} />
+      )}
 
       <Typography
         sx={{
@@ -131,7 +133,7 @@ export default function IndividualSpeaker({
         {name} {isLocal && "(You)"}
       </Typography>
 
-      {screen && isLocal && (
+      {screen && isLocal && isPresenter && (
         <Box
           sx={{
             width: "100%",
