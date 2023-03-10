@@ -34,7 +34,6 @@ export default function GridMain({ profilename }) {
   };
 
   const disconnected = (reason) => {
-    console.log({ reason });
     router.push("/home");
     switch (reason) {
       case EVENTSTATUS.DISCONNECTED_REASON.DUPLICATE_IDENTITY:

@@ -44,6 +44,8 @@ export default function Controls() {
   };
 
   const toggleScreen = async () => {
+    if (!screen && existingPresenter)
+      return ToastHandler("dan", "Someone else is presenting");
     dispatch(SaveRoomControls({ screen: !screen }));
     ROOM.localParticipant.setScreenShareEnabled(!screen, {
       audio: true,

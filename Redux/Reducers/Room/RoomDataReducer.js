@@ -29,7 +29,6 @@ const initialState = {
   },
   metaData: {
     existingPresenter: false,
-    volumes: {},
   },
 };
 

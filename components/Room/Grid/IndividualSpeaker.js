@@ -1,11 +1,12 @@
 import { Avatar, Box, Grid, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import MeetAudioPlayer from "./AudioPlayer";
 import MeetVideoPlayer from "./VideoPlayer";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VolumeIndicator from "../../Common/VolumeIndicator";
 import { useEffect, useRef } from "react";
 import { useParticipant } from "@livekit/react-core";
+import { SaveRoomMetaData } from "../../../Redux/Actions/Room/RoomDataAction";
 
 export default function IndividualSpeaker({
   username,
@@ -26,6 +27,8 @@ export default function IndividualSpeaker({
 
   const containerRef = useRef();
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     setPresenters((prev) => {
       const existingPresenter = prev.find(
@@ -33,11 +36,22 @@ export default function IndividualSpeaker({
       );
 
       if (existingPresenter && !screen) {
-        return [
+        const newPresenter = [
           ...prev.filter((item) => item.identity !== participant.identity),
         ];
+
+        dispatch(
+          SaveRoomMetaData({ existingPresenter: newPresenter.length > 0 })
+        );
+
+        return newPresenter;
       } else if (!existingPresenter && screen) {
-        return [...prev, participant];
+        const newPresenter = [...prev, participant];
+
+        dispatch(
+          SaveRoomMetaData({ existingPresenter: newPresenter.length > 0 })
+        );
+        return newPresenter;
       } else return prev;
     });
   }, [screen]);
