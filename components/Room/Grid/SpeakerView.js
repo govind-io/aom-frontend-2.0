@@ -110,7 +110,7 @@ export default function SpeakerView({
               }}
             >
               <IndividualSpeaker
-                name={selfUID.split("-")[1]}
+                name={ROOM.localParticipant.name}
                 username={selfUID.split("-")[0]}
                 participant={ROOM.localParticipant}
                 smallTile={true}
@@ -138,7 +138,7 @@ export default function SpeakerView({
                 key={key}
               >
                 <IndividualSpeaker
-                  name={item.identity.split("-")[1]}
+                  name={item.name}
                   username={item.identity.split("-")[0]}
                   smallTile={true}
                   setPresenters={setPresenters}
@@ -158,7 +158,7 @@ export default function SpeakerView({
       >
         {activeSpeaker && (
           <IndividualSpeaker
-            name={activeSpeaker?.identity.split("-")[1]}
+            name={activeSpeaker?.name}
             username={activeSpeaker?.identity.split("-")[0]}
             participant={activeSpeaker}
             setPresenters={setPresenters}

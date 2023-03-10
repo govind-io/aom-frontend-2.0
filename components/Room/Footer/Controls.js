@@ -90,7 +90,6 @@ export default function Controls() {
           onSuccess: () => {
             ToastHandler("sus", "Meeting ended successfully");
             setLoading(false);
-
             router.push("/home");
           },
         })

@@ -71,7 +71,7 @@ export default function GalleryView({ selfUID, users, setPresenters }) {
         {gridUsers.size === 0 && (
           <Grid item sx={{ width: "100%", height: "100%" }}>
             <IndividualSpeaker
-              name={selfUID.split("-")[1]}
+              name={ROOM.localParticipant.name}
               username={selfUID.split("-")[0]}
               participant={ROOM.localParticipant}
               setPresenters={setPresenters}
@@ -89,7 +89,7 @@ export default function GalleryView({ selfUID, users, setPresenters }) {
               key={key}
             >
               <IndividualSpeaker
-                name={item.identity.split("-")[1]}
+                name={item.name}
                 username={item.identity.split("-")[0]}
                 participant={item}
                 setPresenters={setPresenters}
@@ -106,7 +106,7 @@ export default function GalleryView({ selfUID, users, setPresenters }) {
             item
           >
             <IndividualSpeaker
-              name={selfUID.split("-")[1]}
+              name={ROOM.localParticipant.name}
               username={selfUID.split("-")[0]}
               participant={ROOM.localParticipant}
               setPresenters={setPresenters}
@@ -157,7 +157,7 @@ export default function GalleryView({ selfUID, users, setPresenters }) {
                   key={key}
                 >
                   <IndividualSpeaker
-                    name={item.identity.split("-")[1]}
+                    name={item.name}
                     username={item.identity.split("-")[0]}
                     participant={item}
                     smallTile={true}
@@ -184,7 +184,7 @@ export default function GalleryView({ selfUID, users, setPresenters }) {
               }}
             >
               <IndividualSpeaker
-                name={selfUID.split("-")[1]}
+                name={ROOM.localParticipant.name}
                 username={selfUID.split("-")[0]}
                 participant={ROOM.localParticipant}
                 smallTile={true}

@@ -129,7 +129,7 @@ export default function List({ searchQuery }) {
                     color: "#F5F5F5",
                   }}
                 >
-                  {item.identity.split("-")[1]}
+                  {item.name}
                 </Typography>
               </Grid>
               <Grid
