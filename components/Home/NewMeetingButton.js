@@ -61,7 +61,12 @@ export default function NewMeetingButton() {
           router.push(
             {
               pathname: `/room/${data.meetingId}`,
-              query: { audio: true, video: startVideo, internalRedirect: true },
+              query: {
+                audio: true,
+                video: startVideo,
+                internalRedirect: true,
+                profilename: user.name || user.username,
+              },
             },
             { pathname: `/room/${data.meetingId}` }
           );

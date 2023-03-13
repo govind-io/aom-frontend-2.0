@@ -9,6 +9,9 @@ import {
   SAVE_ROOM_LAYOUT,
   SAVE_ROOM_META_DATA,
   GET_ROOM_COUNT_FOR_MONTH,
+  SEND_ROOM_MESSAGE,
+  GET_ROOM_MESSAGES,
+  MUTE_ALL_USERS,
 } from "../../Types/Users/RoomTypes";
 
 export const GetRoomDetails = (data) => ({ type: GET_ROOM_DETAILS, data });
@@ -24,3 +27,6 @@ export const GetRoomCountForMonth = (data) => ({
   data,
   type: GET_ROOM_COUNT_FOR_MONTH,
 });
+export const SendRoomMessage = (data) => ({ type: SEND_ROOM_MESSAGE, data });
+export const GetRoomMessage = (data) => ({ data, type: GET_ROOM_MESSAGES });
+export const MuteAllUsers = (data) => ({ data, type: MUTE_ALL_USERS });

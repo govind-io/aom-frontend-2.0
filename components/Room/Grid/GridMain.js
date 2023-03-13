@@ -10,6 +10,7 @@ import { ChangeParticipantCounts } from "../../../Redux/Actions/Comps/DataComps"
 import { useRouter } from "next/router";
 import { EVENTSTATUS } from "../../../Utils/Contants/Constants";
 import ToastHandler from "../../../Utils/Toast/ToastHandler";
+import { SaveRoomControls } from "../../../Redux/Actions/Room/RoomDataAction";
 
 export default function GridMain({ profilename }) {
   const userData = useSelector((s) => s.user.data);
@@ -40,7 +41,7 @@ export default function GridMain({ profilename }) {
         ToastHandler("dan", "Joined from another device");
         break;
       case EVENTSTATUS.DISCONNECTED_REASON.ROOM_DELETED:
-        ToastHandler("dan", "Meeting ended");
+        ToastHandler("dan", "Meeting ended by owner");
         break;
       case EVENTSTATUS.DISCONNECTED_REASON.PARTICIPANT_REMOVED:
         ToastHandler("dan", "You were removed from this meeting");
@@ -54,16 +55,25 @@ export default function GridMain({ profilename }) {
     }
   };
 
+  const TrackMuted = (track, user) => {
+    if (user.identity === ROOM.localParticipant.identity) {
+      dispatch(SaveRoomControls({ audio: false }));
+      ToastHandler("info", "You have been muted by moderator");
+    }
+  };
+
   const roomEventHandler = ({ room }) => {
     room.on(RoomEvent.ParticipantConnected, updateParticipantsCount);
     room.on(RoomEvent.ParticipantDisconnected, updateParticipantsCount);
     room.on(RoomEvent.Disconnected, disconnected);
+    room.on(RoomEvent.TrackMuted, TrackMuted);
   };
 
   const roomEventCloser = ({ room }) => {
     room.off(RoomEvent.ParticipantConnected, updateParticipantsCount);
     room.off(RoomEvent.ParticipantDisconnected, updateParticipantsCount);
     room.off(RoomEvent.Disconnected, disconnected);
+    room.off(RoomEvent.TrackMuted, TrackMuted);
   };
 
   useEffect(() => {

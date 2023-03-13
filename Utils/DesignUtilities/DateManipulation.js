@@ -4,8 +4,9 @@ export default function convertDateToLocalTime(dateString) {
   date.setMinutes(date.getMinutes());
 
   var localTime = date.toLocaleTimeString([], {
-    hour: "2-digit",
+    hour: "numeric",
     minute: "2-digit",
+    hour12: true,
   });
 
   return localTime;

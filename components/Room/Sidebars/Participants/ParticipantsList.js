@@ -8,6 +8,8 @@ import { ToggleParticpantsList } from "../../../../Redux/Actions/Comps/Collapsib
 import { useDispatch } from "react-redux";
 
 export default function Participants() {
+  const dispatch = useDispatch();
+
   const [searchQuery, setSearchQuery] = useState("");
 
   return (

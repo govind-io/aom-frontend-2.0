@@ -6,7 +6,7 @@ import { TogglChatList } from "../../../../Redux/Actions/Comps/CollapsibleComps"
 import SendMessage from "./SendMessage";
 import Messages from "./Messages";
 
-export default function Chat() {
+export default function Chat({ messages, setMessages }) {
   const dispatch = useDispatch();
 
   return (
@@ -74,7 +74,7 @@ export default function Chat() {
           />
         </Grid>
 
-        <Messages />
+        <Messages messages={messages} setMessages={setMessages} />
 
         <Grid
           item
@@ -84,7 +84,7 @@ export default function Chat() {
             marginRight: "20px",
           }}
         >
-          <SendMessage />
+          <SendMessage setMessages={setMessages} />
         </Grid>
       </Grid>
     </Grid>

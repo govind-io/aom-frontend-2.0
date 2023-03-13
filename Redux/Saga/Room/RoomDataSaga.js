@@ -12,6 +12,9 @@ import {
   GET_ALL_ROOM,
   GET_ROOM_COUNT_FOR_MONTH,
   GET_ROOM_DETAILS,
+  GET_ROOM_MESSAGES,
+  MUTE_ALL_USERS,
+  SEND_ROOM_MESSAGE,
 } from "../../Types/Users/RoomTypes";
 
 function* GetRoomDetailsSaga({ data }) {
@@ -184,10 +187,110 @@ function* GetRoomCountForMonthSaga({ data }) {
   return data.onSuccess(response.data.data);
 }
 
+function* SendRoomMessageSaga({ data }) {
+  let apiConfig = {
+    method: "post",
+    url: `room/${data.meetingId}/message`,
+    data: data.data,
+    headers: {
+      Authorization: `Bearer ${Tokens.refresh || data.data.token}`,
+    },
+  };
+
+  let response = yield call(
+    SecureApiHandler,
+    apiConfig,
+    false,
+    "Sending Message"
+  );
+
+  if (response.logout) {
+    yield put(DeleteAll());
+    if (!data.onFailed) return;
+    data.onFailed();
+  }
+
+  if (!response.res || !response.success) {
+    if (!data.onFailed) return;
+    return data.onFailed();
+  }
+
+  if (!data.onSuccess) return;
+
+  return data.onSuccess(response.data.data);
+}
+
+function* GetRoomMessageSaga({ data }) {
+  let apiConfig = {
+    method: "get",
+    url: `room/${data.data.meetingId}/message?limit=${data.data.limit}&skip=${data.data.skip}`,
+    headers: {
+      Authorization: `Bearer ${Tokens.refresh || data.data.token}`,
+    },
+  };
+
+  let response = yield call(
+    SecureApiHandler,
+    apiConfig,
+    false,
+    "Fetching Messages"
+  );
+
+  if (response.logout) {
+    yield put(DeleteAll());
+    if (!data.onFailed) return;
+    data.onFailed();
+  }
+
+  if (!response.res || !response.success) {
+    if (!data.onFailed) return;
+    return data.onFailed();
+  }
+
+  if (!data.onSuccess) return;
+
+  return data.onSuccess(response.data.data);
+}
+
+function* MuteAllSaga({ data }) {
+  let apiConfig = {
+    method: "get",
+    url: `room/${data.data.meetingId}/mute-all`,
+    headers: {
+      Authorization: `Bearer ${Tokens.refresh || data.data.token}`,
+    },
+  };
+
+  let response = yield call(
+    SecureApiHandler,
+    apiConfig,
+    false,
+    "Muted all users"
+  );
+
+  if (response.logout) {
+    yield put(DeleteAll());
+    if (!data.onFailed) return;
+    data.onFailed();
+  }
+
+  if (!response.res || !response.success) {
+    if (!data.onFailed) return;
+    return data.onFailed();
+  }
+
+  if (!data.onSuccess) return;
+
+  return data.onSuccess(response.data.data);
+}
+
 export const roomDataSaga = all([
   takeLatest(GET_ROOM_DETAILS, GetRoomDetailsSaga),
   takeLatest(CREATE_ROOM, CreateRoomSaga),
   takeLatest(DELETE_ROOM, DeleteRoomSaga),
   takeLatest(GET_ALL_ROOM, GetAllRoom),
   takeLatest(GET_ROOM_COUNT_FOR_MONTH, GetRoomCountForMonthSaga),
+  takeLatest(SEND_ROOM_MESSAGE, SendRoomMessageSaga),
+  takeLatest(GET_ROOM_MESSAGES, GetRoomMessageSaga),
+  takeLatest(MUTE_ALL_USERS, MuteAllSaga),
 ]);

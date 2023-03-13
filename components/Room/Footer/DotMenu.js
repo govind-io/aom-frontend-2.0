@@ -6,14 +6,17 @@ import {
   Popover,
 } from "@mui/material";
 import { useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import text from "../../../Content/text.json";
-import { EVENTSTATUS } from "../../../Utils/Contants/Constants";
+import { MuteAllUsers } from "../../../Redux/Actions/Room/RoomDataAction";
+import ToastHandler from "../../../Utils/Toast/ToastHandler";
 
 export default function DotMenu() {
   const user = useSelector((s) => s.user.data);
   const roomData = useSelector((s) => s.room.data);
+
+  const dispatch = useDispatch();
 
   const [openMenu, setOpenMenu] = useState(false);
 
@@ -32,6 +35,17 @@ export default function DotMenu() {
   };
 
   const muteAll = (e) => {
+    const data = {
+      data: { meetingId: roomData.meetingId },
+      onFailed: () => {
+        ToastHandler("dan", "Could Not mute everyone");
+      },
+      onSuccess: () => {
+        ToastHandler("sus", "Muted All users");
+      },
+    };
+
+    dispatch(MuteAllUsers(data));
     handleClose(e);
   };
 
